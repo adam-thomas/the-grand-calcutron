@@ -5,22 +5,24 @@
 
 {% block script %}
 <script>
-    function showTab(tab_id) {
+    function showTab(tab_element, task_id) {
+        $("nav button").removeClass("active")
+        $(tab_element).addClass("active")
+
         $(".tab-contents-container").hide()
-        $(".tab-contents-container#" + tab_id).show()
+        $(".tab-contents-container#" + task_id).show()
     }
 </script>
 {% endblock script %}
 
+
 {% block body %}
 <nav class="top-tab-container">
-    <ul class="tabs">
-        {% for tab in tabs %}
-            <li>
-                <a href="#" onclick="showTab({{ tab.id }})">{{ tab.title }}</a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% for tab in tabs %}
+        <button onclick="showTab(this, {{ tab.id }})">
+            <span>{{ tab.title }}</span>
+        </button>
+    {% endfor %}
 </nav>
 
 {% for tab in tabs %}

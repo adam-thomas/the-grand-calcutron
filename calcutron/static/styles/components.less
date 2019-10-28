@@ -1,0 +1,29 @@
+button, .button {
+    padding: 5px 10px;
+    background-color: @light-green;
+    border: 2px solid @light-green;
+    border-radius: 5px;
+
+    color: @black;
+    cursor: pointer;
+    outline: none;
+
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled):not(.disabled) {
+        border: 2px solid @white;
+        color: @white;
+    }
+
+    &.active {
+        background-color: @main-green;
+        color: @white;
+    }
+
+    &:focused, &:active {
+        outline: none;
+    }
+}
