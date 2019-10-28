@@ -1,0 +1,29 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet/less" type="text/less" href="{% static 'styles/main.less' %}"></link>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
+</head>
+
+<body>
+    {% block body %}
+    {% endblock %}
+</body>
+
+{% block script %}
+{% endblock %}
+
+
+</html>

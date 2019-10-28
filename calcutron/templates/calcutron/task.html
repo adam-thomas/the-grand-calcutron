@@ -1,0 +1,20 @@
+{% if task.parent is None %}
+    <div class="tab-contents-container" id="{{ task.id }}">
+{% endif %}
+
+<ul>
+    {% for child in task.children.all %}
+        <li>
+            <p>{{ child.title }}</p>
+            {% if child.long_text %}<p>{{ child.long_text }}</p>{% endif %}
+
+            {% if child.children.exists %}
+                {% include "calcutron/task.html" with task=child %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+{% if task.parent is None %}
+    </div>
+{% endif %}
