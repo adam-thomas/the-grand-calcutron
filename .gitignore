@@ -1,0 +1,15 @@
+# Python compile files
+__pycache__/
+.py[cod]
+
+# Virtualenv files
+bin/
+lib/
+lib64
+pyvenv.cfg
+share/
+
+# Locally installed dependencies
+src/
+
+.vscode
