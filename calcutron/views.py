@@ -1,7 +1,7 @@
-from django.views.generic import CreateView
+from django.views.generic import CreateView, FormView
 from django.views.generic.list import ListView
 
-from .forms import NewTaskForm
+from .forms import DeleteTaskForm, NewTaskForm
 from .models import Task
 
 
@@ -37,3 +37,20 @@ class NewTaskView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         return self.render_to_response({"task": self.object.parent})
+
+
+class DeleteTaskView(FormView):
+    model = Task
+    form_class = DeleteTaskForm
+    template_name = "calcutron/task.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.is_ajax():
+            raise Http404("Attempted to send a non-AJAX request to an AJAX view!")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = self.model.objects.get(id=form.cleaned_data["id"])
+        parent = self.object.parent
+        self.object.delete()
+        return self.render_to_response({"task": parent})

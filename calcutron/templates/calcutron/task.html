@@ -1,4 +1,4 @@
-{% if task.parent is None %}
+{% if task.parent is None and not request.is_ajax %}
     <div class="tab-contents-container" id="{{ task.id }}">
 {% endif %}
 
@@ -13,10 +13,20 @@
     {% endfor %}
 
     <li class="task-form-wrapper">
+        {% if not task.parent is None %}
+            {% url "delete" as delete_url %}
+            <form class="delete-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ delete_url }}')">
+                {% csrf_token %}
+                <input type="hidden" name="parent" value="{{ task.parent.id }}" />
+                <input type="hidden" name="id" value="{{ task.id }}" />
+                <button type="submit" class="submit">Delete</button>
+            </form>
+        {% endif %}
+
         <button class="show-add-form" onclick="showAdd(this)">Add new</button>
         <div class="form-visibility-wrapper">
             {% url "new" as new_url %}
-            <form class="new-task" method="post" action="#" onsubmit="addNewTask(event, this, '{{ new_url }}')">
+            <form class="new-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ new_url }}')">
                 {% csrf_token %}
                 <input type="hidden" name="parent" value="{{ task.id }}" />
                 <input type="text" class="task-title" name="title" />
@@ -26,6 +36,6 @@
     </li>
 </ul>
 
-{% if task.parent is None %}
+{% if task.parent is None and not request.is_ajax %}
     </div>
 {% endif %}
