@@ -8,11 +8,19 @@
             <p>{{ child.title }}</p>
             {% if child.long_text %}<p>{{ child.long_text }}</p>{% endif %}
 
-            {% if child.children.exists %}
-                {% include "calcutron/task.html" with task=child %}
-            {% endif %}
+            {% include "calcutron/task.html" with task=child %}
         </li>
     {% endfor %}
+
+    <li>
+        <a href="#" onclick="showAdd(this)">Add new</a>
+        <form class="new-todo" method="post" action="{% url 'new' %}">
+            {% csrf_token %}
+            <input type="hidden" name="parent" value="{{ task.id }}" />
+            <input type="text" class="todo-text" name="title" />
+            <button type="submit">Save</button>
+        </form>
+    </li>
 </ul>
 
 {% if task.parent is None %}
