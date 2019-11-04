@@ -2,24 +2,27 @@
     <div class="tab-contents-container" id="{{ task.id }}">
 {% endif %}
 
-<ul>
+<ul id="children-of-{{ task.id }}">
     {% for child in task.children.all %}
-        <li>
-            <p>{{ child.title }}</p>
-            {% if child.long_text %}<p>{{ child.long_text }}</p>{% endif %}
+        <li class="task-wrapper" id="wrapper-of-{{ child.id }}">
+            <p class="title">{{ child.title }}</p>
+            {% if child.long_text %}<p class="long-text">{{ child.long_text }}</p>{% endif %}
 
             {% include "calcutron/task.html" with task=child %}
         </li>
     {% endfor %}
 
-    <li>
-        <a href="#" onclick="showAdd(this)">Add new</a>
-        <form class="new-todo" method="post" action="{% url 'new' %}">
-            {% csrf_token %}
-            <input type="hidden" name="parent" value="{{ task.id }}" />
-            <input type="text" class="todo-text" name="title" />
-            <button type="submit">Save</button>
-        </form>
+    <li class="task-form-wrapper">
+        <button class="show-add-form" onclick="showAdd(this)">Add new</button>
+        <div class="form-visibility-wrapper">
+            {% url "new" as new_url %}
+            <form class="new-task" method="post" action="#" onsubmit="addNewTask(event, this, '{{ new_url }}')">
+                {% csrf_token %}
+                <input type="hidden" name="parent" value="{{ task.id }}" />
+                <input type="text" class="task-title" name="title" />
+                <button type="submit" class="submit">Save</button>
+            </form>
+        </div>
     </li>
 </ul>
 

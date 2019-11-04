@@ -27,4 +27,13 @@ class MainView(ListView):
 class NewTaskView(CreateView):
     model = Task
     form_class = NewTaskForm
-    success_url = "/"
+    template_name = "calcutron/task.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.is_ajax():
+            raise Http404("Attempted to send a non-AJAX request to an AJAX view!")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response({"task": self.object.parent})
