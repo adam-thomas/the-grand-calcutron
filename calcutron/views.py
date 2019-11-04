@@ -27,7 +27,7 @@ class MainView(ListView):
 class NewTaskView(CreateView):
     model = Task
     form_class = NewTaskForm
-    template_name = "calcutron/task.html"
+    template_name = "calcutron/task_children.html"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.is_ajax():
@@ -42,7 +42,7 @@ class NewTaskView(CreateView):
 class DeleteTaskView(FormView):
     model = Task
     form_class = DeleteTaskForm
-    template_name = "calcutron/task.html"
+    template_name = "calcutron/task_children.html"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.is_ajax():

@@ -1,0 +1,22 @@
+
+<ul class="child-tasks" id="children-of-{{ task.id }}">
+    {% for child in task.children.all %}
+        <li class="task-wrapper" id="wrapper-of-{{ child.id }}">
+            {% include "calcutron/task.html" with task=child %}
+        </li>
+    {% endfor %}
+
+    <li class="task-form-wrapper">
+        <div class="{% if not task.parent %}show{% endif %} form-visibility-wrapper" id="add-form-of-{{ task.id }}">
+            {% url "new" as new_url %}
+            <form class="new-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ new_url }}')">
+                {% csrf_token %}
+                <input type="hidden" name="parent" value="{{ task.id }}" />
+                <input type="text" class="task-title" name="title" />
+                <button type="submit" class="submit">Add</button>
+            </form>
+
+            {% if task.parent %}<button class="hide-add-form" onclick="hideAdd({{ task.id }})">^</button>{% endif %}
+        </div>
+    </li>
+</ul>

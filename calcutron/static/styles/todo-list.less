@@ -22,7 +22,7 @@ nav {
 .tab-contents-container {
     padding: 30px;
 
-    &:not(:first-of-type) {
+    &:not(.show) {
         display: none;
     }
 
@@ -39,17 +39,31 @@ nav {
         margin: 5px 0 30px 0;
     }
 
+    li.task-wrapper {
+        .main-row {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+
+            .title, .delete-task {
+                margin-right: 8px;
+            }
+        }
+    }
+
     li.task-form-wrapper {
         display: flex;
         flex-flow: row;
         align-items: center;
 
-        .show-add-form {
-            margin-right: 10px;
-        }
-
         .form-visibility-wrapper {
-            display: none;
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+
+            &:not(.show) {
+                display: none;
+            }
 
             form.new-task {
                 display: flex;

@@ -1,15 +1,32 @@
 function showAddInner(form_visibility_element) {
     title_input_element = form_visibility_element.find(".task-title");
 
-    form_visibility_element.show();
+    form_visibility_element.addClass("show");
     title_input_element.focus();
 }
 
 
-function showAdd(add_link_element) {
-    li_element = $(add_link_element).parent();
-    form_visibility_element = li_element.children(".form-visibility-wrapper");
+function showAdd(task_id) {
+    form_visibility_element = $("#add-form-of-" + task_id);
     showAddInner(form_visibility_element);
+}
+
+
+function hideAdd(task_id) {
+    form_visibility_element = $("#add-form-of-" + task_id);
+    form_visibility_element.removeClass("show");
+}
+
+
+function showTab(tab_element) {
+    $("nav button").removeClass("active");
+    $(tab_element).addClass("active");
+
+    let id = $(tab_element).attr("id");
+
+    $(".tab-contents-container").removeClass("show");
+    $(".tab-contents-container#container-of-" + id).addClass("show");
+    $(".form-visibility-wrapper#add-form-of-" + id).addClass("show");
 }
 
 
@@ -36,3 +53,9 @@ function submitAjaxForm(event, form_element, target_url) {
         );
     });
 }
+
+
+$(document).ready(() => {
+    // Display the first tab.
+    showTab($("nav").children("button")[0]);
+})

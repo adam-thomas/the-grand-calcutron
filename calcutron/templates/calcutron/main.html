@@ -3,23 +3,10 @@
 {% load index %}
 
 
-{% block script %}
-<script>
-    function showTab(tab_element, task_id) {
-        $("nav button").removeClass("active")
-        $(tab_element).addClass("active")
-
-        $(".tab-contents-container").hide()
-        $(".tab-contents-container#" + task_id).show()
-    }
-</script>
-{% endblock script %}
-
-
 {% block body %}
 <nav class="top-tab-container">
     {% for tab in tabs %}
-        <button onclick="showTab(this, {{ tab.id }})">
+        <button id="{{ tab.id }}" onclick="showTab(this)">
             <span>{{ tab.title }}</span>
         </button>
     {% endfor %}

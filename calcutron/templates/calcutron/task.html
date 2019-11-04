@@ -1,41 +1,29 @@
-{% if task.parent is None and not request.is_ajax %}
-    <div class="tab-contents-container" id="{{ task.id }}">
+{% if task.parent is None %}
+    <div class="tab-contents-container" id="container-of-{{ task.id }}">
 {% endif %}
 
-<ul id="children-of-{{ task.id }}">
-    {% for child in task.children.all %}
-        <li class="task-wrapper" id="wrapper-of-{{ child.id }}">
-            <p class="title">{{ child.title }}</p>
-            {% if child.long_text %}<p class="long-text">{{ child.long_text }}</p>{% endif %}
+{% if task.parent is not None %}
+    <div class="main-row">
+        <span class="title">{{ child.title }}</span>
 
-            {% include "calcutron/task.html" with task=child %}
-        </li>
-    {% endfor %}
+        {% comment %} Delete button {% endcomment %}
+        {% url "delete" as delete_url %}
+        <form class="delete-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ delete_url }}')">
+            {% csrf_token %}
+            <input type="hidden" name="parent" value="{{ task.parent.id }}" />
+            <input type="hidden" name="id" value="{{ task.id }}" />
+            <button type="submit" class="submit">-</button>
+        </form>
 
-    <li class="task-form-wrapper">
-        {% if not task.parent is None %}
-            {% url "delete" as delete_url %}
-            <form class="delete-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ delete_url }}')">
-                {% csrf_token %}
-                <input type="hidden" name="parent" value="{{ task.parent.id }}" />
-                <input type="hidden" name="id" value="{{ task.id }}" />
-                <button type="submit" class="submit">-</button>
-            </form>
-        {% endif %}
+        {% comment %} Add button {% endcomment %}
+        <button class="show-add-form" onclick="showAdd({{ task.id }})">+</button>
+    </div>
 
-        <button class="show-add-form" onclick="showAdd(this)">+</button>
-        <div class="form-visibility-wrapper">
-            {% url "new" as new_url %}
-            <form class="new-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ new_url }}')">
-                {% csrf_token %}
-                <input type="hidden" name="parent" value="{{ task.id }}" />
-                <input type="text" class="task-title" name="title" />
-                <button type="submit" class="submit">Add</button>
-            </form>
-        </div>
-    </li>
-</ul>
+    {% if child.long_text %}<div class="long-text">{{ child.long_text }}</div>{% endif %}
+{% endif %}
 
-{% if task.parent is None and not request.is_ajax %}
+{% include "calcutron/task_children.html" with task=task %}
+
+{% if task.parent is None %}
     </div>
 {% endif %}
