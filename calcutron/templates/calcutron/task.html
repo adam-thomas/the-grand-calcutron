@@ -19,18 +19,18 @@
                 {% csrf_token %}
                 <input type="hidden" name="parent" value="{{ task.parent.id }}" />
                 <input type="hidden" name="id" value="{{ task.id }}" />
-                <button type="submit" class="submit">Delete</button>
+                <button type="submit" class="submit">-</button>
             </form>
         {% endif %}
 
-        <button class="show-add-form" onclick="showAdd(this)">Add new</button>
+        <button class="show-add-form" onclick="showAdd(this)">+</button>
         <div class="form-visibility-wrapper">
             {% url "new" as new_url %}
             <form class="new-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ new_url }}')">
                 {% csrf_token %}
                 <input type="hidden" name="parent" value="{{ task.id }}" />
                 <input type="text" class="task-title" name="title" />
-                <button type="submit" class="submit">Save</button>
+                <button type="submit" class="submit">Add</button>
             </form>
         </div>
     </li>
