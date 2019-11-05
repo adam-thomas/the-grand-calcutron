@@ -6,7 +6,7 @@
         </li>
     {% endfor %}
 
-    <li class="task-form-wrapper">
+    <li class="{% if task.parent is None %}show{% endif %} task-form-wrapper" id="add-form-of-{{ task.id }}">
         {% url "new" as new_url %}
         <form class="new-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ new_url }}')">
             {% csrf_token %}

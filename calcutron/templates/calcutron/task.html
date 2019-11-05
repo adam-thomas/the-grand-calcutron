@@ -6,6 +6,12 @@
     <div class="main-row">
         <span class="title">{{ child.title }}</span>
 
+        {% comment %} Show children and add/delete buttons {% endcomment %}
+        <button class="show-children" onclick="toggleChildren(this, {{ task.id }})">v</button>
+
+        {% comment %} Show Add form {% endcomment %}
+        <button class="show-add-form" onclick="showAddForm({{ task.id }})">+</button>
+
         {% comment %} Delete button {% endcomment %}
         {% url "delete" as delete_url %}
         <form class="delete-task" method="post" action="#" onsubmit="submitAjaxForm(event, this, '{{ delete_url }}')">
@@ -14,9 +20,6 @@
             <input type="hidden" name="id" value="{{ task.id }}" />
             <button type="submit" class="submit">x</button>
         </form>
-
-        {% comment %} Add button {% endcomment %}
-        <button class="show-add-form" onclick="toggleChildren(this, {{ task.id }})">v</button>
     </div>
 
     {% if child.long_text %}<div class="long-text">{{ child.long_text }}</div>{% endif %}
