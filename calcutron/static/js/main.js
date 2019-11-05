@@ -1,20 +1,21 @@
-function showAddInner(form_visibility_element) {
-    title_input_element = form_visibility_element.find(".task-title");
+function showAddInner(children_element) {
+    title_input_element = children_element.children(".task-form-wrapper").find(".task-title");
 
-    form_visibility_element.addClass("show");
+    children_element.addClass("show");
     title_input_element.focus();
 }
 
 
-function showAdd(task_id) {
-    form_visibility_element = $("#add-form-of-" + task_id);
-    showAddInner(form_visibility_element);
-}
+function toggleChildren(button_element, task_id) {
+    children_element = $("#children-of-" + task_id);
 
-
-function hideAdd(task_id) {
-    form_visibility_element = $("#add-form-of-" + task_id);
-    form_visibility_element.removeClass("show");
+    if (children_element.hasClass("show")) {
+        children_element.removeClass("show");
+        $(button_element).html("v");
+    } else {
+        showAddInner(children_element);
+        $(button_element).html("^");
+    }
 }
 
 
@@ -48,9 +49,7 @@ function submitAjaxForm(event, form_element, target_url) {
     $.post(target_url, data, (return_data, status) => {
         siblings_list_id = "#children-of-" + data.parent;
         $(siblings_list_id).replaceWith(return_data);
-        showAddInner(
-            $(siblings_list_id).children(".task-form-wrapper").children(".form-visibility-wrapper")
-        );
+        showAddInner($(siblings_list_id));
     });
 }
 

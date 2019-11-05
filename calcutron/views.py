@@ -36,7 +36,7 @@ class NewTaskView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        return self.render_to_response({"task": self.object.parent})
+        return self.render_to_response({"task": self.object.parent, "depth": 0})
 
 
 class DeleteTaskView(FormView):
@@ -53,4 +53,4 @@ class DeleteTaskView(FormView):
         self.object = self.model.objects.get(id=form.cleaned_data["id"])
         parent = self.object.parent
         self.object.delete()
-        return self.render_to_response({"task": parent})
+        return self.render_to_response({"task": parent, "depth": 0})

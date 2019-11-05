@@ -32,11 +32,26 @@ nav {
 
     ul {
         list-style: none;
-        margin: 10px 0 10px 30px;
+
+        display: flex;
+        flex-flow: column;
+        align-items: flex-start;
     }
 
     & > ul {
-        margin: 5px 0 30px 0;
+        margin: 0;
+    }
+
+    ul ul {
+        margin: 0 0 0 30px;
+
+        &:not(.show) {
+            display: none;
+        }
+    }
+
+    li {
+        padding: 5px 0;
     }
 
     li.task-wrapper {
@@ -56,22 +71,12 @@ nav {
         flex-flow: row;
         align-items: center;
 
-        .form-visibility-wrapper {
+        form.new-task {
             display: flex;
             flex-flow: row;
-            align-items: center;
 
-            &:not(.show) {
-                display: none;
-            }
-
-            form.new-task {
-                display: flex;
-                flex-flow: row;
-
-                & > * {
-                    margin-right: 10px;
-                }
+            & > * {
+                margin-right: 10px;
             }
         }
     }

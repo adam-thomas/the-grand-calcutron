@@ -12,17 +12,17 @@
             {% csrf_token %}
             <input type="hidden" name="parent" value="{{ task.parent.id }}" />
             <input type="hidden" name="id" value="{{ task.id }}" />
-            <button type="submit" class="submit">-</button>
+            <button type="submit" class="submit">x</button>
         </form>
 
         {% comment %} Add button {% endcomment %}
-        <button class="show-add-form" onclick="showAdd({{ task.id }})">+</button>
+        <button class="show-add-form" onclick="toggleChildren(this, {{ task.id }})">v</button>
     </div>
 
     {% if child.long_text %}<div class="long-text">{{ child.long_text }}</div>{% endif %}
 {% endif %}
 
-{% include "calcutron/task_children.html" with task=task %}
+{% include "calcutron/task_children.html" with task=task depth=depth %}
 
 {% if task.parent is None %}
     </div>

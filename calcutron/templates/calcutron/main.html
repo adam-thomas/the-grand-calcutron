@@ -13,7 +13,7 @@
 </nav>
 
 {% for tab in tabs %}
-    {% include "calcutron/task.html" with task=tab %}
+    {% include "calcutron/task.html" with task=tab depth=0 %}
 {% endfor %}
 
 {% endblock %}
