@@ -1,5 +1,6 @@
 import os
 
+import django_heroku
 import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,3 +67,6 @@ USE_TZ = False
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
