@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, FormView
 from django.views.generic.list import ListView
 
@@ -5,7 +6,7 @@ from .forms import DeleteTaskForm, NewTaskForm
 from .models import Task
 
 
-class MainView(ListView):
+class MainView(LoginRequiredMixin, ListView):
     model = Task
     template_name = "calcutron/main.html"
 
@@ -24,7 +25,7 @@ class MainView(ListView):
         return context
 
 
-class NewTaskView(CreateView):
+class NewTaskView(LoginRequiredMixin, CreateView):
     model = Task
     form_class = NewTaskForm
     template_name = "calcutron/task_children.html"
@@ -39,7 +40,7 @@ class NewTaskView(CreateView):
         return self.render_to_response({"task": self.object.parent, "depth": 0})
 
 
-class DeleteTaskView(FormView):
+class DeleteTaskView(LoginRequiredMixin, FormView):
     model = Task
     form_class = DeleteTaskForm
     template_name = "calcutron/task_children.html"

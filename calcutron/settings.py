@@ -68,5 +68,7 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
+LOGIN_REDIRECT_URL = "/"
+
 # Activate Django-Heroku.
 django_heroku.settings(locals())
