@@ -69,7 +69,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
 LOGIN_REDIRECT_URL = "/"
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = not DEBUG
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())

@@ -10,12 +10,16 @@ class MainView(LoginRequiredMixin, ListView):
     model = Task
     template_name = "calcutron/main.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         queryset = self.get_queryset()
 
-        tabs = queryset.filter(parent__isnull=True)
+        tabs = queryset.filter(parent__isnull=True, users=self.request.user)
         context["tabs"] = tabs
         context["contents"] = {}
 
@@ -33,10 +37,12 @@ class NewTaskView(LoginRequiredMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not request.is_ajax():
             raise Http404("Attempted to send a non-AJAX request to an AJAX view!")
+        self.request = request
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.object = form.save()
+        self.object.users.add(self.request.user)
         return self.render_to_response({"task": self.object.parent, "depth": 0})
 
 

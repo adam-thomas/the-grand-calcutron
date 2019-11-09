@@ -8,6 +8,7 @@ class Task(Orderable):
     title = models.CharField(max_length=255)
     long_text = models.TextField(blank=True, null=True)
     done = models.BooleanField(default=False)
+    users = models.ManyToManyField("auth.User", blank=True, null=True)
 
     def __str__(self):
         return self.title
