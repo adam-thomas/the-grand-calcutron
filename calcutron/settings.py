@@ -33,7 +33,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-SECRET_KEY = 'Django requires this to be set, but this project does not make use of it'
+SECRET_KEY = os.environ.get("SECRET_KEY", "Local key")
 
 ROOT_URLCONF = 'calcutron.urls'
 
@@ -69,6 +69,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
 LOGIN_REDIRECT_URL = "/"
+SECURE_SSL_REDIRECT = True
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
