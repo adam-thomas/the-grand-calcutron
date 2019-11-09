@@ -39,6 +39,9 @@ function showTab(tab_element) {
     $(".tab-contents-container").removeClass("show");
     $(".tab-contents-container#container-of-" + id).addClass("show");
     $(".form-visibility-wrapper#add-form-of-" + id).addClass("show");
+
+    $(".tab-options form").removeClass("show");
+    $(".tab-options form#options-of-" + id).addClass("show");
 }
 
 

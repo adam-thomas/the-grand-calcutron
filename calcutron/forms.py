@@ -11,3 +11,8 @@ class NewTaskForm(forms.ModelForm):
 
 class DeleteTaskForm(forms.Form):
     id = forms.IntegerField()
+
+
+class EditTaskForm(forms.Form):
+    id = forms.IntegerField()
+    title = forms.CharField(max_length=255)

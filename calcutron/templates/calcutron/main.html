@@ -12,8 +12,25 @@
     {% endfor %}
 </nav>
 
-{% for tab in tabs %}
-    {% include "calcutron/task.html" with task=tab depth=0 %}
-{% endfor %}
+<main class="task-container-wrapper">
+    {% for tab in tabs %}
+        {% include "calcutron/task.html" with task=tab depth=0 %}
+    {% endfor %}
+</main>
+
+<footer class="tab-options">
+    {% for tab in tabs %}
+        <form id="options-of-{{ tab.id }}" method="post">
+            {% csrf_token %}
+
+            <span class="title">Tab options</span>
+            <input type="hidden" name="id" value="{{ tab.id }}" />
+            <input type="text" name="title" value="{{ tab.title }}" />
+            <button type="submit" formaction="{% url 'new' %}">Add</button>
+            <button type="submit" formaction="{% url 'edit' %}">Update</button>
+            <button type="submit" formaction="{% url 'delete' %}">Delete</button>
+        </form>
+    {% endfor %}
+</footer>
 
 {% endblock %}

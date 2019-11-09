@@ -1,17 +1,19 @@
 nav {
     width: 100%;
-    padding: 20px;
+    padding: 15px 0;
+    flex: 0 0 auto;
 
     display: flex;
     flex-flow: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 
     background-color: @dark-green;
 
     button {
-        height: 50px;
+        height: 45px;
         width: 100%;
+        max-width: 300px;
         flex: 0 1 auto;
 
         margin: 0 20px;
@@ -19,58 +21,100 @@ nav {
     }
 }
 
-.tab-contents-container {
-    padding: 30px;
+.task-container-wrapper {
+    width: 100%;
+    height: 100%;
+    flex: 0 1 auto;
 
-    &:not(.show) {
-        display: none;
-    }
+    .tab-contents-container {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
 
-    button:hover {
-        border-color: @main-green !important;
-    }
-
-    ul {
-        list-style: none;
-
-        display: flex;
-        flex-flow: column;
-        align-items: flex-start;
-    }
-
-    & > ul {
-        margin: 0;
-    }
-
-    ul ul {
-        margin: 0 0 0 30px;
+        padding: 30px;
 
         &:not(.show) {
             display: none;
         }
-    }
 
-    li {
-        padding: 5px 0;
-    }
+        button:hover {
+            border-color: @main-green !important;
+        }
 
-    li.task-wrapper {
-        .main-row {
+        ul {
+            list-style: none;
+
+            display: flex;
+            flex-flow: column;
+            align-items: flex-start;
+        }
+
+        & > ul {
+            margin: 0;
+        }
+
+        ul ul {
+            margin: 0 0 0 30px;
+
+            &:not(.show) {
+                display: none;
+            }
+        }
+
+        li {
+            padding: 5px 0;
+        }
+
+        li.task-wrapper {
+            .main-row {
+                display: flex;
+                flex-flow: row;
+                align-items: center;
+
+                .title, .show-children, .show-add-form {
+                    margin-right: 8px;
+                }
+
+                .show-add-form:not(.show), .delete-task:not(.show) {
+                    display: none;
+                }
+            }
+        }
+
+        li.task-form-wrapper {
             display: flex;
             flex-flow: row;
             align-items: center;
 
-            .title, .show-children, .show-add-form {
-                margin-right: 8px;
+            &:not(.show) {
+                display: none;
             }
 
-            .show-add-form:not(.show), .delete-task:not(.show) {
-                display: none;
+            form.new-task {
+                display: flex;
+                flex-flow: row;
+
+                & > * {
+                    margin-right: 10px;
+                }
             }
         }
     }
+}
 
-    li.task-form-wrapper {
+.tab-options {
+    width: 100%;
+    height: 60px;
+    flex: 0 0 auto;
+
+    background-color: @white;
+    z-index: 1;
+
+    form {
+        width: 100%;
+        height: 100%;
+        padding: 0 20px;
+
         display: flex;
         flex-flow: row;
         align-items: center;
@@ -79,13 +123,8 @@ nav {
             display: none;
         }
 
-        form.new-task {
-            display: flex;
-            flex-flow: row;
-
-            & > * {
-                margin-right: 10px;
-            }
+        & > * {
+            margin-right: 12px;
         }
     }
 }
