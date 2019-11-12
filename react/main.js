@@ -3,11 +3,11 @@ import ReactDOM from "react-dom";
 
 class App extends React.Component {
     render() {
-        return (<h1>"hooray it worked!"</h1>);
+        return (<h1>hooray, it worked!</h1>);
     }
 }
 
 const wrapper = document.getElementById("app");
 if (wrapper) {
-    ReactDOM.render(<h1>"hooray it worked!"</h1>, wrapper);
+    ReactDOM.render(<App />, wrapper);
 }
