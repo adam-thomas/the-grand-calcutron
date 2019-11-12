@@ -19,3 +19,6 @@ src/
 node_modules
 yarn-error.log
 yarn.lock
+
+# Webpack output
+calcutron/static/js/main.js
