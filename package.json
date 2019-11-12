@@ -1,0 +1,27 @@
+{
+  "name": "the-grand-calcutron",
+  "version": "1.0.0",
+  "description": "Another todo app.",
+  "main": "index.js",
+  "repository": "git@github.com:adam-thomas/the-grand-calcutron.git",
+  "author": "Adam Thomas <adamthomas@e3d-online.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  },
+  "scripts": {
+    "dev": "webpack --mode development ./react/main.js --output ./calcutron/static/js/main.js",
+    "build": "webpack --mode production ./react/main.js --output ./calcutron/static/js/main.js"
+  }
+}
