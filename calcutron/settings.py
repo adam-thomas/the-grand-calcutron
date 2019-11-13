@@ -6,7 +6,7 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # TODO: Figure out why this doesn't work on Heroku - I assume it's submitting a string of "0" or "False"
-DEBUG = bool(os.environ.get('DEBUG', False))
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 # ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
 ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
