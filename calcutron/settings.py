@@ -5,7 +5,7 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = bool(os.environ.get('DEBUG', True))
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 ALLOWED_HOSTS = ['*']
 
@@ -33,7 +33,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "Local key")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 ROOT_URLCONF = 'calcutron.urls'
 
