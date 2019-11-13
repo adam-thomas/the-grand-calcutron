@@ -20,5 +20,6 @@ node_modules
 yarn-error.log
 yarn.lock
 
-# Webpack output
+# Build output
 calcutron/static/js/main.js
+staticfiles

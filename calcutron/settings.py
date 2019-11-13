@@ -6,10 +6,10 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # TODO: Figure out why this doesn't work on Heroku - I assume it's submitting a string of "0" or "False"
-# DEBUG = bool(os.environ.get('DEBUG', False))
-DEBUG = False
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
+# ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
+ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
 BASE_URL = "https://the-grand-calcutron.herokuapp.com"
 
 INSTALLED_APPS = (
@@ -36,6 +36,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# SECRET_KEY = "local_key" if DEBUG else os.environ.get("SECRET_KEY")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 ROOT_URLCONF = 'calcutron.urls'
