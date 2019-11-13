@@ -5,7 +5,9 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = bool(os.environ.get('DEBUG', False))
+# TODO: Figure out why this doesn't work on Heroku - I assume it's submitting a string of "0" or "False"
+# DEBUG = bool(os.environ.get('DEBUG', False))
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
