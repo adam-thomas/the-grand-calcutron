@@ -9,7 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 # ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
-ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
+# ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
+ALLOWED_HOSTS = ["*"]  # for now
 BASE_URL = "https://the-grand-calcutron.herokuapp.com"
 
 INSTALLED_APPS = (
