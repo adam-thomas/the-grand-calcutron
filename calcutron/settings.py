@@ -6,7 +6,7 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # TODO: Figure out why this doesn't work on Heroku - I assume it's submitting a string of "0" or "False"
-DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 
 # ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
 # ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
@@ -70,8 +70,11 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 LANGUAGE_CODE = 'en-gb'
 USE_TZ = False
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'calcutron/static'),
+)
 
 LOGIN_REDIRECT_URL = "/"
 # SECURE_SSL_REDIRECT = not DEBUG
