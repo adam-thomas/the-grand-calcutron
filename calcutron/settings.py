@@ -5,9 +5,10 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = bool(os.environ.get('DEBUG', True))
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
+BASE_URL = "https://the-grand-calcutron.herokuapp.com"
 
 INSTALLED_APPS = (
     'calcutron',
@@ -33,7 +34,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "Local key")
+SECRET_KEY = "local_key" if DEBUG else os.environ.get("SECRET_KEY")
 
 ROOT_URLCONF = 'calcutron.urls'
 
@@ -65,11 +66,49 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 LANGUAGE_CODE = 'en-gb'
 USE_TZ = False
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'calcutron/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
+
+DEBUG_PROPAGATE_EXCEPTIONS = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
+                       'pathname=%(pathname)s lineno=%(lineno)s ' +
+                       'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'testlogger': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
+    }
+}
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
