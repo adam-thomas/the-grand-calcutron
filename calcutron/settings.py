@@ -35,6 +35,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 # SECRET_KEY = "local_key" if DEBUG else os.environ.get("SECRET_KEY")
@@ -75,10 +76,13 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'calcutron/static'),
 )
+STATICFILES_STORAGE = (
+    "django.contrib.staticfiles.storage.StaticFilesStorage" if DEBUG
+    else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 LOGIN_REDIRECT_URL = "/"
-# SECURE_SSL_REDIRECT = not DEBUG
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = not DEBUG
 
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
