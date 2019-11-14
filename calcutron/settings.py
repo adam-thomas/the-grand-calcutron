@@ -77,7 +77,7 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder', # finds files stored in the 'static' subdirectory of each app.
 )
-# STATICFILES_STORAGE = 'whitenoise.django.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
