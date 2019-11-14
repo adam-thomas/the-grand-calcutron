@@ -76,7 +76,7 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'calcutron/static'),
 )
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.CompressedManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
