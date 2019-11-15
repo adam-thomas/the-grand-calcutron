@@ -75,9 +75,9 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder', # finds files stored in the 'static' subdirectory of each app.
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
