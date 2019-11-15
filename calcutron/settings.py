@@ -30,7 +30,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Needs to be exactly here.
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Needs to be exactly here.
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,7 +77,7 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
+# STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
