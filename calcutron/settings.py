@@ -72,6 +72,9 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 LANGUAGE_CODE = 'en-gb'
 USE_TZ = False
 
+# Heroku may need this?
+PROJECT_ROOT = BASE_DIR
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
