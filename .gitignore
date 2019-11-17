@@ -21,5 +21,5 @@ yarn-error.log
 yarn.lock
 
 # Build output
-calcutron/static/js/main.js
+# calcutron/static/js/react.js
 staticfiles

@@ -73,6 +73,10 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
+<<<<<<< HEAD
+=======
+STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
+>>>>>>> 93776135ec4f269b030ad7a5c750ece3e12052a6
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
