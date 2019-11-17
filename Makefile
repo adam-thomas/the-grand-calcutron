@@ -19,4 +19,4 @@ test:
 	@python manage.py test --keepdb --verbosity=$(verbosity)
 
 calc:
-	@SECRET_KEY="local_key" DEBUG=1 python manage.py runserver
+	@python manage.py runserver

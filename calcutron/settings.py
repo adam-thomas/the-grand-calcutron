@@ -5,8 +5,7 @@ import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# TODO: Figure out why this doesn't work on Heroku - I assume it's submitting a string of "0" or "False"
-DEBUG = bool(int(os.environ.get('DEBUG', 1)))
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 # ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
 # ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
@@ -24,13 +23,11 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 )
 
 MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Needs to be exactly here.
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -39,8 +36,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-# SECRET_KEY = "local_key" if DEBUG else os.environ.get("SECRET_KEY")
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "local_key" if DEBUG else os.environ.get("SECRET_KEY")
 
 ROOT_URLCONF = 'calcutron.urls'
 
@@ -77,7 +73,6 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-# STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
