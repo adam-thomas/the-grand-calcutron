@@ -7,9 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
-# ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
-# ALLOWED_HOSTS = ["the-grand-calcutron.herokuapp.com"]
-ALLOWED_HOSTS = ["*"]  # for now
+ALLOWED_HOSTS = ['*'] if DEBUG else ["the-grand-calcutron.herokuapp.com"]
 BASE_URL = "https://the-grand-calcutron.herokuapp.com"
 
 INSTALLED_APPS = (
@@ -73,10 +71,6 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-<<<<<<< HEAD
-=======
-STATICFILES_STORAGE = 'calcutron.storage.LessStrictStorage'
->>>>>>> 93776135ec4f269b030ad7a5c750ece3e12052a6
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
