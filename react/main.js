@@ -123,8 +123,8 @@ class AddTaskForm extends React.Component {
         event.preventDefault();
         data = {
             parent: this.props.task.id,
-            text:
-        }
+            title: getFieldValue(this.form_ref.current, "title"),
+        };
 
         $.post("/new", data, (return_data, status) => {
             children_element = $("#children-of-" + data.parent);
