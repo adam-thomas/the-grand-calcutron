@@ -17,6 +17,8 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "django-react-csrftoken": "^1.0.4",
+    "jquery": "^3.4.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
   },
