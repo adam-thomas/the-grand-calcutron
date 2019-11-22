@@ -9,7 +9,7 @@ from .models import Task
 
 class MainView(LoginRequiredMixin, ListView):
     model = Task
-    template_name = "calcutron/main.html"
+    template_name = "calcutron/base.html"
 
     def dispatch(self, request, *args, **kwargs):
         self.request = request

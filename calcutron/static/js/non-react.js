@@ -59,6 +59,7 @@ function parseForm(form_element) {
 function submitAjaxForm(event, form_element, target_url) {
     event.preventDefault();
     data = parseForm(form_element);
+    console.log(data);
 
     $.post(target_url, data, (return_data, status) => {
         children_element = $("#children-of-" + data.parent);
