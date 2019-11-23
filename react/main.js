@@ -7,22 +7,6 @@ import ReactDOM from "react-dom";
 
 import taskState from "./state";
 
-class App extends React.Component {
-    render() {
-        let root_tasks = Object.values(taskState.tasks);
-
-        return (root_tasks.map(task => (
-            <TabContainer task={task} />
-        )));
-    }
-}
-
-const wrapper = document.getElementById("app");
-if (wrapper) {
-    taskState.initialise();
-    ReactDOM.render(<App />, wrapper);
-}
-
 
 // class TabBar extends React.Component {
 //
@@ -42,19 +26,22 @@ class TabContainer extends React.Component {
 }
 
 
-class SubtaskList extends React.Component {
+@observer class SubtaskList extends React.Component {
     constructor(props) {
         super(props);
         this.title_field_ref = React.createRef();
         // this.csrf_ref = React.createRef();
     }
 
-    addChild() {
+    addChild(event) {
+        event.preventDefault();
+        let field_element = $(this.title_field_ref.current);
+
         let data = {
             // TODO: Figure out a reasonable solution for CSRF
             //   (https://docs.djangoproject.com/en/2.2/ref/csrf/#ajax has some good hints)
             // csrfmiddlewaretoken: $(this.csrf_ref.current).val(),
-            title: $(this.title_field_ref.current).val(),
+            title: field_element.val(),
             parent: this.props.task.id,
         };
 
@@ -65,6 +52,7 @@ class SubtaskList extends React.Component {
         // Use a fake testing id for now
         data.id = 99;
         taskState.addTask(this.props.task.id, data);
+        field_element.val("");
     }
 
     render() {
@@ -74,17 +62,17 @@ class SubtaskList extends React.Component {
         return (
             <ul className="child-tasks">
                 {children.map(child => (
-                    <li className="task-wrapper">
+                    <li key={child.id} className="task-wrapper">
                         <Task task={child} />
                     </li>
                 ))}
 
-                <li className="task-form-wrapper">
-                    <div className="new-task">
+                <li key="add-form" className="task-form-wrapper">
+                    <form className="new-task" action="#" onSubmit={this.addChild.bind(this)}>
                         {/*<DjangoCSRFToken ref={this.csrf_ref} />*/}
                         <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
-                        <button className="submit" onClick={this.addChild}>Add</button>
-                    </div>
+                        <button className="submit">Add</button>
+                    </form>
                 </li>
             </ul>
         );
@@ -119,20 +107,19 @@ class SubtaskList extends React.Component {
     }
 
     toggleChildren() {
-        this.setState(!this.state.show_children);
+        this.setState({show_children: !this.state.show_children});
     }
-
 
     render() {
         let main_row = (
-            <div className="main-row">
-                <span className="title">{this.props.task.title}</span>
+            <div key="main-row" className="main-row">
+                <span key="title" className="title">{this.props.task.title}</span>
 
-                <button className="show-children" onClick={this.toggleChildren}>
+                <button key="show-children" className="show-children" onClick={this.toggleChildren.bind(this)}>
                     {this.state.show_children ? "-" : "v"}
                 </button>
 
-                <button className="delete-task" onClick={this.delete}>x</button>
+                <button key="delete" className="delete-task" onClick={this.delete.bind(this)}>x</button>
             </div>
         );
 
@@ -142,7 +129,25 @@ class SubtaskList extends React.Component {
 
         return [
             main_row,
-            <SubtaskList task={this.props.task} />,
+            <SubtaskList key="subtasks" task={this.props.task} />,
         ];
     }
+}
+
+
+class App extends React.Component {
+    render() {
+        let root_tasks = Object.values(taskState.tasks);
+        return (
+            <div className="task-container-wrapper">
+                {root_tasks.map( task => (<TabContainer key={task.id} task={task} />) )}
+            </div>
+        );
+    }
+}
+
+const wrapper = document.getElementById("app");
+if (wrapper) {
+    taskState.initialise();
+    ReactDOM.render(<App />, wrapper);
 }
