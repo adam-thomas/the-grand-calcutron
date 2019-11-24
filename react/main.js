@@ -8,6 +8,19 @@ import ReactDOM from "react-dom";
 import taskState from "./state";
 
 
+function postAjax(url, data, success_callback) {
+    let full_data = Object.assign({csrfmiddlewaretoken: taskState.csrf}, data);
+
+    $.post(url, full_data, (return_data) => {
+        if (return_data.errors) {
+            alert(Object.values(return_data.errors));
+        } else {
+            success_callback(return_data);
+        }
+    });
+}
+
+
 @observer class TabBar extends React.Component {
     showTab(id) {
         taskState.active_tab = id;
@@ -59,19 +72,13 @@ import taskState from "./state";
         let field_element = $(this.title_field_ref.current);
 
         let data = {
-            csrfmiddlewaretoken: taskState.csrf,
             title: field_element.val(),
             parent: this.props.task.id,
         };
 
-        $.post("/new", data, (return_data) => {
-            if (return_data.errors) {
-                alert(Object.values(return_data.errors));
-            } else {
-                taskState.addTask(this.props.task.id, return_data);
-            }
+        postAjax("/new", data, (return_data) => {
+            taskState.addTask(this.props.task.id, return_data);
         });
-
         field_element.val("");
     }
 
@@ -113,16 +120,15 @@ import taskState from "./state";
         let task = this.props.task;
         let data = {
             id: task.id,
-            parent: task.parent.id,
+            parent: task.parent,
         };
 
-        // TODO Turn the Ajax interactions on
-        // $.post("/delete", data, (return_data, status) => {});
-
-        let parent_children = taskState.tasks_by_id[task.parent].children;
-        transaction(() => {
-            delete taskState.tasks_by_id[task.id];
-            delete parent_children[task.id];
+        postAjax("/delete", data, () => {
+            let parent_children = taskState.tasks_by_id[task.parent].children;
+            transaction(() => {
+                delete taskState.tasks_by_id[task.id];
+                delete parent_children[task.id];
+            });
         });
     }
 
