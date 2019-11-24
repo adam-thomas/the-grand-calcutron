@@ -8,12 +8,34 @@ import ReactDOM from "react-dom";
 import taskState from "./state";
 
 
-// class TabBar extends React.Component {
-//
-// }
+@observer class TabBar extends React.Component {
+    showTab(id) {
+        taskState.active_tab = id;
+    }
+
+    renderTab(tab) {
+        let activeClass = (tab.id === taskState.active_tab) ? "active" : "";
+
+        return (
+            <button key={tab.id} className={activeClass} onClick={this.showTab.bind(this, tab.id)}>
+                <span>{tab.title}</span>
+            </button>
+        );
+    }
+
+    render() {
+        let tabs = Object.values(taskState.tasks);
+
+        return (
+            <nav className="top-tab-container">
+                {tabs.map(tab => this.renderTab(tab))}
+            </nav>
+        );
+    }
+}
 
 
-class TabContainer extends React.Component {
+@observer class TabContainer extends React.Component {
     render() {
         let task = this.props.task;
 
@@ -51,7 +73,7 @@ class TabContainer extends React.Component {
 
         // Use a fake testing id for now
         data.id = 99;
-        taskState.addTask(this.props.task.id, data);
+        taskState.addTask(this.props.task.id, return_data);
         field_element.val("");
     }
 
@@ -135,14 +157,18 @@ class TabContainer extends React.Component {
 }
 
 
-class App extends React.Component {
+@observer class App extends React.Component {
     render() {
-        let root_tasks = Object.values(taskState.tasks);
-        return (
-            <div className="task-container-wrapper">
-                {root_tasks.map( task => (<TabContainer key={task.id} task={task} />) )}
-            </div>
-        );
+        let active_task = taskState.tasks[taskState.active_tab];
+
+        return [
+            (<TabBar key="tabs" />),
+            (
+                <div key="contents" className="task-container-wrapper">
+                    <TabContainer task={active_task} />
+                </div>
+            ),
+        ];
     }
 }
 

@@ -4,6 +4,7 @@ import {observable} from "mobx";
 class TaskState {
     @observable tasks = {};
     @observable tasks_by_id = {};
+    @observable active_tab = null;
 
     tasks_base = Object.freeze({
         title: "",
@@ -42,6 +43,11 @@ class TaskState {
 
         let new_task = this.tasks[task_data.id];
         this.tasks_by_id[task_data.id] = new_task;
+
+        if (this.active_tab === null) {
+            this.active_tab = task_data.id;
+        }
+
         return new_task;
     }
 }
