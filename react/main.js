@@ -52,7 +52,6 @@ import taskState from "./state";
     constructor(props) {
         super(props);
         this.title_field_ref = React.createRef();
-        // this.csrf_ref = React.createRef();
     }
 
     addChild(event) {
@@ -60,20 +59,19 @@ import taskState from "./state";
         let field_element = $(this.title_field_ref.current);
 
         let data = {
-            // TODO: Figure out a reasonable solution for CSRF
-            //   (https://docs.djangoproject.com/en/2.2/ref/csrf/#ajax has some good hints)
-            // csrfmiddlewaretoken: $(this.csrf_ref.current).val(),
+            csrfmiddlewaretoken: taskState.csrf,
             title: field_element.val(),
             parent: this.props.task.id,
         };
 
-        // TODO: add Ajax and make those endpoints return json
-        // $.post("/new", data, (return_data, status) => {
-        // });
+        $.post("/new", data, (return_data) => {
+            if (return_data.errors) {
+                alert(Object.values(return_data.errors));
+            } else {
+                taskState.addTask(this.props.task.id, return_data);
+            }
+        });
 
-        // Use a fake testing id for now
-        data.id = 99;
-        taskState.addTask(this.props.task.id, return_data);
         field_element.val("");
     }
 
@@ -91,7 +89,7 @@ import taskState from "./state";
 
                 <li key="add-form" className="task-form-wrapper">
                     <form className="new-task" action="#" onSubmit={this.addChild.bind(this)}>
-                        {/*<DjangoCSRFToken ref={this.csrf_ref} />*/}
+                        <DjangoCSRFToken />
                         <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
                         <button className="submit">Add</button>
                     </form>
@@ -162,6 +160,7 @@ import taskState from "./state";
         let active_task = taskState.tasks[taskState.active_tab];
 
         return [
+            (<DjangoCSRFToken key="csrf" />),
             (<TabBar key="tabs" />),
             (
                 <div key="contents" className="task-container-wrapper">
@@ -176,4 +175,7 @@ const wrapper = document.getElementById("app");
 if (wrapper) {
     taskState.initialise();
     ReactDOM.render(<App />, wrapper);
+
+    // Get the CSRF token we added, and store it in the state
+    taskState.csrf = $(wrapper).children("input[name=csrfmiddlewaretoken]").val();
 }

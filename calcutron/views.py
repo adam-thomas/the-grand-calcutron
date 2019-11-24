@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import CreateView, FormView
 from django.views.generic.list import ListView
@@ -45,16 +47,23 @@ class TaskView(LoginRequiredMixin, FormView):
 
     def return_result(self, errors=None):
         if self.request.is_ajax():
-            return self.render_to_response({"task": self.object.parent, "depth": 0, "errors": None})
+            return JsonResponse(model_to_dict(self.object))
         else:
             return redirect("/")
 
     def form_invalid(self, form):
-        return self.return_result(form.errors)
+        if self.request.is_ajax():
+            return JsonResponse({"errors": form.errors})
+        else:
+            return redirect("/")
 
     def form_valid(self, form):
         self.resolve_form(form)
-        return self.return_result()
+
+        if self.request.is_ajax():
+            return JsonResponse(model_to_dict(self.object))
+        else:
+            return redirect("/")
 
 
 class NewTaskView(TaskView):

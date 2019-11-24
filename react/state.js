@@ -5,6 +5,7 @@ class TaskState {
     @observable tasks = {};
     @observable tasks_by_id = {};
     @observable active_tab = null;
+    csrf = null;
 
     tasks_base = Object.freeze({
         title: "",
