@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.views.generic import CreateView, FormView, View
+from django.views.generic import CreateView, FormView, TemplateView, View
 from django.views.generic.list import ListView
 
 from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm
@@ -20,27 +20,8 @@ def task_to_dict(task):
     }
 
 
-class MainView(LoginRequiredMixin, ListView):
-    model = Task
+class MainView(LoginRequiredMixin, TemplateView):
     template_name = "calcutron/main.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        self.request = request
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        queryset = self.get_queryset()
-
-        tabs = queryset.filter(parent__isnull=True, users=self.request.user)
-        context["tabs"] = tabs
-        context["contents"] = {}
-
-        for tab in tabs:
-            context["contents"][tab.id] = queryset.filter(parent=tab)
-
-        return context
 
 
 class GetAllTasksView(LoginRequiredMixin, View):
@@ -64,12 +45,6 @@ class TaskView(LoginRequiredMixin, FormView):
     def resolve_form(self, form):
         # Must set self.object.
         pass
-
-    def return_result(self, errors=None):
-        if self.request.is_ajax():
-            return JsonResponse(task_to_dict(self.object))
-        else:
-            return redirect("/")
 
     def form_invalid(self, form):
         if self.request.is_ajax():
