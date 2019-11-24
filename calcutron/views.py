@@ -1,17 +1,28 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.views.generic import CreateView, FormView
+from django.views.generic import CreateView, FormView, View
 from django.views.generic.list import ListView
 
 from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm
 from .models import Task
 
 
+def task_to_dict(task):
+    # We can't just use model_to_dict here because the User isn't JSON-serializable.
+    # TODO: I should probably install DRF at some point
+    return {
+        "id": task.id,
+        "parent": task.parent_id,
+        "title": task.title,
+        "long_text": task.long_text,
+        "order": task.sort_order,
+    }
+
+
 class MainView(LoginRequiredMixin, ListView):
     model = Task
-    template_name = "calcutron/base.html"
+    template_name = "calcutron/main.html"
 
     def dispatch(self, request, *args, **kwargs):
         self.request = request
@@ -32,6 +43,15 @@ class MainView(LoginRequiredMixin, ListView):
         return context
 
 
+class GetAllTasksView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        tasks = Task.objects.all()
+        return JsonResponse({
+            t.id: task_to_dict(t)
+            for t in tasks
+        })
+
+
 class TaskView(LoginRequiredMixin, FormView):
     model = Task
     success_url = "/"
@@ -47,7 +67,7 @@ class TaskView(LoginRequiredMixin, FormView):
 
     def return_result(self, errors=None):
         if self.request.is_ajax():
-            return JsonResponse(model_to_dict(self.object))
+            return JsonResponse(task_to_dict(self.object))
         else:
             return redirect("/")
 
@@ -61,7 +81,7 @@ class TaskView(LoginRequiredMixin, FormView):
         self.resolve_form(form)
 
         if self.request.is_ajax():
-            return JsonResponse(model_to_dict(self.object))
+            return JsonResponse(task_to_dict(self.object))
         else:
             return redirect("/")
 

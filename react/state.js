@@ -1,4 +1,4 @@
-import {observable} from "mobx";
+import {observable, transaction} from "mobx";
 
 
 class TaskState {
@@ -16,15 +16,34 @@ class TaskState {
         children: {},
     });
 
-    initialise() {
-        // todo: bring this in from the Django template
-        this.addRootTask({title: "First Tab", id: 1});
-        this.addRootTask({title: "Second Tab", id: 2});
+    initialise(tasks) {
+        transaction(() => {
+            this.tasks = {};
+            this.tasks_by_id = {};
+            this.active_tab = null;
 
-        this.addTask(1, {title: "First child", id: 3});
-        this.addTask(1, {title: "Second child", id: 4});
-        this.addTask(3, {title: "First grandchild", id: 5});
-        this.addTask(3, {title: "Second grandchild", id: 6});
+            // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
+            // the full tree of parents and children.
+            for (let task_data of Object.values(tasks)) {
+                let task = Object.assign({}, this.tasks_base, task_data)
+                this.tasks_by_id[task.id] = task;
+
+                if (task.parent === null && this.active_tab === null) {
+                    this.active_tab = task_data.id;
+                }
+            }
+
+            // Then, fill out the parent-child relationships.
+            for (let task of Object.values(this.tasks_by_id)) {
+                if (task.parent !== null) {
+                    this.tasks_by_id[task.parent].children[task.id] = task;
+                } else {
+                    this.tasks[task.id] = task;
+                }
+            }
+
+            console.log(this.tasks);
+        });
     }
 
     addTask(parent_id, task_data) {

@@ -162,7 +162,7 @@ import taskState from "./state";
         return [
             (<DjangoCSRFToken key="csrf" />),
             (<TabBar key="tabs" />),
-            (
+            (active_task &&
                 <div key="contents" className="task-container-wrapper">
                     <TabContainer task={active_task} />
                 </div>
@@ -173,9 +173,14 @@ import taskState from "./state";
 
 const wrapper = document.getElementById("app");
 if (wrapper) {
-    taskState.initialise();
+    // Get the tasks from the backend, and initialise the state with them.
+    // (This will happen after the app is initially rendered.)
+    $.get("/get_tasks", (return_data) => {
+        taskState.initialise(return_data);
+    });
+
     ReactDOM.render(<App />, wrapper);
 
-    // Get the CSRF token we added, and store it in the state
+    // Get the CSRF token we added, and store it in the state.
     taskState.csrf = $(wrapper).children("input[name=csrfmiddlewaretoken]").val();
 }
