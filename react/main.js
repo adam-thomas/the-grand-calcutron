@@ -42,22 +42,22 @@ import taskState from "./state";
         super(props);
         this.title_field_ref = React.createRef();
     }
-    
+
     delete() {
-        actions.delete_task(tabState[tabState.active_task]);
+        actions.deleteTask(taskState.tasks[taskState.active_tab]);
     }
 
     add() {
         let field_element = $(this.title_field_ref.current);
 
-        actions.add_task(field_element.val(), null);
+        actions.addTask(field_element.val(), null);
         field_element.val("");
     }
 
     update() {
         let field_element = $(this.title_field_ref.current);
 
-        actions.update_task(field_element.val(), tabState[tabState.active_task]);
+        actions.updateTask(field_element.val(), taskState.tasks[taskState.active_tab]);
         field_element.val("");
     }
 
@@ -102,7 +102,7 @@ import taskState from "./state";
         event.preventDefault();
         let field_element = $(this.title_field_ref.current);
 
-        actions.add_task(field_element.val(), this.props.task);
+        actions.addTask(field_element.val(), this.props.task);
         field_element.val("");
     }
 
@@ -141,7 +141,7 @@ import taskState from "./state";
     }
 
     delete() {
-        actions.delete_task(this.props.task);
+        actions.deleteTask(this.props.task);
     }
 
     toggleChildren() {

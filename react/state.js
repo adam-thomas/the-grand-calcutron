@@ -47,6 +47,10 @@ class TaskState {
     }
 
     addTask(parent_id, task_data) {
+        if (parent_id === null) {
+            return this.addRootTask(task_data);
+        }
+
         let parent = this.tasks_by_id[parent_id];
         task_data = Object.assign({}, this.tasks_base, task_data, {parent: parent_id});
 
