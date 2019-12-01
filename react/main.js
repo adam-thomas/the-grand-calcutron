@@ -37,9 +37,46 @@ import taskState from "./state";
 }
 
 
-// @observer class TabSettingsBar extends React.Component {
+@observer class TabSettingsBar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.title_field_ref = React.createRef();
+    }
+    
+    delete() {
+        actions.delete_task(tabState[tabState.active_task]);
+    }
 
-// }
+    add() {
+        let field_element = $(this.title_field_ref.current);
+
+        actions.add_task(field_element.val(), null);
+        field_element.val("");
+    }
+
+    update() {
+        let field_element = $(this.title_field_ref.current);
+
+        actions.update_task(field_element.val(), tabState[tabState.active_task]);
+        field_element.val("");
+    }
+
+    toggleChildren() {
+        this.setState({show_children: !this.state.show_children});
+    }
+
+    render() {
+        return (
+            <div key="tab-update-form" className="tab-update-bar">
+                <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
+                <button className="submit" onClick={this.add.bind(this)}>Add</button>
+                <button className="submit" onClick={this.update.bind(this)}>Update</button>
+                <button className="submit" onClick={this.delete.bind(this)}>Delete</button>
+            </div>
+        )
+    }
+
+}
 
 
 @observer class TabContainer extends React.Component {
@@ -148,7 +185,7 @@ import taskState from "./state";
                     <TabContainer task={active_task} />
                 </div>
             ),
-
+            (<TabSettingsBar key="settings" />),
         ];
     }
 }

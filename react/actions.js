@@ -5,13 +5,26 @@ import taskState from "./state";
 
 
 function add_task(title, parent_task) {
+    let id = (parent_task === null) ? null : parent_task.id;
+
     let data = {
         title: title,
-        parent: parent_task.id,
+        parent: id,
     };
 
     ajax_requests.post("/new", data, (return_data) => {
-        taskState.addTask(parent_task.id, return_data);
+        taskState.addTask(id, return_data);
+    });
+}
+
+
+function update_task(title, task) {
+    let data = {
+        title: title,
+    };
+
+    ajax_requests.post("/edit/" + task.id, data, (return_data) => {
+        task.title = return_data.title;
     });
 }
 
