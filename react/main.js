@@ -5,20 +5,9 @@ import {transaction} from "mobx";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import actions from "./actions";
 import taskState from "./state";
 
-
-function postAjax(url, data, success_callback) {
-    let full_data = Object.assign({csrfmiddlewaretoken: taskState.csrf}, data);
-
-    $.post(url, full_data, (return_data) => {
-        if (return_data.errors) {
-            alert(Object.values(return_data.errors));
-        } else {
-            success_callback(return_data);
-        }
-    });
-}
 
 
 @observer class TabBar extends React.Component {
@@ -48,6 +37,11 @@ function postAjax(url, data, success_callback) {
 }
 
 
+// @observer class TabSettingsBar extends React.Component {
+
+// }
+
+
 @observer class TabContainer extends React.Component {
     render() {
         let task = this.props.task;
@@ -71,14 +65,7 @@ function postAjax(url, data, success_callback) {
         event.preventDefault();
         let field_element = $(this.title_field_ref.current);
 
-        let data = {
-            title: field_element.val(),
-            parent: this.props.task.id,
-        };
-
-        postAjax("/new", data, (return_data) => {
-            taskState.addTask(this.props.task.id, return_data);
-        });
+        actions.add_task(field_element.val(), this.props.task);
         field_element.val("");
     }
 
@@ -117,19 +104,7 @@ function postAjax(url, data, success_callback) {
     }
 
     delete() {
-        let task = this.props.task;
-        let data = {
-            id: task.id,
-            parent: task.parent,
-        };
-
-        postAjax("/delete", data, () => {
-            let parent_children = taskState.tasks_by_id[task.parent].children;
-            transaction(() => {
-                delete taskState.tasks_by_id[task.id];
-                delete parent_children[task.id];
-            });
-        });
+        actions.delete_task(this.props.task);
     }
 
     toggleChildren() {
@@ -173,9 +148,11 @@ function postAjax(url, data, success_callback) {
                     <TabContainer task={active_task} />
                 </div>
             ),
+
         ];
     }
 }
+
 
 const wrapper = document.getElementById("app");
 if (wrapper) {
