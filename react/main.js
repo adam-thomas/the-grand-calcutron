@@ -66,13 +66,19 @@ import taskState from "./state";
     }
 
     render() {
+        let current_title = "";
+        if (taskState.active_tab !== null) {
+            current_title = taskState.tasks[taskState.active_tab].title
+        }
+
         return (
-            <div key="tab-update-form" className="tab-update-bar">
-                <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
+            <footer key="tab-update-form" className="tab-options">
+                <span class="title">Tab options</span>
+                <input ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
                 <button className="submit" onClick={this.add.bind(this)}>Add</button>
                 <button className="submit" onClick={this.update.bind(this)}>Update</button>
                 <button className="submit" onClick={this.delete.bind(this)}>Delete</button>
-            </div>
+            </footer>
         )
     }
 
