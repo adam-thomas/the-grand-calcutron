@@ -1,8 +1,11 @@
 {
     "presets": [
-        "@babel/preset-env", "@babel/preset-react"
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "mobx"
     ],
     "plugins": [
-        "transform-class-properties"
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose" : true }]
     ]
 }

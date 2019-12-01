@@ -1,33 +1,36 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.views.generic import CreateView, FormView
+from django.views.generic import CreateView, FormView, TemplateView, View
 from django.views.generic.list import ListView
 
 from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm
 from .models import Task
 
 
-class MainView(LoginRequiredMixin, ListView):
-    model = Task
+def task_to_dict(task):
+    # We can't just use model_to_dict here because the User isn't JSON-serializable.
+    # TODO: I should probably install DRF at some point
+    return {
+        "id": task.id,
+        "parent": task.parent_id,
+        "title": task.title,
+        "long_text": task.long_text,
+        "order": task.sort_order,
+    }
+
+
+class MainView(LoginRequiredMixin, TemplateView):
     template_name = "calcutron/main.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        self.request = request
-        return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        queryset = self.get_queryset()
-
-        tabs = queryset.filter(parent__isnull=True, users=self.request.user)
-        context["tabs"] = tabs
-        context["contents"] = {}
-
-        for tab in tabs:
-            context["contents"][tab.id] = queryset.filter(parent=tab)
-
-        return context
+class GetAllTasksView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        tasks = Task.objects.all()
+        return JsonResponse({
+            t.id: task_to_dict(t)
+            for t in tasks
+        })
 
 
 class TaskView(LoginRequiredMixin, FormView):
@@ -43,18 +46,19 @@ class TaskView(LoginRequiredMixin, FormView):
         # Must set self.object.
         pass
 
-    def return_result(self, errors=None):
+    def form_invalid(self, form):
         if self.request.is_ajax():
-            return self.render_to_response({"task": self.object.parent, "depth": 0, "errors": None})
+            return JsonResponse({"errors": form.errors})
         else:
             return redirect("/")
 
-    def form_invalid(self, form):
-        return self.return_result(form.errors)
-
     def form_valid(self, form):
         self.resolve_form(form)
-        return self.return_result()
+
+        if self.request.is_ajax():
+            return JsonResponse(task_to_dict(self.object))
+        else:
+            return redirect("/")
 
 
 class NewTaskView(TaskView):

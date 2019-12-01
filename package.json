@@ -9,14 +9,21 @@
   "private": false,
   "devDependencies": {
     "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-decorators": "^7.7.0",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-mobx": "^2.0.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "django-react-csrftoken": "^1.0.4",
+    "jquery": "^3.4.1",
+    "mobx": "^5.15.0",
+    "mobx-react": "^6.1.4",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
   },
