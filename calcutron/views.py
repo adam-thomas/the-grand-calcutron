@@ -26,7 +26,13 @@ class MainView(LoginRequiredMixin, TemplateView):
 
 class GetAllTasksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        tasks = Task.objects.all()
+        tasks = list(Task.objects.filter(parent=None, users=request.user))
+        new_tasks = tasks
+
+        while len(new_tasks) > 0:
+            new_tasks = Task.objects.filter(parent__in=new_tasks)
+            tasks.extend(new_tasks)
+
         return JsonResponse({
             t.id: task_to_dict(t)
             for t in tasks
