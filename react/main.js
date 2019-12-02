@@ -150,16 +150,24 @@ import taskState from "./state";
         this.setState({show_children: !this.state.show_children});
     }
 
+    showAddForm() {
+        this.setState({show_children: true});
+        // todo: Focus the add form
+    }
+
     render() {
         let main_row = (
             <div key="main-row" className="main-row">
                 <span key="title" className="title">{this.props.task.title}</span>
 
-                <button key="show-children" className="show-children" onClick={this.toggleChildren.bind(this)}>
-                    {this.state.show_children ? "-" : "v"}
-                </button>
+                {Object.keys(this.props.task.children).length > 0 &&
+                    <button key="show-children" className="show-children" onClick={this.toggleChildren.bind(this)}>
+                        {this.state.show_children ? "-" : "v"}
+                    </button>
+                }
 
-                <button key="delete" className="delete-task" onClick={this.delete.bind(this)}>x</button>
+                <button key="show-add" className="add-child hover-button" onClick={this.showAddForm.bind(this)}>+</button>
+                <button key="delete" className="delete-task hover-button" onClick={this.delete.bind(this)}>x</button>
             </div>
         );
 

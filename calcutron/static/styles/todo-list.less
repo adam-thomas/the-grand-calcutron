@@ -69,8 +69,18 @@
                     flex-flow: row;
                     align-items: center;
 
-                    .title, .show-children, .show-add-form {
+                    // Extra hitbox for mouseover goodness
+                    padding-right: 200px;
+                    height: 35px;
+
+                    & > * {
                         margin-right: 8px;
+                    }
+
+                    &:not(:hover) {
+                        .hover-button {
+                            display: none;
+                        }
                     }
                 }
             }
