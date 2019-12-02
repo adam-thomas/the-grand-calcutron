@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import CreateView, FormView, TemplateView, View
 from django.views.generic.list import ListView
@@ -33,12 +33,15 @@ class GetAllTasksView(LoginRequiredMixin, View):
         })
 
 
-class TaskView(LoginRequiredMixin, FormView):
+class AjaxTaskView(LoginRequiredMixin, FormView):
     model = Task
     success_url = "/"
-    template_name = "calcutron/task_children.html"
+    template_name = ""
 
     def dispatch(self, request, *args, **kwargs):
+        if not self.request.is_ajax():
+            raise Http404
+
         self.request = request
         return super().dispatch(request, *args, **kwargs)
 
@@ -47,21 +50,14 @@ class TaskView(LoginRequiredMixin, FormView):
         pass
 
     def form_invalid(self, form):
-        if self.request.is_ajax():
-            return JsonResponse({"errors": form.errors})
-        else:
-            return redirect("/")
+        return JsonResponse({"errors": form.errors})
 
     def form_valid(self, form):
         self.resolve_form(form)
-
-        if self.request.is_ajax():
-            return JsonResponse(task_to_dict(self.object))
-        else:
-            return redirect("/")
+        return JsonResponse(task_to_dict(self.object))
 
 
-class NewTaskView(TaskView):
+class NewTaskView(AjaxTaskView):
     form_class = NewTaskForm
 
     def resolve_form(self, form):
@@ -69,7 +65,7 @@ class NewTaskView(TaskView):
         self.object.users.add(self.request.user)
 
 
-class DeleteTaskView(TaskView):
+class DeleteTaskView(AjaxTaskView):
     form_class = DeleteTaskForm
 
     def resolve_form(self, form):
@@ -78,7 +74,7 @@ class DeleteTaskView(TaskView):
         self.object.delete()
 
 
-class EditTaskView(TaskView):
+class EditTaskView(AjaxTaskView):
     form_class = EditTaskForm
 
     def resolve_form(self, form):

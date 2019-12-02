@@ -124,11 +124,8 @@ import taskState from "./state";
                 ))}
 
                 <li key="add-form" className="task-form-wrapper">
-                    <form className="new-task" action="#" onSubmit={this.addChild.bind(this)}>
-                        <DjangoCSRFToken />
-                        <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
-                        <button className="submit">Add</button>
-                    </form>
+                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
+                    <button className="submit" onClick={this.addChild.bind(this)}>Add</button>
                 </li>
             </ul>
         );
