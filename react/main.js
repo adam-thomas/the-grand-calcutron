@@ -193,16 +193,18 @@ import taskState from "./state";
 }
 
 
-const wrapper = document.getElementById("app");
-if (wrapper) {
-    // Get the tasks from the backend, and initialise the state with them.
-    // (This will happen after the app is initially rendered.)
-    $.get("/get_tasks", (return_data) => {
-        taskState.initialise(return_data);
-    });
+$(document).ready(() => {
+    const wrapper = document.getElementById("app");
+    if (wrapper) {
+        // Get the tasks from the backend, and initialise the state with them.
+        // (This will happen after the app is initially rendered.)
+        $.get("/get_tasks", (return_data) => {
+            taskState.initialise(return_data);
+        });
 
-    ReactDOM.render(<App />, wrapper);
+        ReactDOM.render(<App />, wrapper);
 
-    // Get the CSRF token we added, and store it in the state.
-    taskState.csrf = $(wrapper).children("input[name=csrfmiddlewaretoken]").val();
-}
+        // Get the CSRF token we added, and store it in the state.
+        taskState.csrf = $(wrapper).children("input[name=csrfmiddlewaretoken]").val();
+    }
+})
