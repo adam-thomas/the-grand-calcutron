@@ -64,22 +64,31 @@
             }
 
             li.task-wrapper {
+                width: 100%;
+
                 .main-row {
                     display: flex;
                     flex-flow: row;
                     align-items: center;
 
-                    // Extra hitbox for mouseover goodness.
-                    // Use percent scaling so it doesn't go too horribly awry on different screens.
-                    padding-right: 15%;
                     height: 35px;
 
-                    & > * {
+                    .extra-buttons {
+                        display: flex;
+                        flex-flow: row;
+                        align-items: center;
+
+                        // Fix a width to extend the row's hitbox out some more.
+                        // Use percent scaling so it doesn't go too horribly awry on different screens.
+                        min-width: 90px;  // Enough to accommodate the buttons
+                    }
+
+                    & > *, .extra-buttons > * {
                         margin-right: 8px;
                     }
 
                     &:not(:hover) {
-                        .hover-button {
+                        .extra-buttons button {
                             display: none;
                         }
                     }

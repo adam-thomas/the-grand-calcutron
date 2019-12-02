@@ -109,6 +109,7 @@ import taskState from "./state";
 
         actions.addTask(field_element.val(), this.props.task);
         field_element.val("");
+        field_element.focus();
     }
 
     render() {
@@ -161,13 +162,15 @@ import taskState from "./state";
                 <span key="title" className="title">{this.props.task.title}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
-                    <button key="show-children" className="show-children" onClick={this.toggleChildren.bind(this)}>
+                    <button key="show-children" onClick={this.toggleChildren.bind(this)}>
                         {this.state.show_children ? "-" : "v"}
                     </button>
                 }
 
-                <button key="show-add" className="add-child hover-button" onClick={this.showAddForm.bind(this)}>+</button>
-                <button key="delete" className="delete-task hover-button" onClick={this.delete.bind(this)}>x</button>
+                <div key="extra-buttons" className="extra-buttons">
+                    <button key="show-add" onClick={this.showAddForm.bind(this)}>+</button>
+                    <button key="delete" onClick={this.delete.bind(this)}>x</button>
+                </div>
             </div>
         );
 
