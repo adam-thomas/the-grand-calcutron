@@ -114,6 +114,12 @@ import taskState from "./state";
         field_element.focus();
     }
 
+    handleEnter(event) {
+        if(event.key === 'Enter'){
+            this.addChild(event);
+        }
+    }
+
     render() {
         let task = this.props.task;
         let children = Object.values(task.children);
@@ -127,7 +133,7 @@ import taskState from "./state";
                 ))}
 
                 <li key="add-form" className="task-form-wrapper">
-                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
+                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
                     <button className="submit" onClick={this.addChild.bind(this)}>Add</button>
                 </li>
             </ul>
