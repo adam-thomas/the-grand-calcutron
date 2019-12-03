@@ -1,237 +1,54 @@
-import DjangoCSRFToken from 'django-react-csrftoken';
 import $ from "jquery";
-import {observer} from "mobx-react";
-import {transaction} from "mobx";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import actions from "./actions";
 import taskState from "./state";
+import DesktopUI from "./desktop_ui";
+import MobileUI from "./mobile_ui";
 
 
+// Track the DOM element that React will be added to.
+let target;
 
-@observer class TabBar extends React.Component {
-    showTab(id) {
-        taskState.active_tab = id;
+
+// Create the appropriate React UI for how big the window is.
+function renderReact() {
+    let app_class = DesktopUI;
+    if ($(window).width() < 800) {
+        app_class = MobileUI;
     }
 
-    renderTab(tab) {
-        let activeClass = (tab.id === taskState.active_tab) ? "active" : "";
-
-        return (
-            <button key={tab.id} className={activeClass} onClick={this.showTab.bind(this, tab.id)}>
-                <span>{tab.title}</span>
-            </button>
-        );
-    }
-
-    render() {
-        let tabs = Object.values(taskState.tasks);
-
-        return (
-            <div className="tab-bar">
-                {tabs.map(tab => this.renderTab(tab))}
-            </div>
-        );
-    }
+    ReactDOM.render(React.createElement(app_class), target);
 }
 
 
-@observer class TabSettingsBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.title_field_ref = React.createRef();
+// Fill out the taskState and start up the React UI.
+function initialise() {
+    // Grab the element we're injecting into.
+    target = document.getElementById("app");
+
+    // Basic error checking.
+    if (!target) {
+        console.error("Failed to find an element with id='app'");
+        return;
     }
 
-    delete() {
-        actions.deleteTask(taskState.tasks[taskState.active_tab]);
-    }
+    // Get the tasks from the backend, and initialise the state with them.
+    // (This will happen after the app is initially rendered.)
+    $.get("/get_tasks", (return_data) => {
+        taskState.initialise(return_data);
 
-    add() {
-        let field_element = $(this.title_field_ref.current);
-
-        actions.addTask(field_element.val(), null);
-        field_element.val("");
-    }
-
-    update() {
-        let field_element = $(this.title_field_ref.current);
-
-        actions.updateTask(field_element.val(), taskState.tasks[taskState.active_tab]);
-        field_element.val("");
-    }
-
-    toggleChildren() {
-        this.setState({show_children: !this.state.show_children});
-    }
-
-    render() {
-        let current_title = "";
-        if (taskState.active_tab !== null) {
-            current_title = taskState.tasks[taskState.active_tab].title
-        }
-
-        return (
-            <div key="tab-update-form" className="tab-options">
-                <span key="title" className="title">Tab options</span>
-                <input key="text" ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
-                <div key="buttons" className="buttons-wrapper">
-                    <button key="add" onClick={this.add.bind(this)}>Add</button>
-                    <button key="update" onClick={this.update.bind(this)}>Update</button>
-                    <button key="delete" onClick={this.delete.bind(this)}>Delete</button>
-                </div>
-            </div>
-        )
-    }
-}
-
-
-@observer class TabContainer extends React.Component {
-    render() {
-        let task = this.props.task;
-
-        return (
-            <div className="tab-contents-container">
-                <SubtaskList task={task} />
-            </div>
-        );
-    }
-}
-
-
-@observer class SubtaskList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.title_field_ref = React.createRef();
-    }
-
-    addChild(event) {
-        event.preventDefault();
-        let field_element = $(this.title_field_ref.current);
-
-        actions.addTask(field_element.val(), this.props.task);
-        field_element.val("");
-        field_element.focus();
-    }
-
-    handleEnter(event) {
-        if(event.key === 'Enter'){
-            this.addChild(event);
-        }
-    }
-
-    render() {
-        let task = this.props.task;
-        let children = Object.values(task.children);
-
-        return (
-            <ul className="child-tasks">
-                {children.map(child => (
-                    <li key={child.id} className="task-wrapper">
-                        <Task task={child} />
-                    </li>
-                ))}
-
-                <li key="add-form" className="task-form-wrapper">
-                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
-                    <button className="submit" onClick={this.addChild.bind(this)}>Add</button>
-                </li>
-            </ul>
-        );
-    }
-}
-
-
-@observer class Task extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            show_children: false,
-        }
-    }
-
-    delete() {
-        actions.deleteTask(this.props.task);
-    }
-
-    toggleChildren() {
-        this.setState({show_children: !this.state.show_children});
-    }
-
-    showAddForm() {
-        this.setState({show_children: true});
-        // todo: Focus the add form
-    }
-
-    render() {
-        let caret_class = "caret";
-        if (this.state.show_children) {
-            caret_class = "open " + caret_class;
-        }
-
-        let main_row = (
-            <div key="main-row" className="main-row">
-                <div key="title" className="title" onClick={this.toggleChildren.bind(this)}>
-                    <span>{this.props.task.title}</span>
-                    {Object.keys(this.props.task.children).length > 0 &&
-                        <div className={caret_class} />
-                    }
-                </div>
-
-                <div key="extra-buttons" className="extra-buttons">
-                    <button key="show-add" onClick={this.showAddForm.bind(this)}>+</button>
-                    <button key="delete" onClick={this.delete.bind(this)}>x</button>
-                </div>
-            </div>
-        );
-
-        if (!this.state.show_children) {
-            return main_row;
-        }
-
-        return [
-            main_row,
-            <SubtaskList key="subtasks" task={this.props.task} />,
-        ];
-    }
-}
-
-
-@observer class App extends React.Component {
-    render() {
-        let active_task = taskState.tasks[taskState.active_tab];
-
-        return [
-            (<DjangoCSRFToken key="csrf" />),
-
-            (<div key="tab-column" className="tab-column">
-                <TabBar key="tabs" />
-                <TabSettingsBar key="settings" />
-            </div>),
-
-            (active_task &&
-                <div key="contents" className="task-container-wrapper">
-                    <TabContainer task={active_task} />
-                </div>
-            ),
-        ];
-    }
-}
-
-
-$(document).ready(() => {
-    const wrapper = document.getElementById("app");
-    if (wrapper) {
-        // Get the tasks from the backend, and initialise the state with them.
-        // (This will happen after the app is initially rendered.)
-        $.get("/get_tasks", (return_data) => {
-            taskState.initialise(return_data);
-        });
-
-        ReactDOM.render(<App />, wrapper);
+        // Create the React UI.
+        renderReact();
 
         // Get the CSRF token we added, and store it in the state.
-        taskState.csrf = $(wrapper).children("input[name=csrfmiddlewaretoken]").val();
-    }
-})
+        taskState.csrf = $(target).children("input[name=csrfmiddlewaretoken]").val();
+
+        // Reinitialise the UI if the window is resized.
+        $(window).resize(renderReact);
+    });
+}
+
+
+// Call initialise() when the page is ready.
+$(document).ready(initialise);
