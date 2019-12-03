@@ -105,11 +105,6 @@ import taskState from "./state";
         this.setState({show_children: !this.state.show_children});
     }
 
-    showAddForm() {
-        this.setState({show_children: true});
-        // todo: Focus the add form
-    }
-
     render() {
         let caret_class = "caret";
         if (this.state.show_children) {
@@ -126,7 +121,6 @@ import taskState from "./state";
                 </div>
 
                 <div key="extra-buttons" className="extra-buttons">
-                    <button key="show-add" onClick={this.showAddForm.bind(this)}>+</button>
                     <button key="delete" onClick={this.delete.bind(this)}>x</button>
                 </div>
             </div>
