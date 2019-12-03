@@ -29,9 +29,9 @@ import taskState from "./state";
         let tabs = Object.values(taskState.tasks);
 
         return (
-            <nav className="top-tab-container">
+            <div className="tab-bar">
                 {tabs.map(tab => this.renderTab(tab))}
-            </nav>
+            </div>
         );
     }
 }
@@ -72,13 +72,15 @@ import taskState from "./state";
         }
 
         return (
-            <footer key="tab-update-form" className="tab-options">
-                <span class="title">Tab options</span>
-                <input ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
-                <button className="submit" onClick={this.add.bind(this)}>Add</button>
-                <button className="submit" onClick={this.update.bind(this)}>Update</button>
-                <button className="submit" onClick={this.delete.bind(this)}>Delete</button>
-            </footer>
+            <div key="tab-update-form" className="tab-options">
+                <span key="title" className="title">Tab options</span>
+                <input key="text" ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
+                <div key="buttons" className="buttons-wrapper">
+                    <button key="add" onClick={this.add.bind(this)}>Add</button>
+                    <button key="update" onClick={this.update.bind(this)}>Update</button>
+                    <button key="delete" onClick={this.delete.bind(this)}>Delete</button>
+                </div>
+            </div>
         )
     }
 }
@@ -109,6 +111,13 @@ import taskState from "./state";
 
         actions.addTask(field_element.val(), this.props.task);
         field_element.val("");
+        field_element.focus();
+    }
+
+    handleEnter(event) {
+        if(event.key === 'Enter'){
+            this.addChild(event);
+        }
     }
 
     render() {
@@ -124,7 +133,7 @@ import taskState from "./state";
                 ))}
 
                 <li key="add-form" className="task-form-wrapper">
-                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" />
+                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
                     <button className="submit" onClick={this.addChild.bind(this)}>Add</button>
                 </li>
             </ul>
@@ -150,16 +159,30 @@ import taskState from "./state";
         this.setState({show_children: !this.state.show_children});
     }
 
+    showAddForm() {
+        this.setState({show_children: true});
+        // todo: Focus the add form
+    }
+
     render() {
+        let caret_class = "caret";
+        if (this.state.show_children) {
+            caret_class = "open " + caret_class;
+        }
+
         let main_row = (
             <div key="main-row" className="main-row">
-                <span key="title" className="title">{this.props.task.title}</span>
+                <div key="title" className="title" onClick={this.toggleChildren.bind(this)}>
+                    <span>{this.props.task.title}</span>
+                    {Object.keys(this.props.task.children).length > 0 &&
+                        <div className={caret_class} />
+                    }
+                </div>
 
-                <button key="show-children" className="show-children" onClick={this.toggleChildren.bind(this)}>
-                    {this.state.show_children ? "-" : "v"}
-                </button>
-
-                <button key="delete" className="delete-task" onClick={this.delete.bind(this)}>x</button>
+                <div key="extra-buttons" className="extra-buttons">
+                    <button key="show-add" onClick={this.showAddForm.bind(this)}>+</button>
+                    <button key="delete" onClick={this.delete.bind(this)}>x</button>
+                </div>
             </div>
         );
 
@@ -181,13 +204,17 @@ import taskState from "./state";
 
         return [
             (<DjangoCSRFToken key="csrf" />),
-            (<TabBar key="tabs" />),
+
+            (<div key="tab-column" className="tab-column">
+                <TabBar key="tabs" />
+                <TabSettingsBar key="settings" />
+            </div>),
+
             (active_task &&
                 <div key="contents" className="task-container-wrapper">
                     <TabContainer task={active_task} />
                 </div>
             ),
-            (<TabSettingsBar key="settings" />),
         ];
     }
 }

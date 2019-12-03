@@ -4,33 +4,83 @@
 
     background-color: @dark-green;
 
-    nav {
-        width: 100%;
-        padding: 15px 0;
+    display: flex;
+    flex-flow: row;
+
+    .tab-column {
+        width: 290px;
+        height: 100%;
         flex: 0 0 auto;
 
+        padding: 10px 15px;
+
         display: flex;
-        flex-flow: row;
-        align-items: center;
-        justify-content: flex-start;
+        flex-flow: column;
 
-        button {
-            height: 45px;
+        .tab-bar {
             width: 100%;
-            max-width: 300px;
-            flex: 0 1 auto;
+            height: calc(100% - 150px);
+            flex: 0 0 auto;
 
-            margin: 0 20px;
-            .font-size-large();
+            padding: 15px 0 5px 0;
+            overflow-y: auto;
+
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: flex-start;
+
+            button {
+                height: 45px;
+                width: 100%;
+                flex: 0 0 auto;
+
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                .font-size-large();
+
+                &:not(:last-of-type) {
+                    margin-bottom: 10px;
+                }
+            }
+        }
+
+        .tab-options {
+            width: 100%;
+            height: 150px;
+            flex: 0 0 auto;
+
+            padding-top: 20px;
+
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: space-evenly;
+
+            .title, .task-title, .buttons-wrapper {
+                width: 100%;
+            }
+
+            .buttons-wrapper {
+                display: flex;
+                flex-flow: row;
+                justify-content: space-between;
+
+                button {
+                    font-size: 16px;
+                }
+            }
         }
     }
 
     .task-container-wrapper {
         width: 100%;
-        height: calc(100% - 135px);
+        height: 100%;
         flex: 0 1 auto;
 
-        padding: 30px;
+        padding: 20px;
 
         color: @light-green;
         overflow-y: auto;
@@ -64,13 +114,68 @@
             }
 
             li.task-wrapper {
+                width: 100%;
+
                 .main-row {
                     display: flex;
                     flex-flow: row;
                     align-items: center;
 
-                    .title, .show-children, .show-add-form {
+                    height: 35px;
+
+                    .title {
+                        display: flex;
+                        flex-flow: row;
+                        align-items: center;
+
+                        height: 100%;
+                        padding: 0 8px;
+                        cursor: pointer;
+
+                        &:hover {
+                            // TODO: Find a slightly-less-than-white colour
+                            color: @pale-green;
+
+                            .caret {
+                                border-width: 2px;
+                                border-color: @pale-green;
+                            }
+                        }
+
+                        .caret {
+                            width: 10px;
+                            height: 10px;
+                            margin-left: 8px;
+
+                            border-right: 1px solid @light-green;
+                            border-bottom: 1px solid @light-green;
+                            transform: rotate(-45deg);
+
+                            &.open {
+                                transform: rotate(45deg);
+                                margin-top: -4px;
+                            }
+                        }
+                    }
+
+                    .extra-buttons {
+                        display: flex;
+                        flex-flow: row;
+                        align-items: center;
+
+                        // Fix a width to extend the row's hitbox out some more.
+                        // Use percent scaling so it doesn't go too horribly awry on different screens.
+                        min-width: 90px;  // Enough to accommodate the buttons
+                    }
+
+                    .title, .extra-buttons > * {
                         margin-right: 8px;
+                    }
+
+                    &:not(:hover) {
+                        .extra-buttons button {
+                            display: none;
+                        }
                     }
                 }
             }
@@ -84,24 +189,6 @@
                     margin-right: 10px;
                 }
             }
-        }
-    }
-
-    .tab-options {
-        width: 100%;
-        height: 60px;
-        flex: 0 0 auto;
-
-        z-index: 1;
-        padding: 0 20px;
-
-        display: flex;
-        flex-flow: row;
-        align-items: center;
-
-
-        & > * {
-            margin-right: 12px;
         }
     }
 }
