@@ -205,16 +205,16 @@ import taskState from "./state";
         return [
             (<DjangoCSRFToken key="csrf" />),
 
+            (<div key="contents" className="task-container-wrapper">
+                {active_task &&
+                    <TabContainer task={active_task} />
+                }
+            </div>),
+
             (<div key="tab-column" className="tab-column">
                 <TabBar key="tabs" />
                 <TabSettingsBar key="settings" />
             </div>),
-
-            (active_task &&
-                <div key="contents" className="task-container-wrapper">
-                    <TabContainer task={active_task} />
-                </div>
-            ),
         ];
     }
 }
