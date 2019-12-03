@@ -1,0 +1,46 @@
+.calcutron.mobile-ui {
+    flex-flow: column;
+    font-size: 16px;
+
+    // TODO: Put some media queries in fonts.less
+    button, .button {
+        font-size: 16px;
+    }
+
+    .mobile-menu-bar {
+        height: 50px;
+        flex: 0 0 auto;
+
+        padding: 8px 15px 8px 8px;
+
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
+        button, .button {
+            height: 100%;
+            flex: 0 0 auto;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            .font-size();
+        }
+
+        .tab-menu-open-wrapper {
+            width: 34px;
+            flex: 0 0 auto;
+            margin-right: 10px;
+        }
+
+        .tab-display {
+            width: 100%;
+            flex: 0 1 auto;
+        }
+    }
+
+    .task-container-wrapper {
+        height: calc(100% - 60px);
+    }
+}

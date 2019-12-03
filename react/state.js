@@ -41,8 +41,6 @@ class TaskState {
                     this.tasks[task.id] = task;
                 }
             }
-
-            console.log(this.tasks);
         });
     }
 
