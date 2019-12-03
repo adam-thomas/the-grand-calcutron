@@ -10,26 +10,10 @@ import tasks from "./tasks";
 
 
 @observer class TabBar extends React.Component {
-    showTab(id) {
-        taskState.active_tab = id;
-    }
-
-    renderTab(tab) {
-        let activeClass = (tab.id === taskState.active_tab) ? "active" : "";
-
-        return (
-            <button key={tab.id} className={activeClass} onClick={this.showTab.bind(this, tab.id)}>
-                <span>{tab.title}</span>
-            </button>
-        );
-    }
-
     render() {
-        let tabs = Object.values(taskState.tasks);
-
         return (
             <div className="tab-bar">
-                {tabs.map(tab => this.renderTab(tab))}
+                <tasks.TabList />
             </div>
         );
     }
@@ -89,10 +73,10 @@ import tasks from "./tasks";
     render() {
         let active_task = taskState.tasks[taskState.active_tab];
 
-        return (
-            <div className="desktop-ui calcutron">
-                <DjangoCSRFToken key="csrf" />
+        return [
+            (<DjangoCSRFToken key="csrf" />),
 
+            (<div className="desktop-ui calcutron">
                 <div key="contents" className="task-container-wrapper">
                     {active_task &&
                         <tasks.TabContainer task={active_task} />
@@ -103,7 +87,7 @@ import tasks from "./tasks";
                     <TabBar key="tabs" />
                     <TabSettingsBar key="settings" />
                 </div>
-            </div>
-        );
+            </div>),
+        ];
     }
 }

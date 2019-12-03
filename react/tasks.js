@@ -3,6 +3,33 @@ import {observer} from "mobx-react";
 import React from "react";
 
 import actions from "./actions";
+import taskState from "./state";
+
+
+@observer class TabList extends React.Component {
+    showTab(id) {
+        taskState.active_tab = id;
+
+        if (this.props.extra_show_callback) {
+            this.props.extra_show_callback();
+        }
+    }
+
+    renderTab(tab) {
+        let activeClass = (tab.id === taskState.active_tab) ? "active" : "";
+
+        return (
+            <button key={tab.id} className={activeClass} onClick={this.showTab.bind(this, tab.id)}>
+                <span>{tab.title}</span>
+            </button>
+        );
+    }
+
+    render() {
+        let tabs = Object.values(taskState.tasks);
+        return tabs.map(tab => this.renderTab(tab));
+    }
+}
 
 
 @observer class TabContainer extends React.Component {
@@ -118,5 +145,6 @@ import actions from "./actions";
 
 
 export default {
+    TabList,
     TabContainer,
 }

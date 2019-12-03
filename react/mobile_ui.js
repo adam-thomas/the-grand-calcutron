@@ -7,18 +7,35 @@ import tasks from "./tasks";
 
 
 @observer class TabMenu extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            menu_showing: false,
+        };
+    }
+
+    toggleMenu() {
+        this.setState({menu_showing: !this.state.menu_showing});
+    }
+
     render() {
         let active_task = taskState.tasks[taskState.active_tab];
+        let tab_menu_show_class = this.state.menu_showing ? "show " : "";
 
-        return (
-            <div className="mobile-menu-bar">
-                <button className="tab-menu-open-wrapper">
+        return [
+            (<div key="menu-bar" className="mobile-menu-bar">
+                <button className="tab-menu-open-wrapper" onClick={this.toggleMenu.bind(this)}>
                     v
                 </button>
 
                 <div className="tab-display active button">{active_task.title}</div>
-            </div>
-        );
+            </div>),
+
+            (<div key="full-menu" className={tab_menu_show_class + "tab-menu"}>
+                <tasks.TabList extra_show_callback={this.toggleMenu.bind(this)} />
+            </div>),
+        ];
     }
 }
 
@@ -27,9 +44,10 @@ import tasks from "./tasks";
     render() {
         let active_task = taskState.tasks[taskState.active_tab];
 
-        return (
-            <div className="mobile-ui calcutron">
-                <DjangoCSRFToken key="csrf" />
+        return [
+            (<DjangoCSRFToken key="csrf" />),
+
+            (<div className="mobile-ui calcutron">
                 <TabMenu key="tabs" />
 
                 <div key="contents" className="task-container-wrapper">
@@ -37,7 +55,7 @@ import tasks from "./tasks";
                         <tasks.TabContainer task={active_task} />
                     }
                 </div>
-            </div>
-        );
+            </div>),
+        ];
     }
 }
