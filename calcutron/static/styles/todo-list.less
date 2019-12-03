@@ -73,6 +73,41 @@
 
                     height: 35px;
 
+                    .title {
+                        display: flex;
+                        flex-flow: row;
+                        align-items: center;
+
+                        height: 100%;
+                        padding: 0 8px;
+                        cursor: pointer;
+
+                        &:hover {
+                            // TODO: Find a slightly-less-than-white colour
+                            color: @pale-green;
+
+                            .caret {
+                                border-width: 2px;
+                                border-color: @pale-green;
+                            }
+                        }
+
+                        .caret {
+                            width: 10px;
+                            height: 10px;
+                            margin-left: 8px;
+
+                            border-right: 1px solid @light-green;
+                            border-bottom: 1px solid @light-green;
+                            transform: rotate(-45deg);
+
+                            &.open {
+                                transform: rotate(45deg);
+                                margin-top: -4px;
+                            }
+                        }
+                    }
+
                     .extra-buttons {
                         display: flex;
                         flex-flow: row;
@@ -83,7 +118,7 @@
                         min-width: 90px;  // Enough to accommodate the buttons
                     }
 
-                    & > *, .extra-buttons > * {
+                    .title, .extra-buttons > * {
                         margin-right: 8px;
                     }
 

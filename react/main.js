@@ -157,15 +157,19 @@ import taskState from "./state";
     }
 
     render() {
+        let caret_class = "caret";
+        if (this.state.show_children) {
+            caret_class = "open " + caret_class;
+        }
+
         let main_row = (
             <div key="main-row" className="main-row">
-                <span key="title" className="title">{this.props.task.title}</span>
-
-                {Object.keys(this.props.task.children).length > 0 &&
-                    <button key="show-children" onClick={this.toggleChildren.bind(this)}>
-                        {this.state.show_children ? "-" : "v"}
-                    </button>
-                }
+                <div key="title" className="title" onClick={this.toggleChildren.bind(this)}>
+                    <span>{this.props.task.title}</span>
+                    {Object.keys(this.props.task.children).length > 0 &&
+                        <div className={caret_class} />
+                    }
+                </div>
 
                 <div key="extra-buttons" className="extra-buttons">
                     <button key="show-add" onClick={this.showAddForm.bind(this)}>+</button>
