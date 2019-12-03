@@ -29,9 +29,9 @@ import taskState from "./state";
         let tabs = Object.values(taskState.tasks);
 
         return (
-            <nav className="top-tab-container">
+            <div className="tab-bar">
                 {tabs.map(tab => this.renderTab(tab))}
-            </nav>
+            </div>
         );
     }
 }
@@ -72,13 +72,15 @@ import taskState from "./state";
         }
 
         return (
-            <footer key="tab-update-form" className="tab-options">
-                <span class="title">Tab options</span>
-                <input ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
-                <button className="submit" onClick={this.add.bind(this)}>Add</button>
-                <button className="submit" onClick={this.update.bind(this)}>Update</button>
-                <button className="submit" onClick={this.delete.bind(this)}>Delete</button>
-            </footer>
+            <div key="tab-update-form" className="tab-options">
+                <span key="title" className="title">Tab options</span>
+                <input key="text" ref={this.title_field_ref} defaultValue={current_title} type="text" className="task-title" name="title" />
+                <div key="buttons" className="buttons-wrapper">
+                    <button key="add" onClick={this.add.bind(this)}>Add</button>
+                    <button key="update" onClick={this.update.bind(this)}>Update</button>
+                    <button key="delete" onClick={this.delete.bind(this)}>Delete</button>
+                </div>
+            </div>
         )
     }
 }
@@ -196,13 +198,17 @@ import taskState from "./state";
 
         return [
             (<DjangoCSRFToken key="csrf" />),
-            (<TabBar key="tabs" />),
+
+            (<div key="tab-column" className="tab-column">
+                <TabBar key="tabs" />
+                <TabSettingsBar key="settings" />
+            </div>),
+
             (active_task &&
                 <div key="contents" className="task-container-wrapper">
                     <TabContainer task={active_task} />
                 </div>
             ),
-            (<TabSettingsBar key="settings" />),
         ];
     }
 }
