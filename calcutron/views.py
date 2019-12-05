@@ -1,8 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, JsonResponse
-from django.shortcuts import redirect
-from django.views.generic import CreateView, FormView, TemplateView, View
-from django.views.generic.list import ListView
+from django.views.generic import FormView, TemplateView, View
 
 from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm
 from .models import Task
