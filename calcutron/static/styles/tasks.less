@@ -61,29 +61,38 @@
                         padding: 0 8px;
                         cursor: pointer;
 
+                        .caret-wrapper {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            height: 100%;
+                            width: 18px;
+                            margin-left: 5px;
+
+                            .caret {
+                                width: 10px;
+                                height: 10px;
+                                flex: 0 0 auto;
+
+                                border-right: 1px solid @light-green;
+                                border-bottom: 1px solid @light-green;
+                                transform: rotate(-45deg);
+
+                                &.open {
+                                    transform: rotate(45deg);
+                                    margin-top: -4px;
+                                }
+                            }
+                        }
+
                         &:hover {
                             // TODO: Find a slightly-less-than-white colour
                             color: @pale-green;
 
-                            .caret {
+                            .caret-wrapper .caret {
                                 border-width: 2px;
                                 border-color: @pale-green;
-                            }
-                        }
-
-                        .caret {
-                            width: 10px;
-                            height: 10px;
-                            flex: 0 0 auto;
-                            margin-left: 8px;
-
-                            border-right: 1px solid @light-green;
-                            border-bottom: 1px solid @light-green;
-                            transform: rotate(-45deg);
-
-                            &.open {
-                                transform: rotate(45deg);
-                                margin-top: -4px;
                             }
                         }
                     }

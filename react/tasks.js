@@ -115,14 +115,19 @@ import taskState from "./state";
             <div key="main-row" className="main-row">
                 <div key="title" className="title" onClick={this.toggleChildren.bind(this)}>
                     <span>{this.props.task.title}</span>
+
                     {Object.keys(this.props.task.children).length > 0 &&
-                        <div className={caret_class} />
+                        <div className="caret-wrapper">
+                            <div className={caret_class} />
+                        </div>
                     }
                 </div>
 
-                <div key="extra-buttons" className="extra-buttons">
-                    <button key="delete" onClick={this.delete.bind(this)}>x</button>
-                </div>
+                {!taskState.is_mobile &&
+                    <div key="extra-buttons" className="extra-buttons">
+                        <button key="delete" onClick={this.delete.bind(this)}>x</button>
+                    </div>
+                }
             </div>
         );
 
