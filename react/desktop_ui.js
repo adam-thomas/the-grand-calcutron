@@ -5,15 +5,14 @@ import React from "react";
 
 import actions from "./actions";
 import taskState from "./state";
-import tasks from "./tasks";
-
+import tab_container from "./tab_container";
 
 
 @observer class TabBar extends React.Component {
     render() {
         return (
             <div className="tab-bar">
-                <tasks.TabList />
+                <tab_container.TabList />
             </div>
         );
     }
@@ -76,10 +75,10 @@ import tasks from "./tasks";
         return [
             (<DjangoCSRFToken key="csrf" />),
 
-            (<div className="desktop-ui calcutron">
+            (<div key="ui" className="desktop-ui calcutron">
                 <div key="contents" className="task-container-wrapper">
                     {active_task &&
-                        <tasks.TabContainer task={active_task} />
+                        <tab_container.TabContainer task={active_task} />
                     }
                 </div>
 

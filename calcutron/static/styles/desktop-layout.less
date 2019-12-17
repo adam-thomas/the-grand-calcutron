@@ -1,6 +1,17 @@
 .calcutron.desktop-ui {
     flex-flow: row;
 
+    .task-container-wrapper {
+        // Use direction: rtl to trick the browser into putting the scrollbar on the left!
+        // Props to https://stackoverflow.com/a/21372576
+        direction: rtl;
+
+        .tab-contents-container {
+            // Undo the direction setting, so the text isn't inverted
+            direction: ltr;
+        }
+    }
+
     .tab-column {
         width: 290px;
         height: 100%;

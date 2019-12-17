@@ -47,8 +47,9 @@
 
                 .main-row {
                     display: flex;
-                    flex-flow: row;
-                    align-items: center;
+                    flex-flow: column;
+                    align-items: flex-start;
+                    justify-content: center;
 
                     min-height: 35px;
 
@@ -58,6 +59,7 @@
                         align-items: center;
 
                         height: 100%;
+                        min-height: 35px;
                         padding: 0 8px;
                         cursor: pointer;
 
@@ -97,24 +99,17 @@
                         }
                     }
 
-                    .extra-buttons {
+                    .options-row {
                         display: flex;
                         flex-flow: row;
                         align-items: center;
 
-                        // Fix a width to extend the row's hitbox out some more.
-                        // Use percent scaling so it doesn't go too horribly awry on different screens.
-                        min-width: 45px;  // Enough to accommodate the buttons
+                        margin: 5px 0;
+                        padding-left: 30px;
                     }
 
-                    .title, .extra-buttons > * {
+                    .title, .options-row > * {
                         margin-right: 8px;
-                    }
-
-                    &:not(:hover) {
-                        .extra-buttons button {
-                            display: none;
-                        }
                     }
                 }
             }
@@ -126,6 +121,7 @@
 
                 & > * {
                     margin-right: 10px;
+                    min-height: 34px;
                 }
             }
         }

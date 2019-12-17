@@ -3,7 +3,7 @@ import {observer} from "mobx-react";
 import React from "react";
 
 import taskState from "./state";
-import tasks from "./tasks";
+import tab_container from "./tab_container";
 
 
 @observer class TabMenu extends React.Component {
@@ -33,7 +33,7 @@ import tasks from "./tasks";
             </div>),
 
             (<div key="full-menu" className={tab_menu_show_class + "tab-menu"}>
-                <tasks.TabList extra_show_callback={this.toggleMenu.bind(this)} />
+                <tab_container.TabList extra_show_callback={this.toggleMenu.bind(this)} />
             </div>),
         ];
     }
@@ -47,12 +47,12 @@ import tasks from "./tasks";
         return [
             (<DjangoCSRFToken key="csrf" />),
 
-            (<div className="mobile-ui calcutron">
+            (<div key="ui" className="mobile-ui calcutron">
                 <TabMenu key="tabs" />
 
                 <div key="contents" className="task-container-wrapper">
                     {active_task &&
-                        <tasks.TabContainer task={active_task} />
+                        <tab_container.TabContainer task={active_task} />
                     }
                 </div>
             </div>),
