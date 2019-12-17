@@ -14,6 +14,25 @@
         color: @light-green;
         overflow-y: auto;
 
+        &::-webkit-scrollbar {
+            background: transparent;
+            width: 8px;
+        }
+        &::-webkit-scrollbar-button {
+            display: none;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        &::-webkit-scrollbar-track-piece {
+            background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: @mid-green;
+        }
+        // &::-webkit-scrollbar-corner addresses the (usually) bottom corner of the scrollable element, where two scrollbars might meet
+        // &::-webkit-resizer addresses the draggable resizing handle that appears above the scrollbar-corner at the bottom corner of some elements
+
         display: flex;
         flex-flow: column;
         align-items: flex-start;
