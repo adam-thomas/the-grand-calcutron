@@ -7,7 +7,11 @@ module.exports = {
           use: {
             loader: "babel-loader"
           }
-        }
+        },
+        {
+          test: /\.less$/,
+          loader: 'less-loader',
+        },
       ]
     },
 };

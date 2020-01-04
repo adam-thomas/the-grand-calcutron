@@ -1,3 +1,6 @@
+// Required by Webpack Less build
+require("../calcutron/static/styles/main.less");
+
 import $ from "jquery";
 import {observer} from "mobx-react";
 import React from "react";
