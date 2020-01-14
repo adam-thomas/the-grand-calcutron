@@ -7,9 +7,6 @@
   "author": "Adam Thomas <adamthomas@e3d-online.com>",
   "license": "MIT",
   "private": false,
-  "engines": {
-    "node": "8.11.3"
-  },
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/plugin-proposal-class-properties": "^7.7.0",
