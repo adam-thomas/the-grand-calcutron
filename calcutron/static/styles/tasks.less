@@ -9,10 +9,7 @@
         height: 100%;
         flex: 0 1 auto;
 
-        padding: 20px 20px 20px 45px;
-
-        // Add position: relative so that the checkboxes can float in the left gutter.
-        position: relative;
+        padding: 20px 20px 20px 10px;
 
         color: @light-green;
         overflow-y: auto;
@@ -75,11 +72,10 @@
                     width: 100%;
 
                     .checkbox-wrapper {
-                        position: absolute;
-                        left: 5px;
-
                         width: 30px;
                         height: 30px;
+                        margin-right: 8px;
+                        flex: 0 0 auto;
 
                         input {
                             width: 100%;
@@ -152,6 +148,8 @@
             }
 
             li.task-form-wrapper {
+                padding-left: 8px;
+
                 display: flex;
                 flex-flow: row;
                 align-items: center;

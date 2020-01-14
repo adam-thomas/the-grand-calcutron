@@ -97,7 +97,8 @@ import taskState from "./state";
         this.closeOptionsAndEdit();
     }
 
-    toggleDone() {
+    toggleDone(event) {
+        event.stopPropagation();
         this.props.task.done = !this.props.task.done;
     }
 
@@ -115,6 +116,10 @@ import taskState from "./state";
 
         return (
             <div key="title" className="title" onClick={this.toggleChildren.bind(this)} onContextMenu={this.showOptions.bind(this)}>
+                <div class="checkbox-wrapper" onClick={this.toggleDone}>
+                    <input type="checkbox" checked={this.props.task.done} />
+                </div>
+
                 <span>{this.props.task.title}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
@@ -154,10 +159,6 @@ import taskState from "./state";
     render() {
         let main_row = (
             <div key="main-row" className="main-row">
-                <div class="checkbox-wrapper" onClick={this.toggleDone}>
-                    <input type="checkbox" checked={this.props.task.done} />
-                </div>
-
                 {this.state.edit_mode
                     ? this.renderEditForm()
                     : this.renderTitle()
