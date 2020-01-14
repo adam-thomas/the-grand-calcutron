@@ -97,6 +97,10 @@ import taskState from "./state";
         this.closeOptionsAndEdit();
     }
 
+    toggleDone() {
+        this.props.task.done = !this.props.task.done;
+    }
+
     handleEnter(event) {
         if(event.key === 'Enter'){
             this.edit(event);
@@ -150,6 +154,10 @@ import taskState from "./state";
     render() {
         let main_row = (
             <div key="main-row" className="main-row">
+                <div class="checkbox-wrapper" onClick={this.toggleDone}>
+                    <input type="checkbox" checked={this.props.task.done} />
+                </div>
+
                 {this.state.edit_mode
                     ? this.renderEditForm()
                     : this.renderTitle()
@@ -169,4 +177,3 @@ import taskState from "./state";
         ];
     }
 }
-
