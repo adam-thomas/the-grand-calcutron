@@ -99,7 +99,7 @@ import taskState from "./state";
 
     toggleDone(event) {
         event.stopPropagation();
-        this.props.task.done = !this.props.task.done;
+        actions.setDoneTask(!this.props.task.done, this.props.task);
     }
 
     handleEnter(event) {
@@ -116,8 +116,8 @@ import taskState from "./state";
 
         return (
             <div key="title" className="title" onClick={this.toggleChildren.bind(this)} onContextMenu={this.showOptions.bind(this)}>
-                <div class="checkbox-wrapper" onClick={this.toggleDone}>
-                    <input type="checkbox" checked={this.props.task.done} />
+                <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
+                    <input type="checkbox" checked={this.props.task.done} readOnly={true} />
                 </div>
 
                 <span>{this.props.task.title}</span>

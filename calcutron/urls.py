@@ -17,6 +17,7 @@ urlpatterns = [
     path("new", views.NewTaskView.as_view(), name="new"),
     path("delete", views.DeleteTaskView.as_view(), name="delete"),
     path("edit", views.EditTaskView.as_view(), name="edit"),
+    path("done", views.SetDoneTaskView.as_view(), name="done"),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -62,8 +62,21 @@ function updateTask(title, task) {
 }
 
 
+function setDoneTask(done, task) {
+    let data = {
+        id: task.id,
+        done: done,
+    };
+
+    ajax_requests.post("/done", data, (return_data) => {
+        task.done = return_data.done;
+    });
+}
+
+
 export default {
     addTask,
     deleteTask,
     updateTask,
+    setDoneTask,
 }

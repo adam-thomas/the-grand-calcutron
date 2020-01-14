@@ -16,3 +16,8 @@ class DeleteTaskForm(forms.Form):
 class EditTaskForm(forms.Form):
     id = forms.IntegerField()
     title = forms.CharField(max_length=255)
+
+
+class SetDoneTaskForm(forms.Form):
+    id = forms.IntegerField()
+    done = forms.BooleanField(required=False)

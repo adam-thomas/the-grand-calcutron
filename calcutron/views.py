@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, JsonResponse
 from django.views.generic import FormView, TemplateView, View
 
-from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm
+from .forms import DeleteTaskForm, EditTaskForm, NewTaskForm, SetDoneTaskForm
 from .models import Task
 
 
@@ -15,6 +15,7 @@ def task_to_dict(task):
         "title": task.title,
         "long_text": task.long_text,
         "order": task.sort_order,
+        "done": task.done,
     }
 
 
@@ -84,4 +85,13 @@ class EditTaskView(AjaxTaskView):
     def resolve_form(self, form):
         self.object = self.model.objects.get(id=form.cleaned_data["id"])
         self.object.title = form.cleaned_data["title"]
+        self.object.save()
+
+
+class SetDoneTaskView(AjaxTaskView):
+    form_class = SetDoneTaskForm
+
+    def resolve_form(self, form):
+        self.object = self.model.objects.get(id=form.cleaned_data["id"])
+        self.object.done = form.cleaned_data["done"]
         self.object.save()
