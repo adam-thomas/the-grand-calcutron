@@ -61,12 +61,16 @@
 
             li.task-wrapper {
                 width: 100%;
+                position: relative;
 
                 .main-row {
                     display: flex;
                     flex-flow: column;
                     align-items: flex-start;
                     justify-content: center;
+
+                    user-select: none;
+                    z-index: 0;
 
                     min-height: 35px;
                     width: 100%;
@@ -143,6 +147,28 @@
                     .title, .options-row > * {
                         margin-right: 8px;
                         min-height: 35px;
+                    }
+                }
+
+                .dropzone {
+                    position: absolute;
+                    left: 0;
+                    width: 100%;
+                    z-index: 1;
+
+                    &.before {
+                        top: 0;
+                        height: 25%;
+                    }
+
+                    &.mid {
+                        top: 25%;
+                        height: 50%;
+                    }
+
+                    &.after {
+                        top: 75%;
+                        height: 25%;
                     }
                 }
             }

@@ -14,7 +14,7 @@ def task_to_dict(task):
         "parent": task.parent_id,
         "title": task.title,
         "long_text": task.long_text,
-        "order": task.sort_order,
+        "sort_order": task.sort_order,
         "done": task.done,
     }
 

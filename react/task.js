@@ -1,4 +1,5 @@
 import $ from "jquery";
+import {transaction} from "mobx";
 import {observer} from "mobx-react";
 import React from "react";
 
@@ -29,15 +30,15 @@ import taskState from "./state";
 
     render() {
         let task = this.props.task;
-        let children = Object.values(task.children);
         let button_text = taskState.is_mobile ? "+" : "Add";
+
+        let children = Object.values(task.children);
+        children.sort((c1, c2) => c1.sort_order - c2.sort_order);
 
         return (
             <ul className="child-tasks">
                 {children.map(child => (
-                    <li key={child.id} className="task-wrapper">
-                        <Task task={child} />
-                    </li>
+                    <TaskWrapper key={child.id} task={child} />
                 ))}
 
                 <li key="add-form" className="task-form-wrapper">
@@ -45,6 +46,77 @@ import taskState from "./state";
                     <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
                 </li>
             </ul>
+        );
+    }
+}
+
+
+@observer class TaskWrapper extends React.Component {
+    dragStart() {
+        taskState.dragged_item = this.props.task;
+    }
+
+    dragEnd() {
+        taskState.dragged_item = null;
+    }
+
+    drop(key) {
+        let this_task = this.props.task;
+        let dropped_task = taskState.dragged_item;
+
+        transaction(() => {
+            if (key === "before") {
+                taskState.moveTaskBefore(dropped_task, this_task);
+            }
+
+            else if (key === "mid") {
+                taskState.setTaskParent(dropped_task, this_task);
+            }
+
+            else {
+                taskState.moveTaskAfter(dropped_task, this_task);
+            }
+        });
+
+        taskState.dragged_item = null;
+    }
+
+    renderSingleDropzone(key) {
+        return (
+            <div
+                className={"dropzone " + key}
+                key={key}
+                onDrop={this.drop.bind(this, key)}
+                onDragOver={(event) => event.preventDefault()}
+            />
+        );
+    }
+
+    renderDropzones() {
+        if (taskState.dragged_item === null) {
+            return null;
+        }
+
+        return [
+            this.renderSingleDropzone("before"),
+            this.renderSingleDropzone("mid"),
+            this.renderSingleDropzone("after"),
+        ];
+    }
+
+    render() {
+        let task = this.props.task;
+
+        return (
+            <li key={task.id}
+                draggable={true}
+                className="task-wrapper"
+                onDragStart={this.dragStart.bind(this)}
+                onDragEnd={this.dragEnd.bind(this)}
+            >
+                <Task key="task" task={task} />
+                {this.renderDropzones()}
+            </li>
         );
     }
 }
