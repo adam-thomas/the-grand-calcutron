@@ -14,7 +14,7 @@ def task_to_dict(task):
         "parent": task.parent_id,
         "title": task.title,
         "long_text": task.long_text,
-        "order": task.sort_order,
+        "sort_order": task.sort_order,
         "done": task.done,
     }
 
@@ -84,7 +84,17 @@ class EditTaskView(AjaxTaskView):
 
     def resolve_form(self, form):
         self.object = self.model.objects.get(id=form.cleaned_data["id"])
-        self.object.title = form.cleaned_data["title"]
+        data = form.cleaned_data
+
+        if "title" in data and data["title"]:
+            self.object.title = data["title"]
+
+        if "parent" in data and data["parent"]:
+            self.object.parent_id = data["parent"]
+
+        if "sort_order" in data and data["sort_order"]:
+            self.object.sort_order = data["sort_order"]
+
         self.object.save()
 
 

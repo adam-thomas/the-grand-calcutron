@@ -39,7 +39,7 @@ import tab_container from "./tab_container";
     update() {
         let field_element = $(this.title_field_ref.current);
 
-        actions.updateTask(field_element.val(), taskState.tasks[taskState.active_tab]);
+        actions.setTaskTitle(taskState.tasks[taskState.active_tab], field_element.val());
         field_element.val("");
     }
 
