@@ -50,7 +50,7 @@ function deleteTask(task) {
 }
 
 
-function updateTask(title, task) {
+function setTaskTitle(task, title) {
     let data = {
         id: task.id,
         title: title,
@@ -62,7 +62,7 @@ function updateTask(title, task) {
 }
 
 
-function setDoneTask(done, task) {
+function setTaskDone(task, done) {
     let data = {
         id: task.id,
         done: done,
@@ -74,9 +74,35 @@ function setDoneTask(done, task) {
 }
 
 
+function setTaskParent(task, new_parent_id) {
+    let data = {
+        id: task.id,
+        parent: new_parent_id,
+    };
+
+    ajax_requests.post("/edit", data, () => {});
+}
+
+
+function moveTask(task, new_sort_order, new_parent=undefined) {
+    let data = {
+        id: task.id,
+        sort_order: new_sort_order,
+    };
+
+    if (new_parent !== undefined) {
+        data.parent = new_parent
+    }
+
+    ajax_requests.post("/edit", data, () => {});
+}
+
+
 export default {
     addTask,
     deleteTask,
-    updateTask,
-    setDoneTask,
+    setTaskTitle,
+    setTaskDone,
+    setTaskParent,
+    moveTask,
 }

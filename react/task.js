@@ -104,13 +104,13 @@ import taskState from "./state";
 
     edit() {
         let field_element = $(this.edit_field_ref.current);
-        actions.updateTask(field_element.val(), this.props.task);
+        actions.setTaskTitle(this.props.task, field_element.val());
         this.closeOptionsAndEdit();
     }
 
     toggleDone(event) {
         event.stopPropagation();
-        actions.setDoneTask(!this.props.task.done, this.props.task);
+        actions.setTaskDone(!this.props.task.done, this.props.task);
     }
 
     handleEnter(event) {
@@ -131,7 +131,7 @@ import taskState from "./state";
                     <input type="checkbox" checked={this.props.task.done} readOnly={true} />
                 </div>
 
-                <span>{this.props.task.sort_order} {this.props.task.title}</span>
+                <span>{this.props.task.title}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
