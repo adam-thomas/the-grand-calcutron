@@ -38,7 +38,9 @@ import taskState from "./state";
         return (
             <ul className="child-tasks">
                 {children.map(child => (
-                    <TaskWrapper key={child.id} task={child} />
+                    <li key={child.id} className="task-wrapper">
+                        <Task key="task" task={child} />
+                    </li>
                 ))}
 
                 <li key="add-form" className="task-form-wrapper">
@@ -51,7 +53,20 @@ import taskState from "./state";
 }
 
 
-@observer class TaskWrapper extends React.Component {
+@observer class Task extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.edit_field_ref = React.createRef();
+
+        this.state = {
+            show_children: false,
+            show_options: false,
+            edit_mode: false,
+        }
+    }
+
+
     dragStart() {
         taskState.dragged_item = this.props.task;
     }
@@ -79,60 +94,6 @@ import taskState from "./state";
         });
 
         taskState.dragged_item = null;
-    }
-
-    renderSingleDropzone(key) {
-        return (
-            <div
-                className={"dropzone " + key}
-                key={key}
-                onDrop={this.drop.bind(this, key)}
-                onDragOver={(event) => event.preventDefault()}
-            />
-        );
-    }
-
-    renderDropzones() {
-        if (taskState.dragged_item === null) {
-            return null;
-        }
-
-        return [
-            this.renderSingleDropzone("before"),
-            this.renderSingleDropzone("mid"),
-            this.renderSingleDropzone("after"),
-        ];
-    }
-
-    render() {
-        let task = this.props.task;
-
-        return (
-            <li key={task.id}
-                draggable={true}
-                className="task-wrapper"
-                onDragStart={this.dragStart.bind(this)}
-                onDragEnd={this.dragEnd.bind(this)}
-            >
-                <Task key="task" task={task} />
-                {this.renderDropzones()}
-            </li>
-        );
-    }
-}
-
-
-@observer class Task extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.edit_field_ref = React.createRef();
-
-        this.state = {
-            show_children: false,
-            show_options: false,
-            edit_mode: false,
-        }
     }
 
     toggleChildren() {
@@ -228,15 +189,59 @@ import taskState from "./state";
         );
     }
 
+    renderSingleDropzone(key) {
+        return (
+            <div
+                className={"dropzone " + key}
+                key={key}
+                onDrop={this.drop.bind(this, key)}
+                onDragOver={(event) => event.preventDefault()}
+            />
+        );
+    }
+
+    renderDropzones() {
+        if (taskState.dragged_item === null) {
+            return null;
+        }
+
+        return [
+            this.renderSingleDropzone("before"),
+            this.renderSingleDropzone("mid"),
+            this.renderSingleDropzone("after"),
+        ];
+    }
+
+    render() {
+        let task = this.props.task;
+
+        return (
+            <li key={task.id}
+            >
+                <Task key="task" task={task} />
+            </li>
+        );
+    }
+
     render() {
         let main_row = (
-            <div key="main-row" className="main-row">
-                {this.state.edit_mode
+            <div
+                key="main-row"
+                className="main-row"
+                draggable={true}
+                onDragStart={this.dragStart.bind(this)}
+                onDragEnd={this.dragEnd.bind(this)}
+            >
+                {this.state.edit_mode && (taskState.dragged_item === null)
                     ? this.renderEditForm()
                     : this.renderTitle()
                 }
 
-                {this.state.show_options && this.renderOptions()}
+                {this.state.show_options && (taskState.dragged_item === null)
+                    && this.renderOptions()
+                }
+
+                {this.renderDropzones()}
             </div>
         );
 
