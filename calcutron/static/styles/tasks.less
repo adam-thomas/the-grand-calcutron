@@ -152,25 +152,32 @@
                         min-height: 35px;
                     }
 
-                    .dropzone {
+                    .dropzone-container {
                         position: absolute;
                         left: 0;
+                        top: -5px;
                         width: 100%;
+                        height: calc(100% + 10px);
+
                         z-index: 1;
 
-                        &.before {
-                            top: 0;
-                            height: 25%;
-                        }
+                        display: flex;
+                        flex-flow: column;
 
-                        &.mid {
-                            top: 25%;
-                            height: 50%;
-                        }
+                        .dropzone {
+                            width: 100%;
 
-                        &.after {
-                            top: 75%;
-                            height: 25%;
+                            &.highlight {
+                                background-color: rgba(255, 255, 255, 0.3);
+                            }
+
+                            &.before, &.after {
+                                height: 25%;
+                            }
+
+                            &.in {
+                                height: 50%;
+                            }
                         }
                     }
                 }

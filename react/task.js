@@ -66,33 +66,11 @@ import taskState from "./state";
         }
     }
 
-
     dragStart() {
         taskState.dragged_item = this.props.task;
     }
 
     dragEnd() {
-        taskState.dragged_item = null;
-    }
-
-    drop(key) {
-        let this_task = this.props.task;
-        let dropped_task = taskState.dragged_item;
-
-        transaction(() => {
-            if (key === "before") {
-                taskState.moveTaskBefore(dropped_task, this_task);
-            }
-
-            else if (key === "mid") {
-                taskState.setTaskParent(dropped_task, this_task);
-            }
-
-            else {
-                taskState.moveTaskAfter(dropped_task, this_task);
-            }
-        });
-
         taskState.dragged_item = null;
     }
 
@@ -189,37 +167,17 @@ import taskState from "./state";
         );
     }
 
-    renderSingleDropzone(key) {
-        return (
-            <div
-                className={"dropzone " + key}
-                key={key}
-                onDrop={this.drop.bind(this, key)}
-                onDragOver={(event) => event.preventDefault()}
-            />
-        );
-    }
-
     renderDropzones() {
         if (taskState.dragged_item === null) {
             return null;
         }
 
-        return [
-            this.renderSingleDropzone("before"),
-            this.renderSingleDropzone("mid"),
-            this.renderSingleDropzone("after"),
-        ];
-    }
-
-    render() {
-        let task = this.props.task;
-
         return (
-            <li key={task.id}
-            >
-                <Task key="task" task={task} />
-            </li>
+            <div class="dropzone-container">
+                <TaskDropzone key="before" zoneType="before" task={this.props.task} />
+                <TaskDropzone key="in" zoneType="in" task={this.props.task} />
+                <TaskDropzone key="after" zoneType="after" task={this.props.task} />
+            </div>
         );
     }
 
@@ -232,14 +190,12 @@ import taskState from "./state";
                 onDragStart={this.dragStart.bind(this)}
                 onDragEnd={this.dragEnd.bind(this)}
             >
-                {this.state.edit_mode && (taskState.dragged_item === null)
+                {this.state.edit_mode
                     ? this.renderEditForm()
                     : this.renderTitle()
                 }
 
-                {this.state.show_options && (taskState.dragged_item === null)
-                    && this.renderOptions()
-                }
+                {this.state.show_options && this.renderOptions()}
 
                 {this.renderDropzones()}
             </div>
@@ -253,5 +209,68 @@ import taskState from "./state";
             main_row,
             <SubtaskList key="subtasks" task={this.props.task} />,
         ];
+    }
+}
+
+
+@observer class TaskDropzone extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            highlight: false,
+        };
+    }
+
+
+    drop() {
+        let this_task = this.props.task;
+        let dropped_task = taskState.dragged_item;
+
+        transaction(() => {
+            if (this.props.zoneType === "before") {
+                taskState.moveTaskBefore(dropped_task, this_task);
+            }
+
+            else if (this.props.zoneType === "in") {
+                taskState.setTaskParent(dropped_task, this_task);
+            }
+
+            else {
+                taskState.moveTaskAfter(dropped_task, this_task);
+            }
+        });
+
+        taskState.dragged_item = null;
+    }
+
+
+    dragOver(event) {
+        event.preventDefault();
+        this.setState({highlight: true});
+    }
+
+
+    dragLeave() {
+        this.setState({highlight: false});
+    }
+
+
+    render() {
+        if (taskState.dragged_item === null) {
+            return null;
+        }
+
+        let baseClass = "dropzone " + this.props.zoneType;
+        let highlightClass = this.state.highlight ? " highlight" : "";
+
+        return (
+            <div
+                className={baseClass + highlightClass}
+                key={this.props.zoneType}
+                onDrop={this.drop.bind(this)}
+                onDragOver={this.dragOver.bind(this)}
+                onDragLeave={this.dragLeave.bind(this)}
+            />
+        );
     }
 }
