@@ -131,7 +131,7 @@ import taskState from "./state";
                     <input type="checkbox" checked={this.props.task.done} readOnly={true} />
                 </div>
 
-                <span>{this.props.task.title}</span>
+                <span>{this.props.task.sort_order} {this.props.task.title}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
@@ -173,7 +173,7 @@ import taskState from "./state";
         }
 
         return (
-            <div class="dropzone-container">
+            <div className="dropzone-container">
                 <TaskDropzone key="before" zoneType="before" task={this.props.task} />
                 <TaskDropzone key="in" zoneType="in" task={this.props.task} />
                 <TaskDropzone key="after" zoneType="after" task={this.props.task} />
@@ -216,6 +216,7 @@ import taskState from "./state";
 @observer class TaskDropzone extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             highlight: false,
         };
@@ -223,23 +224,13 @@ import taskState from "./state";
 
 
     drop() {
-        let this_task = this.props.task;
-        let dropped_task = taskState.dragged_item;
+        let operations = {
+            "before": taskState.moveTaskBefore,
+            "in": taskState.setTaskParent,
+            "after": taskState.moveTaskAfter,
+        }
 
-        transaction(() => {
-            if (this.props.zoneType === "before") {
-                taskState.moveTaskBefore(dropped_task, this_task);
-            }
-
-            else if (this.props.zoneType === "in") {
-                taskState.setTaskParent(dropped_task, this_task);
-            }
-
-            else {
-                taskState.moveTaskAfter(dropped_task, this_task);
-            }
-        });
-
+        operations[this.props.zoneType](taskState.dragged_item, this.props.task);
         taskState.dragged_item = null;
     }
 
