@@ -110,7 +110,7 @@ import taskState from "./state";
 
     toggleDone(event) {
         event.stopPropagation();
-        actions.setTaskDone(!this.props.task.done, this.props.task);
+        actions.setTaskDone(this.props.task, !this.props.task.done);
     }
 
     handleEnter(event) {
