@@ -34,7 +34,6 @@ import taskState from "./state";
         this.edit_field_ref = React.createRef();
 
         this.state = {
-            show_options: false,
             edit_mode: false,
         }
     }
@@ -51,12 +50,8 @@ import taskState from "./state";
         taskState.active_task = this.props.task;
     }
 
-    showOptions(event) {
+    showEditMode(event) {
         event.preventDefault();
-        this.setState({show_options: true});
-    }
-
-    showEditMode() {
         this.setState({edit_mode: true});
 
         let field_element = $(this.edit_field_ref.current);
@@ -64,21 +59,21 @@ import taskState from "./state";
         field_element.focus();
     }
 
-    closeOptionsAndEdit() {
-        this.setState({
-            show_options: false,
-            edit_mode: false,
-        });
-    }
-
     delete() {
         actions.deleteTask(this.props.task);
     }
 
-    edit() {
+    saveEdit() {
         let field_element = $(this.edit_field_ref.current);
-        actions.setTaskTitle(this.props.task, field_element.val());
-        this.closeOptionsAndEdit();
+        let title = field_element.val();
+
+        if (title === "") {
+            actions.deleteTask(this.props.task);
+        } else {
+            actions.setTaskTitle(this.props.task, field_element.val());
+        }
+
+        this.setState({edit_mode: false});
     }
 
     toggleDone(event) {
@@ -88,7 +83,7 @@ import taskState from "./state";
 
     handleEnter(event) {
         if(event.key === 'Enter'){
-            this.edit(event);
+            this.saveEdit(event);
         }
     }
 
@@ -99,7 +94,7 @@ import taskState from "./state";
         }
 
         return (
-            <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showOptions.bind(this)}>
+            <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <input type="checkbox" checked={this.props.task.done} readOnly={true} />
                 </div>
@@ -125,17 +120,7 @@ import taskState from "./state";
                     defaultValue={this.props.task.title}
                     onKeyPress={this.handleEnter.bind(this)}
                 />
-                <button className="submit" onClick={this.edit.bind(this)}>Save</button>
-            </div>
-        );
-    }
-
-    renderOptions() {
-        return (
-            <div key="options" className="options-row">
-                <button className="submit" onClick={this.showEditMode.bind(this)}>Edit</button>
-                <button className="submit" onClick={this.delete.bind(this)}>Delete</button>
-                <button className="submit" onClick={this.closeOptionsAndEdit.bind(this)}>Cancel</button>
+                <button className="submit" onClick={this.saveEdit.bind(this)}>Save</button>
             </div>
         );
     }
@@ -155,33 +140,22 @@ import taskState from "./state";
     }
 
     render() {
-        let main_row = (
+        return (
             <div
                 key="main-row"
                 className="main-row"
-                draggable={true}
-                onDragStart={this.dragStart.bind(this)}
-                onDragEnd={this.dragEnd.bind(this)}
+                draggable={!this.state.edit_mode}
+                onDragStart={this.state.edit_mode ? null : this.dragStart.bind(this)}
+                onDragEnd={this.state.edit_mode ? null : this.dragEnd.bind(this)}
             >
                 {this.state.edit_mode
                     ? this.renderEditForm()
                     : this.renderTitle()
                 }
 
-                {this.state.show_options && this.renderOptions()}
-
                 {this.renderDropzones()}
             </div>
         );
-
-        if (!this.state.show_children) {
-            return main_row;
-        }
-
-        return [
-            main_row,
-            <SubtaskList key="subtasks" task={this.props.task} />,
-        ];
     }
 }
 
