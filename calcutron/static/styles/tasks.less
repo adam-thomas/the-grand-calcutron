@@ -32,12 +32,31 @@
         }
 
         display: flex;
-        flex-flow: column;
+        flex-flow: row;
         align-items: flex-start;
 
-        .tab-contents-container {
+        .task-column {
             width: 100%;
+            flex: 0 1 auto;
             height: auto;
+
+            display: flex;
+            flex-flow: column;
+            justify-content: flex-start;
+
+            &:not(:last-of-type) {
+                max-width: 400px;
+            }
+
+            .back-link-wrapper {
+                padding: 5px;
+                margin-bottom: 5px;
+
+                &:hover {
+                    background-color: @pale-green;
+                    color: @mid-green;
+                }
+            }
 
             ul {
                 list-style: none;

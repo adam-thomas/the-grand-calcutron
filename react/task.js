@@ -60,7 +60,6 @@ import taskState from "./state";
         this.edit_field_ref = React.createRef();
 
         this.state = {
-            show_children: false,
             show_options: false,
             edit_mode: false,
         }
@@ -74,8 +73,8 @@ import taskState from "./state";
         taskState.dragged_item = null;
     }
 
-    toggleChildren() {
-        this.setState({show_children: !this.state.show_children});
+    activate() {
+        taskState.active_task = this.props.task;
     }
 
     showOptions(event) {
@@ -121,12 +120,12 @@ import taskState from "./state";
 
     renderTitle() {
         let caret_class = "caret";
-        if (this.state.show_children) {
+        if (taskState.columns.includes(this.props.task)) {
             caret_class = "open " + caret_class;
         }
 
         return (
-            <div key="title" className="title" onClick={this.toggleChildren.bind(this)} onContextMenu={this.showOptions.bind(this)}>
+            <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showOptions.bind(this)}>
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <input type="checkbox" checked={this.props.task.done} readOnly={true} />
                 </div>

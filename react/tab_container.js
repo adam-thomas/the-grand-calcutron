@@ -5,38 +5,23 @@ import taskState from "./state";
 import SubtaskList from "./task";
 
 
-@observer class TabList extends React.Component {
-    showTab(id) {
-        taskState.active_tab = id;
-
-        if (this.props.extra_show_callback) {
-            this.props.extra_show_callback();
-        }
+@observer class TaskColumn extends React.Component {
+    close() {
+        taskState.active_task = this.props.task.parent;
     }
 
-    renderTab(tab) {
-        let activeClass = (tab.id === taskState.active_tab) ? "active" : "";
 
-        return (
-            <button key={tab.id} className={activeClass} onClick={this.showTab.bind(this, tab.id)}>
-                <span>{tab.title}</span>
-            </button>
-        );
-    }
-
-    render() {
-        let tabs = Object.values(taskState.tasks);
-        return tabs.map(tab => this.renderTab(tab));
-    }
-}
-
-
-@observer class TabContainer extends React.Component {
     render() {
         let task = this.props.task;
 
         return (
-            <div className="tab-contents-container">
+            <div className="task-column">
+                {this.props.task.parent &&
+                    <div class="back-link-wrapper" onClick={this.close.bind(this)}>
+                        &lt; {this.props.task.parent.title || "Close"}
+                    </div>
+                }
+
                 <SubtaskList task={task} />
             </div>
         );
@@ -45,6 +30,5 @@ import SubtaskList from "./task";
 
 
 export default {
-    TabList,
-    TabContainer,
+    TaskColumn,
 }

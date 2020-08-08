@@ -4,12 +4,10 @@ import ajax_requests from "./ajax_requests";
 import taskState from "./state";
 
 
-function addTask(title, parent_task) {
-    let id = (parent_task === null) ? null : parent_task.id;
-
+function addTask(title, parent_id) {
     let data = {
         title: title,
-        parent: id,
+        parent: parent_id,
     };
 
     ajax_requests.post("/new", data, (return_data) => {
@@ -91,7 +89,7 @@ function moveTask(task, new_sort_order, new_parent=undefined) {
     };
 
     if (new_parent !== undefined) {
-        data.parent = new_parent
+        data.parent = new_parent.id;
     }
 
     ajax_requests.post("/edit", data, () => {});
