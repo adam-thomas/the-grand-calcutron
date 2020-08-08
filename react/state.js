@@ -81,16 +81,10 @@ class TaskState {
 
     @action.bound
     addTask(parent, task_data) {
-        new_task = new Task(task_data);
+        let new_task = new Task(task_data);
         new_task.parent = parent;
         parent.children[new_task.id] = new_task;
         return new_task;
-    }
-
-
-    @action.bound
-    addRootTask(task_data) {
-        return this.addTask(this.root_task, task_data);
     }
 
 

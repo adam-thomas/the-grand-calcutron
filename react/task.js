@@ -8,29 +8,8 @@ import taskState from "./state";
 
 
 @observer export default class SubtaskList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.title_field_ref = React.createRef();
-    }
-
-    addChild(event) {
-        event.preventDefault();
-        let field_element = $(this.title_field_ref.current);
-
-        actions.addTask(field_element.val(), this.props.task);
-        field_element.val("");
-        field_element.focus();
-    }
-
-    handleEnter(event) {
-        if(event.key === 'Enter'){
-            this.addChild(event);
-        }
-    }
-
     render() {
         let task = this.props.task;
-        let button_text = taskState.is_mobile ? "+" : "Add";
 
         let children = Object.values(task.children);
         children.sort((c1, c2) => c1.sort_order - c2.sort_order);
@@ -42,11 +21,6 @@ import taskState from "./state";
                         <Task key="task" task={child} />
                     </li>
                 ))}
-
-                <li key="add-form" className="task-form-wrapper">
-                    <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
-                    <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
-                </li>
             </ul>
         );
     }
