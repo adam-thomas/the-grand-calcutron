@@ -97,7 +97,7 @@ class TaskState {
             }
 
             parent = parent.parent;
-        } while (parent.id !== null);
+        } while (parent !== null);
 
         return false;
     }
