@@ -44,7 +44,9 @@ import SubtaskList from "./task";
                     </div>
                 }
 
-                <SubtaskList key="subtasks" task={task} />
+                <div key="children" className="child-task-list-wrapper">
+                    <SubtaskList key="subtasks" task={task} />
+                </div>
 
                 <div key="add-form" className="task-form-wrapper">
                     <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
