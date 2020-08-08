@@ -1,5 +1,4 @@
 import $ from "jquery";
-import {transaction} from "mobx";
 import {observer} from "mobx-react";
 import React from "react";
 

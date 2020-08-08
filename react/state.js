@@ -7,6 +7,7 @@ class Task {
     @observable long_text = "";
     @observable sort_order = 0;
     @observable children = {};
+    @observable done = false;
 
     id = null;
     parent = null;
@@ -16,6 +17,7 @@ class Task {
         this.title = api_data.title || "";
         this.long_text = api_data.long_text || "";
         this.sort_order = api_data.sort_order || 0;
+        this.done = api_data.done || false;
 
         this.id = api_data.id || null;
         this.parent_id = api_data.parent || null;
@@ -33,7 +35,7 @@ class TaskState {
 
     csrf = null;
     @observable active_task = this.root_task;
-    @observable is_mobile = false;
+    @observable screen_width = 0;
     @observable dragged_item = null;
 
 
@@ -74,8 +76,18 @@ class TaskState {
 
     @computed get columns() {
         // Return as much of the hierarchy as will fit on the screen, prioritising the lower nodes.
-        // TODO: Dynamically adjust the number of columns to the screen width
-        return this.hierarchy.slice(-3);
+        let width = this.screen_width;
+        let num_columns = 1;
+
+        if (width >= 1400) {
+            num_columns = 4;
+        } else if (width >= 1100) {
+            num_columns = 3;
+        } else if (width >= 800) {
+            num_columns = 2;
+        }
+
+        return this.hierarchy.slice(-num_columns);
     }
 
 
