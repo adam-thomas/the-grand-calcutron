@@ -42,15 +42,13 @@ import SubtaskList from "./task";
                 <div className="heading-wrapper">
                     {this.props.task.parent &&
                         <button key="back-link" className="back" onClick={this.close.bind(this)}>
-                            &lt; Back
+                            &lt; Close
                         </button>
                     }
 
-                    {this.props.task.title &&
-                        <div key="heading" className="heading">
-                            {this.props.task.title}
-                        </div>
-                    }
+                    <div key="heading" className="heading">
+                        {this.props.task.title || "All Tasks"}
+                    </div>
                 </div>
 
                 <div key="children" ref={this.children_container_ref} className="child-task-list-wrapper">

@@ -21,7 +21,7 @@
             height: 100%;
             flex: 0 1 auto;
 
-            padding: 20px 0;
+            padding: 10px 0;
 
             display: flex;
             flex-flow: column;
@@ -48,13 +48,21 @@
 
             &:nth-last-child(2) {
                 background-color: @background-shade-1;
+
+                .child-task-list-wrapper li.task-wrapper.active {
+                    background-image: linear-gradient(to right, @background-shade-1, @background 25%);
+                    border-left-color: @background-shade-1;
+                    border-right-color: @background;
+                }
             }
 
             &:nth-last-child(3) {
                 background-color: @background-shade-2;
 
                 .child-task-list-wrapper li.task-wrapper.active {
-                    background-color: @background-shade-1;
+                    background-image: linear-gradient(to right, @background-shade-2, @background-shade-1 25%);
+                    border-left-color: @background-shade-2;
+                    border-right-color: @background-shade-1;
                 }
             }
 
@@ -62,21 +70,23 @@
                 background-color: @background-shade-3;
 
                 .child-task-list-wrapper li.task-wrapper.active {
-                    background-color: @background-shade-2;
+                    background-image: linear-gradient(to right, @background-shade-3, @background-shade-2 25%);
+                    border-left-color: @background-shade-3;
+                    border-right-color: @background-shade-2;
                 }
             }
 
             .heading-wrapper {
                 padding: 0 10px;
-                margin-bottom: 5px;
                 flex: 0 0 auto;
+                margin-bottom: 10px;
 
                 display: flex;
                 flex-flow: row;
                 justify-content: flex-start;
                 align-items: center;
 
-                .back-button {
+                .back {
                     padding: 5px;
                     margin-right: 15px;
                     width: 65px;
@@ -124,126 +134,116 @@
                     display: flex;
                     flex-flow: column;
                     align-items: flex-start;
-                }
 
-                & > ul {
-                    margin: 0;
-                }
-
-                ul ul {
-                    margin: 0 0 0 30px;
-                }
-
-                li {
-                    padding: 8px 10px;
-                }
-
-                li.task-wrapper {
-                    width: 100%;
-                    border: 1px solid transparent;
-
-                    &:hover {
-                        border: 1px solid @text-dark;
-                    }
-
-                    &.active {
-                        background-color: @background;
-                        font-weight: bold;
-                    }
-
-                    .main-row {
-                        display: flex;
-                        flex-flow: column;
-                        align-items: flex-start;
-                        justify-content: center;
-
-                        position: relative;
-                        user-select: none;
-
-                        min-height: 35px;
+                    li.task-wrapper {
+                        padding: 8px 10px;
                         width: 100%;
+                        border: 1px solid transparent;
 
-                        .checkbox-wrapper {
-                            width: 30px;
-                            height: 30px;
-                            margin-right: 8px;
-                            flex: 0 0 auto;
-
-                            cursor: pointer;
-                            z-index: 0;
-
-                            input {
-                                width: 100%;
-                                height: 100%;
-                                cursor: pointer;
-                            }
+                        &:hover {
+                            border: 1px solid @text-dark;
                         }
 
-                        .title {
-                            display: flex;
-                            flex-flow: row;
-                            align-items: center;
-
-                            height: 100%;
-                            width: 100%;
-                            min-height: 35px;
-                            margin-right: 8px;
-
-                            padding: 0 8px;
-                            cursor: pointer;
-                            z-index: 0;
-
-                            .caret-wrapper {
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-
-                                height: 100%;
-                                width: 18px;
-                                margin-left: 5px;
-
-                                .caret {
-                                    width: 10px;
-                                    height: 10px;
-                                    flex: 0 0 auto;
-
-                                    border-right: 1px solid @text-dark;
-                                    border-bottom: 1px solid @text-dark;
-                                    transform: rotate(-45deg);
-                                }
-                            }
+                        &.active {
+                            // background-color: @background;
+                            font-weight: bold;
                         }
 
-                        .dropzone-container {
-                            position: absolute;
-                            left: 0;
-                            top: -5px;
-                            width: 100%;
-                            height: calc(100% + 10px);
-
-                            z-index: 1;
-
+                        .main-row {
                             display: flex;
                             flex-flow: column;
+                            align-items: flex-start;
+                            justify-content: center;
 
-                            .dropzone {
+                            position: relative;
+                            user-select: none;
+
+                            min-height: 35px;
+                            width: 100%;
+
+                            .checkbox-wrapper {
+                                width: 30px;
+                                height: 30px;
+                                margin-right: 8px;
+                                flex: 0 0 auto;
+
+                                cursor: pointer;
+                                z-index: 0;
+
+                                input {
+                                    width: 100%;
+                                    height: 100%;
+                                    cursor: pointer;
+                                }
+                            }
+
+                            .title {
+                                display: flex;
+                                flex-flow: row;
+                                align-items: center;
+
+                                height: 100%;
                                 width: 100%;
+                                min-height: 35px;
+                                margin-right: 8px;
 
-                                &.highlight {
-                                    background-color: rgba(255, 255, 255, 0.3);
+                                padding: 0 8px;
+                                cursor: pointer;
+                                z-index: 0;
+
+                                .caret-wrapper {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+
+                                    height: 100%;
+                                    width: 18px;
+                                    margin-left: 5px;
+
+                                    .caret {
+                                        width: 10px;
+                                        height: 10px;
+                                        flex: 0 0 auto;
+
+                                        border-right: 1px solid @text-dark;
+                                        border-bottom: 1px solid @text-dark;
+                                        transform: rotate(-45deg);
+                                    }
                                 }
+                            }
 
-                                &.before, &.after {
-                                    height: 25%;
-                                }
+                            .dropzone-container {
+                                position: absolute;
+                                left: 0;
+                                top: -5px;
+                                width: 100%;
+                                height: calc(100% + 10px);
 
-                                &.in {
-                                    height: 50%;
+                                z-index: 1;
+
+                                display: flex;
+                                flex-flow: column;
+
+                                .dropzone {
+                                    width: 100%;
+
+                                    &.highlight {
+                                        background-color: rgba(255, 255, 255, 0.3);
+                                    }
+
+                                    &.before, &.after {
+                                        height: 25%;
+                                    }
+
+                                    &.in {
+                                        height: 50%;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }
 
