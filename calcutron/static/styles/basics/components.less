@@ -1,9 +1,4 @@
 button, .button, input, .input {
-    background-color: @background-shade-1;
-    border: 2px solid @text-light;
-    border-radius: 5px;
-
-    color: @text-dark;
     outline: none;
 
     display: flex;
@@ -14,19 +9,20 @@ button, .button, input, .input {
 
 button, .button {
     padding: 5px 10px;
+    color: @background;
     cursor: pointer;
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    background-color: fade(@text-dark, 70%);
+    border: 2px solid @text-dark;
+    border-radius: 5px;
 
     &:hover:not(:disabled):not(.disabled):not(.active) {
-        border-color: @text-dark;
-        background-color: @background-shade-3;
+        background-color: @white;
+        color: @text-dark;
     }
 
     &.active {
-        border-color: @text-dark;
+        color: @white;
     }
 
     &:focus, &:active {
@@ -37,8 +33,12 @@ button, .button {
 input, .input {
     width: 300px;
     height: 34px;
-    border-radius: 5px;
     padding: 0 5px;
+
+    border: 1px solid @text-dark;
+    border-radius: 5px;
+    background-color: fade(@white, 50%);
+
     .font-face();
 
     &:focus {

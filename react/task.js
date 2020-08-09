@@ -98,10 +98,15 @@ import taskState from "./state";
     }
 
     renderTitle() {
+        let checkbox_class = "imitation-checkbox";
+        if (this.props.task.done) {
+            checkbox_class = "checked " + checkbox_class;
+        }
+
         return (
             <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
-                    <input type="checkbox" checked={this.props.task.done} readOnly={true} />
+                    <div className={checkbox_class} />
                 </div>
 
                 <span>{this.props.task.title}</span>

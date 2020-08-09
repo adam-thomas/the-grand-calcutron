@@ -41,8 +41,8 @@ import SubtaskList from "./task";
             <div className="task-column">
                 <div className="heading-wrapper">
                     {this.props.task.parent &&
-                        <button key="back-link" className="back" onClick={this.close.bind(this)}>
-                            &lt; Close
+                        <button key="close" className="close-button" onClick={this.close.bind(this)}>
+                            &#10006;
                         </button>
                     }
 
