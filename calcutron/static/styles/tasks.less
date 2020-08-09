@@ -52,10 +52,18 @@
 
             &:nth-last-child(3) {
                 background-color: @background-shade-2;
+
+                .child-task-list-wrapper li.task-wrapper.active {
+                    background-color: @background-shade-1;
+                }
             }
 
             &:nth-last-child(n+4) {
                 background-color: @background-shade-3;
+
+                .child-task-list-wrapper li.task-wrapper.active {
+                    background-color: @background-shade-2;
+                }
             }
 
             .heading-wrapper {
@@ -91,11 +99,11 @@
                 width: 100%;
                 height: 100%;
                 flex: 0 1 auto;
-                overflow-y: scroll;
+                overflow-y: auto;
 
                 &::-webkit-scrollbar {
                     background: transparent;
-                    width: 6px;
+                    width: 4px;
                 }
                 &::-webkit-scrollbar-button {
                     display: none;
@@ -107,7 +115,7 @@
                     background: transparent;
                 }
                 &::-webkit-scrollbar-thumb {
-                    background-color: @text-light;
+                    background-color: fade(@text-dark, 70%);
                 }
 
                 ul {
