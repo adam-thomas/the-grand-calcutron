@@ -1,97 +1,115 @@
-import {action, observable, transaction} from "mobx";
+import {action, observable, transaction, computed} from "mobx";
 import actions from "./actions";
 
 
-class TaskState {
-    @observable tasks = {};
-    @observable tasks_by_id = {};
-    @observable active_tab = null;
-    @observable is_mobile = false;
-    @observable dragged_item = null;
-    csrf = null;
+class Task {
+    @observable title = "";
+    @observable long_text = "";
+    @observable sort_order = 0;
+    @observable children = {};
+    @observable done = false;
 
-    tasks_base = Object.freeze({
-        title: "",
-        long_text: null,
-        id: null,
-        sort_order: null,
-        parent: null,
-        children: {},
-    });
+    id = null;
+    parent = null;
+    parent_id = null;
+
+    constructor(api_data={}) {
+        this.title = api_data.title || "";
+        this.long_text = api_data.long_text || "";
+        this.sort_order = api_data.sort_order || 0;
+        this.done = api_data.done || false;
+
+        this.id = api_data.id || null;
+        this.parent_id = api_data.parent || null;
+    }
+}
+
+
+class TaskState {
+    // The root task fakes an item at the head of the tree, which makes it easier to write code
+    // without having to write special cases for null parents. All tasks with a parent ID of null
+    // in the database will point at this root task.
+    // (This is needed instead of just forcing a root node because top-level tasks can be
+    // shared between users, so there isn't actually a single consistent root to the tree.)
+    @observable root_task = new Task();
+
+    csrf = null;
+    @observable active_task = this.root_task;
+    @observable screen_width = 0;
+    @observable dragged_item = null;
 
 
     initialise(tasks) {
         transaction(() => {
-            this.tasks = {};
-            this.tasks_by_id = {};
-            this.active_tab = null;
-
             // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
             // the full tree of parents and children.
+            let tasks_by_id = {};
             for (let task_data of Object.values(tasks)) {
-                let task = Object.assign({}, this.tasks_base, task_data)
-                this.tasks_by_id[task.id] = task;
-
-                if (task.parent === null && this.active_tab === null) {
-                    this.active_tab = task_data.id;
-                }
+                let task = new Task(task_data);
+                tasks_by_id[task.id] = task;
             }
 
             // Then, fill out the parent-child relationships.
-            for (let task of Object.values(this.tasks_by_id)) {
-                if (task.parent !== null) {
-                    this.tasks_by_id[task.parent].children[task.id] = task;
-                } else {
-                    this.tasks[task.id] = task;
-                }
+            // At this point, the `parent` that comes in from the database is just an ID; replace
+            // it with a proper pointer. Fill out each task's list of children as well.
+            for (let task of Object.values(tasks_by_id)) {
+                let parent_obj = (task.parent_id === null) ? this.root_task : tasks_by_id[task.parent_id];
+
+                task.parent = parent_obj;
+                parent_obj.children[task.id] = task;
             }
         });
     }
 
 
-    @action.bound
-    addTask(parent_id, task_data) {
-        if (parent_id === null) {
-            return this.addRootTask(task_data);
+    @computed get hierarchy() {
+        // Return a list of tasks, starting from the root and ending with the current active task.
+        let result = [this.active_task];
+
+        while (result[0].id !== null) {
+            result.unshift(result[0].parent);
         }
 
-        let parent = this.tasks_by_id[parent_id];
-        task_data = Object.assign({}, this.tasks_base, task_data, {parent: parent_id});
+        return result;
+    }
 
-        parent.children[task_data.id] = task_data;
 
-        let new_task = parent.children[task_data.id];
-        this.tasks_by_id[task_data.id] = new_task;
-        return new_task;
+    @computed get columns() {
+        // Return as much of the hierarchy as will fit on the screen, prioritising the lower nodes.
+        let width = this.screen_width;
+        let num_columns = 1;
+
+        if (width >= 1400) {
+            num_columns = 4;
+        } else if (width >= 1100) {
+            num_columns = 3;
+        } else if (width >= 800) {
+            num_columns = 2;
+        }
+
+        return this.hierarchy.slice(-num_columns);
     }
 
 
     @action.bound
-    addRootTask(task_data) {
-        task_data = Object.assign({}, this.tasks_base, task_data, {parent: null});
-        this.tasks[task_data.id] = task_data;
-
-        let new_task = this.tasks[task_data.id];
-        this.tasks_by_id[task_data.id] = new_task;
-
-        if (this.active_tab === null) {
-            this.active_tab = task_data.id;
-        }
-
+    addTask(parent, task_data) {
+        let new_task = new Task(task_data);
+        new_task.parent = parent;
+        parent.children[new_task.id] = new_task;
         return new_task;
     }
 
 
     isAncestor(task, potential_ancestor) {
         // Return true iff `potential_ancestor` is above `task` in the tree, or is `task` itself.
-        let parent_id = task.id;
-        while (parent_id !== null) {
-            if (parent_id === potential_ancestor.id) {
+        let parent = task;
+        do {
+            if (parent.id === potential_ancestor.id) {
                 return true;
             }
 
-            parent_id = this.tasks_by_id[parent_id].parent;
-        }
+            parent = parent.parent;
+        } while (parent !== null);
 
         return false;
     }
@@ -122,14 +140,14 @@ class TaskState {
         task.sort_order = max_sort_order + 1;
 
         // Move `task` from its parent's set of children to `target_parent`'s set of children.
-        let original_parent = this.tasks_by_id[task.parent];
+        let original_parent = task.parent;
         delete original_parent.children[task.id];
         target_parent.children[task.id] = task;
-        task.parent = target_parent.id;
+        task.parent = target_parent;
 
         // Tell the API about the changes - both to the sort order and to the parent.
         if (!skip_save) {
-            this.setSortOrder(task, max_sort_order + 1, target_parent.id);
+            this.setSortOrder(task, max_sort_order + 1, target_parent);
         }
     }
 
@@ -142,7 +160,7 @@ class TaskState {
             return;
         }
 
-        let target_parent = this.tasks_by_id[target_task.parent];
+        let target_parent = target_task.parent;
 
         // If the task being moved isn't in the same level of the hierarchy as the target,
         // update that first.
@@ -185,7 +203,7 @@ class TaskState {
             return;
         }
 
-        let target_parent = this.tasks_by_id[target_task.parent];
+        let target_parent = target_task.parent;
 
         // If the task being moved isn't in the same level of the hierarchy as the target,
         // update that first.

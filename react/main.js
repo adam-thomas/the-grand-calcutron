@@ -15,9 +15,9 @@ import MobileUI from "./mobile_ui";
 let target;
 
 
-// Update taskState.is_mobile to reflect the current size of the window.
-function checkIsMobile() {
-    taskState.is_mobile = ($(window).width() < 800);
+// Update taskState.screen_width to reflect the current size of the window.
+function saveScreenWidth() {
+    taskState.screen_width = $(window).width();
 }
 
 
@@ -25,8 +25,7 @@ function checkIsMobile() {
 // depending on how big the window is.
 @observer class BaseApp extends React.Component {
     render() {
-        let app_class = taskState.is_mobile ? MobileUI : DesktopUI;
-        return React.createElement(app_class);
+        return React.createElement(DesktopUI);
     }
 }
 
@@ -48,14 +47,14 @@ function initialise() {
         taskState.initialise(return_data);
 
         // Create the React UI.
-        checkIsMobile();
+        saveScreenWidth();
         ReactDOM.render(<BaseApp />, target);
 
         // Get the CSRF token we added, and store it in the state.
         taskState.csrf = $(target).children("input[name=csrfmiddlewaretoken]").val();
 
         // Reinitialise the UI if the window is resized.
-        $(window).resize(checkIsMobile);
+        $(window).resize(saveScreenWidth);
     });
 }
 

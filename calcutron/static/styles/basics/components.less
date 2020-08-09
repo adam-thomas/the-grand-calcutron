@@ -1,9 +1,9 @@
 button, .button, input, .input {
-    background-color: @mid-green;
-    border: 2px solid @light-green;
+    background-color: @background-shade-1;
+    border: 2px solid @text-light;
     border-radius: 5px;
 
-    color: @light-green;
+    color: @text-dark;
     outline: none;
 
     display: flex;
@@ -21,14 +21,12 @@ button, .button {
     text-overflow: ellipsis;
 
     &:hover:not(:disabled):not(.disabled):not(.active) {
-        border-color: @pale-green;
-        color: @pale-green;
+        border-color: @text-dark;
+        background-color: @background-shade-3;
     }
 
     &.active {
-        // background-color: @light-green;
-        border-color: @white;
-        color: @white;
+        border-color: @text-dark;
     }
 
     &:focus, &:active {
@@ -44,6 +42,6 @@ input, .input {
     .font-face();
 
     &:focus {
-        border-color: @pale-green;
+        border-color: @text-dark;
     }
 }
