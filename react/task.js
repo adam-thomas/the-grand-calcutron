@@ -15,11 +15,18 @@ import taskState from "./state";
 
         return (
             <ul className="child-tasks">
-                {children.map(child => (
-                    <li key={child.id} className="task-wrapper">
-                        <Task key="task" task={child} />
-                    </li>
-                ))}
+                {children.map(child => {
+                    let wrapper_class = "task-wrapper";
+                    if (taskState.columns.includes(child)) {
+                        wrapper_class = "active " + wrapper_class;
+                    }
+
+                    return (
+                        <li key={child.id} className={wrapper_class}>
+                            <Task key="task" task={child} />
+                        </li>
+                    );
+                })}
             </ul>
         );
     }
@@ -80,18 +87,17 @@ import taskState from "./state";
         actions.setTaskDone(this.props.task, !this.props.task.done);
     }
 
-    handleEnter(event) {
-        if(event.key === 'Enter'){
+    handleEscEnter(event) {
+        if (event.key === "Enter") {
             this.saveEdit(event);
+        } else if (event.key === "Escape") {
+            this.setState({edit_mode: false});
+            let field_element = $(this.edit_field_ref.current);
+            field_element.val(this.props.task.title);
         }
     }
 
     renderTitle() {
-        let caret_class = "caret";
-        if (taskState.columns.includes(this.props.task)) {
-            caret_class = "open " + caret_class;
-        }
-
         return (
             <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
@@ -102,7 +108,7 @@ import taskState from "./state";
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
-                        <div className={caret_class} />
+                        <div className="caret" />
                     </div>
                 }
             </div>
@@ -117,7 +123,7 @@ import taskState from "./state";
                     className="task-title" name="title"
                     autoFocus={true}
                     defaultValue={this.props.task.title}
-                    onKeyPress={this.handleEnter.bind(this)}
+                    onKeyDown={this.handleEscEnter.bind(this)}
                 />
                 <button className="submit" onClick={this.saveEdit.bind(this)}>Save</button>
             </div>

@@ -4,7 +4,7 @@ import ajax_requests from "./ajax_requests";
 import taskState from "./state";
 
 
-function addTask(title, parent) {
+function addTask(title, parent, task_list_container=null) {
     let data = {
         title: title,
         parent: parent.id,
@@ -12,6 +12,11 @@ function addTask(title, parent) {
 
     ajax_requests.post("/new", data, (return_data) => {
         taskState.addTask(parent, return_data);
+
+        if (task_list_container) {
+            let container_obj = $(task_list_container)
+            container_obj.scrollTop(container_obj.height())
+        }
     });
 }
 
