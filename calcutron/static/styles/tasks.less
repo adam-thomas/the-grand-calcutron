@@ -46,34 +46,26 @@
                 }
             }
 
-            &:nth-last-child(2) {
-                background-color: @background-shade-1;
+            .column-shade(@colour-dark, @colour-light) {
+                background-color: @colour-dark;
 
                 .child-task-list-wrapper li.task-wrapper.active {
-                    background-image: linear-gradient(to right, @background-shade-1, @background 25%);
-                    border-left-color: @background-shade-1;
-                    border-right-color: @background;
+                    background-image: linear-gradient(to right, @colour-dark, @colour-light 25%);
+                    border-left-color: @colour-dark;
+                    border-right-color: @colour-light;
                 }
+            }
+
+            &:nth-last-child(2) {
+                .column-shade(@background-shade-1, @background);
             }
 
             &:nth-last-child(3) {
-                background-color: @background-shade-2;
-
-                .child-task-list-wrapper li.task-wrapper.active {
-                    background-image: linear-gradient(to right, @background-shade-2, @background-shade-1 25%);
-                    border-left-color: @background-shade-2;
-                    border-right-color: @background-shade-1;
-                }
+                .column-shade(@background-shade-2, @background-shade-1);
             }
 
             &:nth-last-child(n+4) {
-                background-color: @background-shade-3;
-
-                .child-task-list-wrapper li.task-wrapper.active {
-                    background-image: linear-gradient(to right, @background-shade-3, @background-shade-2 25%);
-                    border-left-color: @background-shade-3;
-                    border-right-color: @background-shade-2;
-                }
+                .column-shade(@background-shade-3, @background-shade-2);
             }
 
             .heading-wrapper {
@@ -185,11 +177,14 @@
                                 height: 100%;
                                 width: 100%;
                                 min-height: 35px;
-                                margin-right: 8px;
 
-                                padding: 0 8px;
                                 cursor: pointer;
                                 z-index: 0;
+
+                                span {
+                                    width: 100%;
+                                    flex: 0 1 auto;
+                                }
 
                                 .caret-wrapper {
                                     display: flex;
