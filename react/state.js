@@ -91,6 +91,13 @@ class TaskState {
     }
 
 
+    @computed get is_mobile() {
+        // Return true if we think this is a mobile OS.
+        // For now, that's just predicated on screen width.
+        return (this.screen_width <= 600);
+    }
+
+
     @action.bound
     addTask(parent, task_data) {
         let new_task = new Task(task_data);

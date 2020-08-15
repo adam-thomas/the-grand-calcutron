@@ -47,7 +47,7 @@ import SubtaskList from "./task";
                     }
 
                     <div key="heading" className="heading">
-                        {this.props.task.title || "All Tasks"}
+                        {this.props.task.title || "All Tasks"}{taskState.is_mobile && " [Mobile]"}
                     </div>
                 </div>
 

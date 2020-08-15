@@ -8,7 +8,6 @@ import ReactDOM from "react-dom";
 
 import taskState from "./state";
 import DesktopUI from "./desktop_ui";
-import MobileUI from "./mobile_ui";
 
 
 // Track the DOM element that React will be added to.
@@ -21,8 +20,7 @@ function saveScreenWidth() {
 }
 
 
-// Top-level app component. Essentially delegates to DesktopUI or MobileUI,
-// depending on how big the window is.
+// Top-level app component.
 @observer class BaseApp extends React.Component {
     render() {
         return React.createElement(DesktopUI);

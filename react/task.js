@@ -136,7 +136,7 @@ import taskState from "./state";
     }
 
     renderDropzones() {
-        if (taskState.dragged_item === null) {
+        if (taskState.is_mobile || (taskState.dragged_item === null)) {
             return null;
         }
 
@@ -150,13 +150,15 @@ import taskState from "./state";
     }
 
     render() {
+        const draggable = !this.state.edit_mode && !taskState.is_mobile;
+
         return (
             <div
                 key="main-row"
                 className="main-row"
-                draggable={!this.state.edit_mode}
-                onDragStart={this.state.edit_mode ? null : this.dragStart.bind(this)}
-                onDragEnd={this.state.edit_mode ? null : this.dragEnd.bind(this)}
+                draggable={draggable}
+                onDragStart={draggable ? this.dragStart.bind(this) : null}
+                onDragEnd={draggable ? this.dragEnd.bind(this) : null}
             >
                 {this.state.edit_mode
                     ? this.renderEditForm()
