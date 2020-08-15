@@ -40,13 +40,25 @@ function deleteTask(task) {
 }
 
 
+function editTask(task, data, callback) {
+    const base_data = {
+        id: task.id,
+        title: task.title,
+        sort_order: task.sort_order,
+        parent: task.parent.id,
+    }
+    data = Object.assign(base_data, data)
+
+    ajax_requests.post("/edit", data, callback);
+}
+
+
 function setTaskTitle(task, title) {
     let data = {
-        id: task.id,
         title: title,
     };
 
-    ajax_requests.post("/edit", data, (return_data) => {
+    editTask(task, data, (return_data) => {
         task.title = return_data.title;
     });
 }
@@ -65,16 +77,13 @@ function setTaskDone(task, done) {
 
 
 function moveTask(task, new_sort_order, new_parent=undefined) {
-    let data = {
-        id: task.id,
-        sort_order: new_sort_order,
-    };
+    let data = {sort_order: new_sort_order};
 
     if (new_parent !== undefined) {
         data.parent = new_parent.id;
     }
 
-    ajax_requests.post("/edit", data, () => {});
+    editTask(task, data, () => {});
 }
 
 

@@ -107,7 +107,7 @@ class TaskState {
     }
 
 
-    isAncestor(potential_ancestor, task) {
+    isAncestor(task, potential_ancestor) {
         // Return true iff `potential_ancestor` is above `task` in the tree, or is `task` itself.
         let parent = task;
         do {

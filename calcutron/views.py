@@ -86,13 +86,13 @@ class EditTaskView(AjaxTaskView):
         self.object = self.model.objects.get(id=form.cleaned_data["id"])
         data = form.cleaned_data
 
-        if "title" in data and data["title"]:
+        if "title" in data:
             self.object.title = data["title"]
 
-        if "parent" in data and data["parent"]:
+        if "parent" in data:
             self.object.parent_id = data["parent"]
 
-        if "sort_order" in data and data["sort_order"]:
+        if "sort_order" in data:
             self.object.sort_order = data["sort_order"]
 
         self.object.save()
