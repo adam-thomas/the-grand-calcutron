@@ -96,11 +96,38 @@ import taskState from "./state";
         }
     }
 
+    parseTitleURLs(title) {
+        // Look through the task title for any URLs. Return a list of components -
+        // either text or <a href> elements.
+        const url_index = title.indexOf("http", url_index);
+
+        if (url_index === -1) {
+            return [title];
+        }
+
+        let result = [title.slice(0, url_index)];
+
+        let space_index = title.indexOf(" ", url_index);
+        if (space_index === -1) {
+            space_index = title.length;
+        }
+
+        const url = title.slice(url_index, space_index);
+        result.push(
+            <a key={url} onClick={(e) => e.stopPropagation()} href={url} target="_blank">{url}</a>
+        );
+
+        // Recur to look for any other URLs.
+        const rest_of_title = this.parseTitleURLs(title.slice(space_index));
+        return result.concat(rest_of_title);
+    }
+
     renderTitle() {
         let checkbox_class = "imitation-checkbox";
         if (this.props.task.done) {
             checkbox_class = "checked " + checkbox_class;
         }
+
 
         return (
             <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
@@ -108,7 +135,7 @@ import taskState from "./state";
                     <div className={checkbox_class} />
                 </div>
 
-                <span>{this.props.task.title}</span>
+                <span>{this.parseTitleURLs(this.props.task.title)}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
