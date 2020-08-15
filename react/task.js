@@ -81,7 +81,6 @@ import taskState from "./state";
 
         this.setState({edit_mode: false});
     }
-
     toggleDone(event) {
         event.stopPropagation();
         actions.setTaskDone(this.props.task, !this.props.task.done);
@@ -130,7 +129,8 @@ import taskState from "./state";
                     defaultValue={this.props.task.title}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
-                <button className="submit" onClick={this.saveEdit.bind(this)}>Save</button>
+                <button className="submit" onClick={this.saveEdit.bind(this)}>+</button>
+                <button className="submit" onClick={this.delete.bind(this)}>-</button>
             </div>
         );
     }
