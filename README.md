@@ -2,13 +2,15 @@
 
 _At the beginning of each player’s end step, if that player’s to-do list has fewer than five tasks, they add tasks equal to the difference._
 
-A(nother) todo application, built around a hierarchical tree of tasks.
+A(nother) todo application, built around a hierarchical tree of items. I wanted to be able to categorise and organise a large number of items without having to rely on visual grouping within a page.
 
-Features:
+Named for [a parody Magic: the Gathering card](https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=439520).
 
-* Arbitrary-depth tree of tasks.
-* Responsive UI supports any size of screen.
-* Done/not done buttons on each task.
+## Features
+
+* Arbitrary-depth tree of tasks. Nest away!
+* Responsive UI supports any size of screen, primarily by adding/removing columns of history.
+* Done buttons on each task.
 * Right-click tasks (or long-press on mobile) to edit or delete them.
 * Drag and drop tasks to move them within the tree (desktop-only at the moment).
 
