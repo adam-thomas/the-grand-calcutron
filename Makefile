@@ -15,6 +15,7 @@ install:
 		psql  -c "CREATE DATABASE calcutron"; \
 	fi
 	python manage.py migrate
+	python manage.py createsuperuser
 	yarn install
 
 test:
