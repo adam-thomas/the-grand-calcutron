@@ -15,6 +15,7 @@ install:
 		psql  -c "CREATE DATABASE calcutron"; \
 	fi
 	python manage.py migrate
+	yarn install
 
 test:
 	@python manage.py test --keepdb --verbosity=$(verbosity)
