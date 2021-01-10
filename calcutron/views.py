@@ -16,6 +16,7 @@ def task_to_dict(task):
         "long_text": task.long_text,
         "sort_order": task.sort_order,
         "done": task.done,
+        "type": task.task_type,
     }
 
 

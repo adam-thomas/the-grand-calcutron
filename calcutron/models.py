@@ -3,6 +3,11 @@ from orderable.models import Orderable
 
 
 class Task(Orderable):
+    class TYPES(models.TextChoices):
+        TASK = "task", "Task"
+        NOTE = "note", "Note"
+
+    task_type = models.CharField(max_length=255, choices=TYPES.choices, default=TYPES.TASK)
     parent = models.ForeignKey("calcutron.Task", blank=True, null=True, on_delete=models.CASCADE, related_name="children")
     date_created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255)

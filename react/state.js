@@ -3,11 +3,17 @@ import actions from "./actions";
 
 
 class Task {
+    static TYPES = Object.freeze({
+        TASK: "task",
+        NOTE: "note",
+    })
+
     @observable title = "";
     @observable long_text = "";
     @observable sort_order = 0;
     @observable children = {};
     @observable done = false;
+    @observable type = TYPES.TASK;
 
     id = null;
     parent = null;
@@ -18,6 +24,7 @@ class Task {
         this.long_text = api_data.long_text || "";
         this.sort_order = api_data.sort_order || 0;
         this.done = api_data.done || false;
+        this.type = api_data.type || TYPES.TASK;
 
         this.id = api_data.id || null;
         this.parent_id = api_data.parent || null;
