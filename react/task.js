@@ -4,6 +4,7 @@ import React from "react";
 
 import actions from "./actions";
 import taskState from "./state";
+import AutoSizeTextarea from "./textarea";
 
 
 @observer export default class SubtaskList extends React.Component {
@@ -37,10 +38,9 @@ import taskState from "./state";
     constructor(props) {
         super(props);
 
-        this.edit_field_ref = React.createRef();
-
         this.state = {
             edit_mode: false,
+            edit_field_contents: this.props.task.title,
         }
     }
 
@@ -58,11 +58,7 @@ import taskState from "./state";
 
     showEditMode(event) {
         event.preventDefault();
-        this.setState({edit_mode: true});
-
-        let field_element = $(this.edit_field_ref.current);
-        field_element.val(this.props.task.title);
-        field_element.focus();
+        this.setState({edit_mode: true, edit_field_contents: this.props.task.title});
     }
 
     delete() {
@@ -70,17 +66,17 @@ import taskState from "./state";
     }
 
     saveEdit() {
-        let field_element = $(this.edit_field_ref.current);
-        let title = field_element.val();
+        let title = this.state.edit_field_contents;
 
         if (title === "") {
             actions.deleteTask(this.props.task);
         } else {
-            actions.setTaskTitle(this.props.task, field_element.val());
+            actions.setTaskTitle(this.props.task, this.state.edit_field_contents);
         }
 
         this.setState({edit_mode: false});
     }
+
     toggleDone(event) {
         event.stopPropagation();
         actions.setTaskDone(this.props.task, !this.props.task.done);
@@ -90,9 +86,7 @@ import taskState from "./state";
         if (event.key === "Enter") {
             this.saveEdit(event);
         } else if (event.key === "Escape") {
-            this.setState({edit_mode: false});
-            let field_element = $(this.edit_field_ref.current);
-            field_element.val(this.props.task.title);
+            this.setState({edit_mode: false, edit_field_contents: this.props.task.title});
         }
     }
 
@@ -148,11 +142,11 @@ import taskState from "./state";
     renderEditForm() {
         return (
             <div key="add-form" className="edit-form title">
-                <textarea
-                    ref={this.edit_field_ref} type="text"
+                <AutoSizeTextarea
                     className="task-title" name="title"
                     autoFocus={true}
-                    defaultValue={this.props.task.title}
+                    value={this.state.edit_field_contents}
+                    onChange={(event) => this.setState({edit_field_contents: event.target.value})}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
                 <button className="submit" onClick={this.saveEdit.bind(this)}>+</button>

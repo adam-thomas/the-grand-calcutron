@@ -31,15 +31,15 @@ button, .button {
 }
 
 textarea, .textarea {
-    width: 300px;
-    min-height: 34px;
+    width: 100%;
+    max-width: 500px;
     padding: 8px;
 
     border: 1px solid @text-dark;
     border-radius: 5px;
     background-color: fade(@white, 50%);
 
-    .font-face();
+    .font-base();
 
     &:focus {
         border-color: @text-dark;

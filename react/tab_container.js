@@ -4,22 +4,24 @@ import React from "react";
 import actions from "./actions";
 import taskState from "./state";
 import SubtaskList from "./task";
+import AutoSizeTextarea from "./textarea";
 
 
 @observer class TaskColumn extends React.Component {
     constructor(props) {
         super(props);
-        this.title_field_ref = React.createRef();
+
         this.children_container_ref = React.createRef();
+
+        this.state = {
+            field_contents: "",
+        }
     }
 
     addChild(event) {
         event.preventDefault();
-        let field_element = $(this.title_field_ref.current);
-
-        actions.addTask(field_element.val(), this.props.task, this.children_container_ref.current);
-        field_element.val("");
-        field_element.focus();
+        actions.addTask(this.state.field_contents, this.props.task, this.children_container_ref.current);
+        this.setState({field_contents: ""});
     }
 
     handleEnter(event) {
@@ -56,7 +58,13 @@ import SubtaskList from "./task";
 
                 {this.props.task == taskState.active_task &&
                     <div key="add-form" className="task-form-wrapper">
-                        <textarea ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
+                        <AutoSizeTextarea
+                            className="task-title"
+                            name="title"
+                            value={this.state.field_contents}
+                            onChange={(event) => this.setState({field_contents: event.target.value})}
+                            onKeyPress={this.handleEnter.bind(this)}
+                        />
                         <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
                     </div>
                 }
