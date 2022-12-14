@@ -4,9 +4,9 @@ import ajax_requests from "./ajax_requests";
 import taskState from "./state";
 
 
-function addTask(title, parent, task_list_container=null) {
+function addTask(text, parent, task_list_container=null) {
     let data = {
-        title: title,
+        text: text,
         parent: parent.id,
     };
 
@@ -43,7 +43,7 @@ function deleteTask(task) {
 function editTask(task, data, callback) {
     const base_data = {
         id: task.id,
-        title: task.title,
+        text: task.text,
         sort_order: task.sort_order,
         parent: task.parent.id,
     }
@@ -53,13 +53,13 @@ function editTask(task, data, callback) {
 }
 
 
-function setTaskTitle(task, title) {
+function setTaskText(task, text) {
     let data = {
-        title: title,
+        text: text,
     };
 
     editTask(task, data, (return_data) => {
-        task.title = return_data.title;
+        task.text = return_data.text;
     });
 }
 
@@ -90,7 +90,7 @@ function moveTask(task, new_sort_order, new_parent=undefined) {
 export default {
     addTask,
     deleteTask,
-    setTaskTitle,
+    setTaskText,
     setTaskDone,
     moveTask,
 }

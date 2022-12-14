@@ -48,7 +48,7 @@ import AutoSizeTextarea from "./textarea";
                     }
 
                     <div key="heading" className="heading">
-                        {this.props.task.title || "All Tasks"}
+                        {this.props.task.text || "All Tasks"}
                     </div>
                 </div>
 
@@ -59,8 +59,6 @@ import AutoSizeTextarea from "./textarea";
                 {this.props.task == taskState.active_task &&
                     <div key="add-form" className="task-form-wrapper">
                         <AutoSizeTextarea
-                            className="task-title"
-                            name="title"
                             value={this.state.field_contents}
                             onChange={(event) => this.setState({field_contents: event.target.value})}
                             onKeyPress={this.handleEnter.bind(this)}

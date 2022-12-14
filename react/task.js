@@ -40,7 +40,7 @@ import AutoSizeTextarea from "./textarea";
 
         this.state = {
             edit_mode: false,
-            edit_field_contents: this.props.task.title,
+            edit_field_contents: this.props.task.text,
         }
     }
 
@@ -58,7 +58,7 @@ import AutoSizeTextarea from "./textarea";
 
     showEditMode(event) {
         event.preventDefault();
-        this.setState({edit_mode: true, edit_field_contents: this.props.task.title});
+        this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
     }
 
     delete() {
@@ -66,12 +66,12 @@ import AutoSizeTextarea from "./textarea";
     }
 
     saveEdit() {
-        let title = this.state.edit_field_contents;
+        let text = this.state.edit_field_contents;
 
-        if (title === "") {
+        if (text === "") {
             actions.deleteTask(this.props.task);
         } else {
-            actions.setTaskTitle(this.props.task, this.state.edit_field_contents);
+            actions.setTaskText(this.props.task, this.state.edit_field_contents);
         }
 
         this.setState({edit_mode: false});
@@ -86,49 +86,54 @@ import AutoSizeTextarea from "./textarea";
         if (event.key === "Enter") {
             this.saveEdit(event);
         } else if (event.key === "Escape") {
-            this.setState({edit_mode: false, edit_field_contents: this.props.task.title});
+            this.setState({edit_mode: false, edit_field_contents: this.props.task.text});
         }
     }
 
-    parseTitleURLs(title) {
-        // Look through the task title for any URLs. Return a list of components -
+    parseTextForURLs(text) {
+        // Look through the task's text for any URLs. Return a list of components -
         // either text or <a href> elements.
-        const url_index = title.indexOf("http", url_index);
+        const url_index = text.indexOf("http", url_index);
 
         if (url_index === -1) {
-            return [title];
+            return [text];
         }
 
-        let result = [title.slice(0, url_index)];
+        let result = [text.slice(0, url_index)];
 
-        let space_index = title.indexOf(" ", url_index);
+        let space_index = text.indexOf(" ", url_index);
         if (space_index === -1) {
-            space_index = title.length;
+            space_index = text.length;
         }
 
-        const url = title.slice(url_index, space_index);
+        const url = text.slice(url_index, space_index);
         result.push(
             <a key={url} onClick={(e) => e.stopPropagation()} href={url} target="_blank">{url}</a>
         );
 
         // Recur to look for any other URLs.
-        const rest_of_title = this.parseTitleURLs(title.slice(space_index));
-        return result.concat(rest_of_title);
+        const rest_of_text = this.parseTextForURLs(text.slice(space_index));
+        return result.concat(rest_of_text);
     }
 
-    renderTitle() {
+    renderTaskText() {
         let checkbox_class = "imitation-checkbox";
         if (this.props.task.done) {
             checkbox_class = "checked " + checkbox_class;
         }
 
         return (
-            <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
+            <div
+                key="task-text"
+                className="task-entry"
+                onClick={this.activate.bind(this)}
+                onContextMenu={this.showEditMode.bind(this)}
+            >
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <div className={checkbox_class} />
                 </div>
 
-                <span>{this.parseTitleURLs(this.props.task.title)}</span>
+                <span>{this.parseTextForURLs(this.props.task.text)}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
@@ -141,9 +146,8 @@ import AutoSizeTextarea from "./textarea";
 
     renderEditForm() {
         return (
-            <div key="add-form" className="edit-form title">
+            <div key="add-form" className="edit-form task-entry">
                 <AutoSizeTextarea
-                    className="task-title" name="title"
                     autoFocus={true}
                     value={this.state.edit_field_contents}
                     onChange={(event) => this.setState({edit_field_contents: event.target.value})}
@@ -182,7 +186,7 @@ import AutoSizeTextarea from "./textarea";
             >
                 {this.state.edit_mode
                     ? this.renderEditForm()
-                    : this.renderTitle()
+                    : this.renderTaskText()
                 }
 
                 {this.renderDropzones()}

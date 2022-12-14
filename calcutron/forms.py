@@ -6,7 +6,7 @@ from .models import Task
 class NewTaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ["parent", "title"]
+        fields = ["parent", "text"]
 
 
 class DeleteTaskForm(forms.Form):
@@ -15,7 +15,7 @@ class DeleteTaskForm(forms.Form):
 
 class EditTaskForm(forms.Form):
     id = forms.IntegerField()
-    title = forms.CharField(max_length=255, required=False)
+    text = forms.Textarea()
     parent = forms.IntegerField(required=False)
     sort_order = forms.IntegerField(required=False)
 
