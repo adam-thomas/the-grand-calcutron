@@ -6,7 +6,6 @@ import taskState from "./state";
 import SubtaskList from "./task";
 
 
-
 @observer class TaskColumn extends React.Component {
     constructor(props) {
         super(props);
@@ -57,7 +56,7 @@ import SubtaskList from "./task";
 
                 {this.props.task == taskState.active_task &&
                     <div key="add-form" className="task-form-wrapper">
-                        <input ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
+                        <textarea ref={this.title_field_ref} type="text" className="task-title" name="title" onKeyPress={this.handleEnter.bind(this)}/>
                         <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
                     </div>
                 }

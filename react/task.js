@@ -128,7 +128,6 @@ import taskState from "./state";
             checkbox_class = "checked " + checkbox_class;
         }
 
-
         return (
             <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
@@ -149,7 +148,7 @@ import taskState from "./state";
     renderEditForm() {
         return (
             <div key="add-form" className="edit-form title">
-                <input
+                <textarea
                     ref={this.edit_field_ref} type="text"
                     className="task-title" name="title"
                     autoFocus={true}
