@@ -1,4 +1,4 @@
-button, .button, input, .input {
+button, .button, textarea, .textarea {
     outline: none;
 
     display: flex;
@@ -30,16 +30,16 @@ button, .button {
     }
 }
 
-input, .input {
-    width: 300px;
-    height: 34px;
-    padding: 0 5px;
+textarea, .textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px;
 
     border: 1px solid @text-dark;
     border-radius: 5px;
     background-color: fade(@white, 50%);
 
-    .font-face();
+    .font-base();
 
     &:focus {
         border-color: @text-dark;

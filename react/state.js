@@ -3,8 +3,7 @@ import actions from "./actions";
 
 
 class Task {
-    @observable title = "";
-    @observable long_text = "";
+    @observable text = "";
     @observable sort_order = 0;
     @observable children = {};
     @observable done = false;
@@ -14,8 +13,7 @@ class Task {
     parent_id = null;
 
     constructor(api_data={}) {
-        this.title = api_data.title || "";
-        this.long_text = api_data.long_text || "";
+        this.text = api_data.text || "";
         this.sort_order = api_data.sort_order || 0;
         this.done = api_data.done || false;
 

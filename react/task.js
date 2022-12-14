@@ -4,6 +4,7 @@ import React from "react";
 
 import actions from "./actions";
 import taskState from "./state";
+import AutoSizeTextarea from "./textarea";
 
 
 @observer export default class SubtaskList extends React.Component {
@@ -37,10 +38,9 @@ import taskState from "./state";
     constructor(props) {
         super(props);
 
-        this.edit_field_ref = React.createRef();
-
         this.state = {
             edit_mode: false,
+            edit_field_contents: this.props.task.text,
         }
     }
 
@@ -58,11 +58,7 @@ import taskState from "./state";
 
     showEditMode(event) {
         event.preventDefault();
-        this.setState({edit_mode: true});
-
-        let field_element = $(this.edit_field_ref.current);
-        field_element.val(this.props.task.title);
-        field_element.focus();
+        this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
     }
 
     delete() {
@@ -70,17 +66,17 @@ import taskState from "./state";
     }
 
     saveEdit() {
-        let field_element = $(this.edit_field_ref.current);
-        let title = field_element.val();
+        let text = this.state.edit_field_contents;
 
-        if (title === "") {
+        if (text === "") {
             actions.deleteTask(this.props.task);
         } else {
-            actions.setTaskTitle(this.props.task, field_element.val());
+            actions.setTaskText(this.props.task, this.state.edit_field_contents);
         }
 
         this.setState({edit_mode: false});
     }
+
     toggleDone(event) {
         event.stopPropagation();
         actions.setTaskDone(this.props.task, !this.props.task.done);
@@ -90,52 +86,54 @@ import taskState from "./state";
         if (event.key === "Enter") {
             this.saveEdit(event);
         } else if (event.key === "Escape") {
-            this.setState({edit_mode: false});
-            let field_element = $(this.edit_field_ref.current);
-            field_element.val(this.props.task.title);
+            this.setState({edit_mode: false, edit_field_contents: this.props.task.text});
         }
     }
 
-    parseTitleURLs(title) {
-        // Look through the task title for any URLs. Return a list of components -
+    parseTextForURLs(text) {
+        // Look through the task's text for any URLs. Return a list of components -
         // either text or <a href> elements.
-        const url_index = title.indexOf("http", url_index);
+        const url_index = text.indexOf("http", url_index);
 
         if (url_index === -1) {
-            return [title];
+            return [text];
         }
 
-        let result = [title.slice(0, url_index)];
+        let result = [text.slice(0, url_index)];
 
-        let space_index = title.indexOf(" ", url_index);
+        let space_index = text.indexOf(" ", url_index);
         if (space_index === -1) {
-            space_index = title.length;
+            space_index = text.length;
         }
 
-        const url = title.slice(url_index, space_index);
+        const url = text.slice(url_index, space_index);
         result.push(
             <a key={url} onClick={(e) => e.stopPropagation()} href={url} target="_blank">{url}</a>
         );
 
         // Recur to look for any other URLs.
-        const rest_of_title = this.parseTitleURLs(title.slice(space_index));
-        return result.concat(rest_of_title);
+        const rest_of_text = this.parseTextForURLs(text.slice(space_index));
+        return result.concat(rest_of_text);
     }
 
-    renderTitle() {
+    renderTaskText() {
         let checkbox_class = "imitation-checkbox";
         if (this.props.task.done) {
             checkbox_class = "checked " + checkbox_class;
         }
 
-
         return (
-            <div key="title" className="title" onClick={this.activate.bind(this)} onContextMenu={this.showEditMode.bind(this)}>
+            <div
+                key="task-text"
+                className="task-entry"
+                onClick={this.activate.bind(this)}
+                onContextMenu={this.showEditMode.bind(this)}
+            >
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <div className={checkbox_class} />
                 </div>
 
-                <span>{this.parseTitleURLs(this.props.task.title)}</span>
+                <span>{this.parseTextForURLs(this.props.task.text)}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
@@ -148,12 +146,11 @@ import taskState from "./state";
 
     renderEditForm() {
         return (
-            <div key="add-form" className="edit-form title">
-                <input
-                    ref={this.edit_field_ref} type="text"
-                    className="task-title" name="title"
+            <div key="add-form" className="edit-form task-entry">
+                <AutoSizeTextarea
                     autoFocus={true}
-                    defaultValue={this.props.task.title}
+                    value={this.state.edit_field_contents}
+                    onChange={(event) => this.setState({edit_field_contents: event.target.value})}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
                 <button className="submit" onClick={this.saveEdit.bind(this)}>+</button>
@@ -189,7 +186,7 @@ import taskState from "./state";
             >
                 {this.state.edit_mode
                     ? this.renderEditForm()
-                    : this.renderTitle()
+                    : this.renderTaskText()
                 }
 
                 {this.renderDropzones()}

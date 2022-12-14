@@ -12,8 +12,7 @@ def task_to_dict(task):
     return {
         "id": task.id,
         "parent": task.parent_id,
-        "title": task.title,
-        "long_text": task.long_text,
+        "text": task.text,
         "sort_order": task.sort_order,
         "done": task.done,
     }
@@ -86,8 +85,8 @@ class EditTaskView(AjaxTaskView):
         self.object = self.model.objects.get(id=form.cleaned_data["id"])
         data = form.cleaned_data
 
-        if "title" in data:
-            self.object.title = data["title"]
+        if "text" in data:
+            self.object.text = data["text"]
 
         if "parent" in data:
             self.object.parent_id = data["parent"]
