@@ -23,7 +23,6 @@ export default class AutoSizeTextarea extends React.Component {
     };
 
     render() {
-        console.log(this.props.value.match(/[A-Z]/g));
         const uppercase_count = (this.props.value.match(/[A-Z]/g) || "").length;
         const lowercase_count = this.props.value.length - uppercase_count;
         const text_width_estimate = (this.pixels_per_uppercase * uppercase_count) + (this.pixels_per_lowercase * lowercase_count);

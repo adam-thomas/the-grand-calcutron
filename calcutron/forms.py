@@ -15,7 +15,7 @@ class DeleteTaskForm(forms.Form):
 
 class EditTaskForm(forms.Form):
     id = forms.IntegerField()
-    text = forms.Textarea()
+    text = forms.CharField()
     parent = forms.IntegerField(required=False)
     sort_order = forms.IntegerField(required=False)
 
