@@ -34,5 +34,8 @@
   "scripts": {
     "dev": "webpack --mode development ./react/main.js --output ./calcutron/static/js/react.js --config webpack.dev.js",
     "build": "webpack --mode production ./react/main.js --output ./calcutron/static/js/react.js --config webpack.prod.js"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
