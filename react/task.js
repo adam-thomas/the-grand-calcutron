@@ -131,6 +131,7 @@ import AutoSizeTextarea from "./textarea";
                 id="task-context-menu"
                 key="task-text"
                 disableIfShiftIsPressed={true}
+                holdToDisplay={500}
                 collect={(props) => {
                     return {
                         showEditCallback: this.showEditMode.bind(this),
