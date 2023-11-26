@@ -6,6 +6,7 @@ import {observer} from "mobx-react";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import ajax_requests from "./ajax_requests";
 import taskState from "./state";
 import DesktopUI from "./desktop_ui";
 
@@ -13,10 +14,44 @@ import DesktopUI from "./desktop_ui";
 // Track the DOM element that React will be added to.
 let target;
 
+// Store a pointer to a repeating login health check.
+let healthCheckInterval = null;
+
 
 // Update taskState.screen_width to reflect the current size of the window.
 function saveScreenWidth() {
     taskState.screen_width = $(window).width();
+}
+
+
+// Poll the login health check endpoint, and redirect to the login page on
+// anything other than a {success: true} response.
+function healthCheck() {
+    console.log("Running health check");
+    ajax_requests.get("health_check", (data) => {
+        if (data.success !== true) {
+            window.location = "/accounts/login";
+        }
+    })
+}
+
+
+// Start the repeating health check. It should fire once every 30 seconds.
+function startHealthCheck() {
+    healthCheck();
+
+    if (healthCheckInterval === null) {
+        healthCheckInterval = setInterval(healthCheck, 30 * 1000);
+    }
+}
+
+
+// Stop the health check again.
+function stopHealthCheck() {
+    if (healthCheckInterval !== null) {
+        clearInterval(healthCheckInterval);
+        healthCheckInterval = null;
+    }
 }
 
 
@@ -53,6 +88,17 @@ function initialise() {
 
         // Reinitialise the UI if the window is resized.
         $(window).resize(saveScreenWidth);
+    });
+
+    // Start our login health checks.
+    startHealthCheck();
+    document.addEventListener("visibilitychange", () => {
+        console.log("Visibility change:", document.visibilityState);
+        if (document.visibilityState === "visible") {
+            startHealthCheck();
+        } else {
+            stopHealthCheck();
+        }
     });
 }
 

@@ -13,6 +13,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
 
     path("", views.MainView.as_view(), name="main"),
+    path("health_check", views.LoginHealthCheck.as_view(), name="health_check"),
     path("get_tasks", views.GetAllTasksView.as_view(), name="get_tasks"),
     path("new", views.NewTaskView.as_view(), name="new"),
     path("delete", views.DeleteTaskView.as_view(), name="delete"),
