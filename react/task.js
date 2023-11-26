@@ -1,6 +1,7 @@
 import $ from "jquery";
 import {observer} from "mobx-react";
 import React from "react";
+import { ContextMenuTrigger } from "react-contextmenu";
 
 import actions from "./actions";
 import taskState from "./state";
@@ -58,10 +59,13 @@ import AutoSizeTextarea from "./textarea";
 
     showEditMode(event) {
         event.preventDefault();
+        event.stopPropagation();
         this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
     }
 
-    delete() {
+    delete(event) {
+        event.preventDefault();
+        event.stopPropagation();
         actions.deleteTask(this.props.task);
     }
 
@@ -123,24 +127,33 @@ import AutoSizeTextarea from "./textarea";
         }
 
         return (
-            <div
+            <ContextMenuTrigger
+                id="task-context-menu"
                 key="task-text"
-                className="task-entry"
-                onClick={this.activate.bind(this)}
-                onContextMenu={this.showEditMode.bind(this)}
+                disableIfShiftIsPressed={true}
+                collect={(props) => {
+                    return {
+                        showEditCallback: this.showEditMode.bind(this),
+                        deleteCallback: this.delete.bind(this),
+                    }
+                }}
+                attributes={{
+                    className: "task-entry",
+                    onClick: this.activate.bind(this),
+                }}
             >
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <div className={checkbox_class} />
                 </div>
 
-                <span>{this.parseTextForURLs(this.props.task.text)}</span>
+                <span className="task-text">{this.parseTextForURLs(this.props.task.text)}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
                         <div className="caret" />
                     </div>
                 }
-            </div>
+            </ContextMenuTrigger>
         );
     }
 
