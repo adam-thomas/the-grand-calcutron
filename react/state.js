@@ -35,6 +35,7 @@ class TaskState {
     @observable active_task = this.root_task;
     @observable screen_width = 0;
     @observable dragged_item = null;
+    @observable context_menu_source_task = null;
 
 
     initialise(tasks) {

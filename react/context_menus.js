@@ -1,6 +1,14 @@
 import React from "react";
 import { ContextMenu, MenuItem } from "react-contextmenu";
 
+import taskState from "./state";
+
+
+function cleanEvent(event) {
+    event.stopPropagation();
+    event.preventDefault();
+}
+
 
 export default class ContextMenus extends React.Component {
     constructor(props) {
@@ -10,16 +18,17 @@ export default class ContextMenus extends React.Component {
             overlay: false,
         }
 
-        this.enableOverlay = this.enableOverlay.bind(this);
-        this.disableOverlay = this.disableOverlay.bind(this);
+        this.onShowAnyMenu = this.onShowAnyMenu.bind(this);
+        this.onHideAnyMenu = this.onHideAnyMenu.bind(this);
     }
 
 
-    enableOverlay() {
+    onShowAnyMenu() {
         this.setState({overlay: true});
     }
-    disableOverlay() {
+    onHideAnyMenu() {
         this.setState({overlay: false});
+        taskState.context_menu_source_task = null;
     }
 
 
@@ -30,12 +39,20 @@ export default class ContextMenus extends React.Component {
                     <div className="context-click-away-overlay" onClick={(event) => event.stopPropagation()} />
                 )}
 
-                <ContextMenu id="task-context-menu" onShow={this.enableOverlay} onHide={this.disableOverlay}>
-                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => data.showEditCallback(event)}>
+                <ContextMenu id="task-context-menu" onShow={this.onShowAnyMenu} onHide={this.onHideAnyMenu}>
+                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => {
+                        cleanEvent(event);
+                        data.showEditCallback();
+                    }}>
                         Edit
                     </MenuItem>
+
                     <MenuItem divider />
-                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => data.deleteCallback(event)}>
+
+                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => {
+                        cleanEvent(event);
+                        data.deleteCallback();
+                    }}>
                         Delete
                     </MenuItem>
                 </ContextMenu>

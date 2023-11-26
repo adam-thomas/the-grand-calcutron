@@ -168,29 +168,30 @@
                     align-items: flex-start;
 
                     li.task-wrapper {
-                        padding: 8px 10px;
                         width: 100%;
-                        border: 1px solid transparent;
-
-                        &:hover {
-                            border: 1px solid @text-dark;
-                        }
 
                         &.active {
                             font-weight: bold;
                         }
 
                         .main-row {
+                            min-height: 35px;
+                            width: 100%;
+
+                            padding: 8px 10px;
+                            border: 1px solid transparent;
+
+                            position: relative;
+                            user-select: none;
+
                             display: flex;
                             flex-flow: column;
                             align-items: flex-start;
                             justify-content: center;
 
-                            position: relative;
-                            user-select: none;
-
-                            min-height: 35px;
-                            width: 100%;
+                            &:hover, &.hover-lock {
+                                border: 1px solid @text-dark;
+                            }
 
                             .checkbox-wrapper {
                                 width: 30px;
@@ -272,13 +273,26 @@
                                 }
 
                                 &.edit-form {
-                                    button.submit {
-                                        height: 38px;
-                                        width: 34px;
-                                        margin-left: 5px;
-                                        flex: 0 0 auto;
+                                    align-items: flex-end;
 
-                                        font-size: 30px;
+                                    textarea {
+                                        min-height: 65px;
+                                    }
+
+                                    .actions {
+                                        margin-left: 5px;
+
+                                        display: flex;
+                                        flex-flow: column;
+                                        gap: 5px;
+
+                                        button.submit {
+                                            height: 30px;
+                                            width: 30px;
+                                            flex: 0 0 auto;
+
+                                            font-size: 15px;
+                                        }
                                     }
                                 }
                             }
@@ -329,6 +343,7 @@
 
             button {
                 height: 38px;
+                font-weight: bold;
             }
         }
     }

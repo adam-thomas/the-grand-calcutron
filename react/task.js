@@ -42,6 +42,7 @@ import AutoSizeTextarea from "./textarea";
         this.state = {
             edit_mode: false,
             edit_field_contents: this.props.task.text,
+            show_hovered: false,
         }
     }
 
@@ -57,15 +58,11 @@ import AutoSizeTextarea from "./textarea";
         taskState.active_task = this.props.task;
     }
 
-    showEditMode(event) {
-        event.preventDefault();
-        event.stopPropagation();
+    showEditMode() {
         this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
     }
 
-    delete(event) {
-        event.preventDefault();
-        event.stopPropagation();
+    delete() {
         actions.deleteTask(this.props.task);
     }
 
@@ -75,10 +72,17 @@ import AutoSizeTextarea from "./textarea";
         if (text === "") {
             actions.deleteTask(this.props.task);
         } else {
-            actions.setTaskText(this.props.task, this.state.edit_field_contents);
+            actions.setTaskText(this.props.task, text);
         }
 
         this.setState({edit_mode: false});
+    }
+
+    cancelEdit() {
+        this.setState({
+            edit_mode: false,
+            edit_field_contents: this.props.task.text,
+        });
     }
 
     toggleDone(event) {
@@ -88,9 +92,9 @@ import AutoSizeTextarea from "./textarea";
 
     handleEscEnter(event) {
         if (event.key === "Enter") {
-            this.saveEdit(event);
+            this.saveEdit();
         } else if (event.key === "Escape") {
-            this.setState({edit_mode: false, edit_field_contents: this.props.task.text});
+            this.cancelEdit();
         }
     }
 
@@ -133,6 +137,10 @@ import AutoSizeTextarea from "./textarea";
                 disableIfShiftIsPressed={true}
                 holdToDisplay={500}
                 collect={(props) => {
+                    // This function is called when the context menu is opened, in order to
+                    // gather useful data about the thing that opened it. We can also use this
+                    // to track that this is the open object.
+                    taskState.context_menu_source_task = this.props.task;
                     return {
                         showEditCallback: this.showEditMode.bind(this),
                         deleteCallback: this.delete.bind(this),
@@ -167,8 +175,11 @@ import AutoSizeTextarea from "./textarea";
                     onChange={(event) => this.setState({edit_field_contents: event.target.value})}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
-                <button className="submit" onClick={this.saveEdit.bind(this)}>+</button>
-                <button className="submit" onClick={this.delete.bind(this)}>-</button>
+
+                <div className="actions">
+                    <button className="submit" onClick={this.saveEdit.bind(this)}>&#128190;</button>
+                    <button className="submit" onClick={this.cancelEdit.bind(this)}>&#10006;</button>
+                </div>
             </div>
         );
     }
@@ -189,11 +200,12 @@ import AutoSizeTextarea from "./textarea";
 
     render() {
         const draggable = !this.state.edit_mode && !taskState.is_mobile;
+        const is_context_menu_source = (taskState.context_menu_source_task === this.props.task);
 
         return (
             <div
                 key="main-row"
-                className="main-row"
+                className={`${is_context_menu_source ? "hover-lock " : ""} main-row`}
                 draggable={draggable}
                 onDragStart={draggable ? this.dragStart.bind(this) : null}
                 onDragEnd={draggable ? this.dragEnd.bind(this) : null}
