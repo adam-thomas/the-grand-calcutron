@@ -189,8 +189,12 @@
                             align-items: flex-start;
                             justify-content: center;
 
-                            &:hover, &.hover-lock {
-                                border: 1px solid @text-dark;
+                            &:not(.active):hover, &.hover-lock {
+                                background-color: fade(@text-dark, 10%);
+                            }
+
+                            &:not(.active):hover .task-entry .caret-wrapper .caret {
+                                border-width: 2px;
                             }
 
                             .checkbox-wrapper {

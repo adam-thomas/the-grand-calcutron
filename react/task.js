@@ -18,14 +18,11 @@ import AutoSizeTextarea from "./textarea";
         return (
             <ul className="child-tasks">
                 {children.map(child => {
-                    let wrapper_class = "task-wrapper";
-                    if (taskState.columns.includes(child)) {
-                        wrapper_class = "active " + wrapper_class;
-                    }
+                    const is_active = taskState.columns.includes(child);
 
                     return (
-                        <li key={child.id} className={wrapper_class}>
-                            <Task key="task" task={child} />
+                        <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
+                            <Task key="task" task={child} is_active={is_active} />
                         </li>
                     );
                 })}
@@ -202,10 +199,16 @@ import AutoSizeTextarea from "./textarea";
         const draggable = !this.state.edit_mode && !taskState.is_mobile;
         const is_context_menu_source = (taskState.context_menu_source_task === this.props.task);
 
+        const className = [
+            is_context_menu_source ? "hover-lock" : "",
+            this.props.is_active ? "active" : "",
+            "main-row",
+        ].join(" ");
+
         return (
             <div
                 key="main-row"
-                className={`${is_context_menu_source ? "hover-lock " : ""} main-row`}
+                className={className}
                 draggable={draggable}
                 onDragStart={draggable ? this.dragStart.bind(this) : null}
                 onDragEnd={draggable ? this.dragEnd.bind(this) : null}
