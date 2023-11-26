@@ -1,9 +1,11 @@
 import DjangoCSRFToken from 'django-react-csrftoken';
 import {observer} from "mobx-react";
 import React from "react";
+import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import taskState from "./state";
 import tab_container from "./tab_container";
+import ContextMenus from './context_menus';
 
 
 @observer export default class DesktopUI extends React.Component {
@@ -15,14 +17,18 @@ import tab_container from "./tab_container";
     render() {
         let task_columns = taskState.columns.map(this.renderColumn);
 
-        return [
-            (<DjangoCSRFToken key="csrf" />),
+        return (
+            <>
+                <DjangoCSRFToken key="csrf" />
 
-            (<div key="ui" className="desktop-ui calcutron">
-                <div key="contents" className="task-container-wrapper">
-                    {task_columns}
+                <div key="ui" className="desktop-ui calcutron">
+                    <ContextMenus />
+
+                    <div key="contents" className="task-container-wrapper">
+                        {task_columns}
+                    </div>
                 </div>
-            </div>),
-        ];
+            </>
+        );
     }
 }

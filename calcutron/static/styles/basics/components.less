@@ -9,11 +9,11 @@ button, .button, textarea, .textarea {
 
 button, .button {
     padding: 5px 10px;
-    color: @background;
+    color: @text-button;
     cursor: pointer;
 
-    background-color: fade(@text-dark, 70%);
-    border: 2px solid @text-dark;
+    background-color: fade(@white, 50%);
+    border: none;
     border-radius: 5px;
 
     &:hover:not(:disabled):not(.disabled):not(.active) {
@@ -35,7 +35,7 @@ textarea, .textarea {
     max-width: 500px;
     padding: 8px;
 
-    border: 1px solid @text-dark;
+    border: 1px solid @text-button;
     border-radius: 5px;
     background-color: fade(@white, 50%);
 

@@ -27,7 +27,6 @@ function saveScreenWidth() {
 // Poll the login health check endpoint, and redirect to the login page on
 // anything other than a {success: true} response.
 function healthCheck() {
-    console.log("Running health check");
     ajax_requests.get("health_check", (data) => {
         if (data.success !== true) {
             window.location = "/accounts/login";
@@ -93,7 +92,6 @@ function initialise() {
     // Start our login health checks.
     startHealthCheck();
     document.addEventListener("visibilitychange", () => {
-        console.log("Visibility change:", document.visibilityState);
         if (document.visibilityState === "visible") {
             startHealthCheck();
         } else {

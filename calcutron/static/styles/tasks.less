@@ -1,13 +1,51 @@
 .calcutron {
     width: 100%;
     height: 100%;
+    position: relative;
 
     display: flex;
+
+    .context-click-away-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    nav.react-contextmenu {
+        min-width: 100px;
+
+        background-color: @white;
+        border: 1px solid @text-light;
+        box-shadow: 2px 2px 5px @text-light;
+        z-index: 2;
+
+        .react-contextmenu-item {
+            &:not(&--divider) {
+                padding: 10px 15px;
+
+                cursor: pointer;
+
+                &:hover {
+                    background-color: @background-shade-1;
+                }
+            }
+
+            &--divider {
+                margin: 5px 5px;
+                border-bottom: 1px solid @text-light;
+            }
+        }
+    }
 
     .task-container-wrapper {
         width: 100%;
         height: 100%;
         flex: 0 1 auto;
+        z-index: 0;
 
         padding: 0;
         overflow-y: auto;
@@ -130,29 +168,34 @@
                     align-items: flex-start;
 
                     li.task-wrapper {
-                        padding: 8px 10px;
                         width: 100%;
-                        border: 1px solid transparent;
-
-                        &:hover {
-                            border: 1px solid @text-dark;
-                        }
 
                         &.active {
                             font-weight: bold;
                         }
 
                         .main-row {
+                            min-height: 35px;
+                            width: 100%;
+
+                            padding: 8px 10px;
+                            border: 1px solid transparent;
+
+                            position: relative;
+                            user-select: none;
+
                             display: flex;
                             flex-flow: column;
                             align-items: flex-start;
                             justify-content: center;
 
-                            position: relative;
-                            user-select: none;
+                            &:not(.active):hover, &.hover-lock {
+                                background-color: fade(@text-dark, 10%);
+                            }
 
-                            min-height: 35px;
-                            width: 100%;
+                            &:not(.active):hover .task-entry .caret-wrapper .caret {
+                                border-width: 2px;
+                            }
 
                             .checkbox-wrapper {
                                 width: 30px;
@@ -200,7 +243,7 @@
                                 cursor: pointer;
                                 z-index: 0;
 
-                                span {
+                                .task-text {
                                     width: 100%;
                                     flex: 0 1 auto;
 
@@ -234,13 +277,26 @@
                                 }
 
                                 &.edit-form {
-                                    button.submit {
-                                        height: 38px;
-                                        width: 34px;
-                                        margin-left: 5px;
-                                        flex: 0 0 auto;
+                                    align-items: flex-end;
 
-                                        font-size: 30px;
+                                    textarea {
+                                        min-height: 65px;
+                                    }
+
+                                    .actions {
+                                        margin-left: 5px;
+
+                                        display: flex;
+                                        flex-flow: column;
+                                        gap: 5px;
+
+                                        button.submit {
+                                            height: 30px;
+                                            width: 30px;
+                                            flex: 0 0 auto;
+
+                                            font-size: 15px;
+                                        }
                                     }
                                 }
                             }
@@ -291,6 +347,7 @@
 
             button {
                 height: 38px;
+                font-weight: bold;
             }
         }
     }

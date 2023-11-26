@@ -43,7 +43,7 @@ import AutoSizeTextarea from "./textarea";
                 <div className="heading-wrapper">
                     {this.props.task.parent &&
                         <button key="close" className="close-button" onClick={this.close.bind(this)}>
-                            &#10006;
+                            &#10094;
                         </button>
                     }
 

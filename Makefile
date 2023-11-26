@@ -7,7 +7,7 @@ help:
 	@echo " make install        -- install requirements and set up the database"
 	@echo " make test           -- run tests"
 	@echo " make run            -- run the-grand-calcutron at 127.0.0.1:8000"
-	@echo " make run-external   -- run the-grand-calcutron at 127.0.0.1:8000"
+	@echo " make run-external   -- run the-grand-calcutron at 0.0.0.0:8000"
 
 install:
 	pip install -r requirements.txt

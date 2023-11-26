@@ -1,6 +1,7 @@
 import $ from "jquery";
 import {observer} from "mobx-react";
 import React from "react";
+import { ContextMenuTrigger } from "react-contextmenu";
 
 import actions from "./actions";
 import taskState from "./state";
@@ -17,14 +18,11 @@ import AutoSizeTextarea from "./textarea";
         return (
             <ul className="child-tasks">
                 {children.map(child => {
-                    let wrapper_class = "task-wrapper";
-                    if (taskState.columns.includes(child)) {
-                        wrapper_class = "active " + wrapper_class;
-                    }
+                    const is_active = taskState.columns.includes(child);
 
                     return (
-                        <li key={child.id} className={wrapper_class}>
-                            <Task key="task" task={child} />
+                        <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
+                            <Task key="task" task={child} is_active={is_active} />
                         </li>
                     );
                 })}
@@ -41,6 +39,7 @@ import AutoSizeTextarea from "./textarea";
         this.state = {
             edit_mode: false,
             edit_field_contents: this.props.task.text,
+            show_hovered: false,
         }
     }
 
@@ -56,8 +55,7 @@ import AutoSizeTextarea from "./textarea";
         taskState.active_task = this.props.task;
     }
 
-    showEditMode(event) {
-        event.preventDefault();
+    showEditMode() {
         this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
     }
 
@@ -71,10 +69,17 @@ import AutoSizeTextarea from "./textarea";
         if (text === "") {
             actions.deleteTask(this.props.task);
         } else {
-            actions.setTaskText(this.props.task, this.state.edit_field_contents);
+            actions.setTaskText(this.props.task, text);
         }
 
         this.setState({edit_mode: false});
+    }
+
+    cancelEdit() {
+        this.setState({
+            edit_mode: false,
+            edit_field_contents: this.props.task.text,
+        });
     }
 
     toggleDone(event) {
@@ -84,9 +89,9 @@ import AutoSizeTextarea from "./textarea";
 
     handleEscEnter(event) {
         if (event.key === "Enter") {
-            this.saveEdit(event);
+            this.saveEdit();
         } else if (event.key === "Escape") {
-            this.setState({edit_mode: false, edit_field_contents: this.props.task.text});
+            this.cancelEdit();
         }
     }
 
@@ -123,24 +128,38 @@ import AutoSizeTextarea from "./textarea";
         }
 
         return (
-            <div
+            <ContextMenuTrigger
+                id="task-context-menu"
                 key="task-text"
-                className="task-entry"
-                onClick={this.activate.bind(this)}
-                onContextMenu={this.showEditMode.bind(this)}
+                disableIfShiftIsPressed={true}
+                holdToDisplay={500}
+                collect={(props) => {
+                    // This function is called when the context menu is opened, in order to
+                    // gather useful data about the thing that opened it. We can also use this
+                    // to track that this is the open object.
+                    taskState.context_menu_source_task = this.props.task;
+                    return {
+                        showEditCallback: this.showEditMode.bind(this),
+                        deleteCallback: this.delete.bind(this),
+                    }
+                }}
+                attributes={{
+                    className: "task-entry",
+                    onClick: this.activate.bind(this),
+                }}
             >
                 <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
                     <div className={checkbox_class} />
                 </div>
 
-                <span>{this.parseTextForURLs(this.props.task.text)}</span>
+                <span className="task-text">{this.parseTextForURLs(this.props.task.text)}</span>
 
                 {Object.keys(this.props.task.children).length > 0 &&
                     <div className="caret-wrapper">
                         <div className="caret" />
                     </div>
                 }
-            </div>
+            </ContextMenuTrigger>
         );
     }
 
@@ -153,8 +172,11 @@ import AutoSizeTextarea from "./textarea";
                     onChange={(event) => this.setState({edit_field_contents: event.target.value})}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
-                <button className="submit" onClick={this.saveEdit.bind(this)}>+</button>
-                <button className="submit" onClick={this.delete.bind(this)}>-</button>
+
+                <div className="actions">
+                    <button className="submit" onClick={this.saveEdit.bind(this)}>&#128190;</button>
+                    <button className="submit" onClick={this.cancelEdit.bind(this)}>&#10006;</button>
+                </div>
             </div>
         );
     }
@@ -175,11 +197,18 @@ import AutoSizeTextarea from "./textarea";
 
     render() {
         const draggable = !this.state.edit_mode && !taskState.is_mobile;
+        const is_context_menu_source = (taskState.context_menu_source_task === this.props.task);
+
+        const className = [
+            is_context_menu_source ? "hover-lock" : "",
+            this.props.is_active ? "active" : "",
+            "main-row",
+        ].join(" ");
 
         return (
             <div
                 key="main-row"
-                className="main-row"
+                className={className}
                 draggable={draggable}
                 onDragStart={draggable ? this.dragStart.bind(this) : null}
                 onDragEnd={draggable ? this.dragEnd.bind(this) : null}
