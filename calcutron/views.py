@@ -22,6 +22,15 @@ class MainView(LoginRequiredMixin, TemplateView):
     template_name = "calcutron/main.html"
 
 
+class LoginHealthCheck(LoginRequiredMixin, View):
+    """
+    A basic healthcheck endpoint. The frontend can poll this, and will receive a redirect to the
+    login page if the user's session has lapsed.
+    """
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"success": True})
+
+
 class GetAllTasksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         tasks = list(Task.objects.filter(parent=None, users=request.user))
