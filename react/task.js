@@ -1,9 +1,10 @@
 import $ from "jquery";
-import {observer} from "mobx-react";
+import { observer } from "mobx-react";
 import React from "react";
 import { ContextMenuTrigger } from "react-contextmenu";
 
 import actions from "./actions";
+import navigate from "./navigate";
 import taskState from "./state";
 import AutoSizeTextarea from "./textarea";
 
@@ -52,7 +53,7 @@ import AutoSizeTextarea from "./textarea";
     }
 
     activate() {
-        taskState.active_task = this.props.task;
+        navigate.toTask(this.props.task);
     }
 
     showEditMode() {

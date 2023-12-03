@@ -2,13 +2,12 @@
 require("../calcutron/static/styles/main.less");
 
 import $ from "jquery";
-import {observer} from "mobx-react";
 import React from "react";
 import ReactDOM from "react-dom";
 
 import ajax_requests from "./ajax_requests";
 import taskState from "./state";
-import DesktopUI from "./desktop_ui";
+import {BaseRoutedApp} from "./router";
 
 
 // Track the DOM element that React will be added to.
@@ -54,14 +53,6 @@ function stopHealthCheck() {
 }
 
 
-// Top-level app component.
-@observer class BaseApp extends React.Component {
-    render() {
-        return React.createElement(DesktopUI);
-    }
-}
-
-
 // Fill out the taskState and start up the React UI.
 function initialise() {
     // Grab the element we're injecting into.
@@ -80,7 +71,7 @@ function initialise() {
 
         // Create the React UI.
         saveScreenWidth();
-        ReactDOM.render(<BaseApp />, target);
+        ReactDOM.render(<BaseRoutedApp />, target);
 
         // Get the CSRF token we added, and store it in the state.
         taskState.csrf = $(target).children("input[name=csrfmiddlewaretoken]").val();
