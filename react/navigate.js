@@ -14,7 +14,11 @@ export function setRouter(routerInstance) {
 }
 
 export function toTask(task) {
-    router.navigate("/" + task.id);
+    if (!task || task.id === null) {
+        router.navigate("/");
+    } else {
+        router.navigate("/" + task.id);
+    }
 }
 
 export default {
