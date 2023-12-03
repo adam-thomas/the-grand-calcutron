@@ -1,7 +1,6 @@
 import DjangoCSRFToken from 'django-react-csrftoken';
 import {observer} from "mobx-react";
 import React from "react";
-import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import taskState from "./state";
 import tab_container from "./tab_container";

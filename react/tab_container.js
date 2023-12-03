@@ -2,6 +2,7 @@ import {observer} from "mobx-react";
 import React from "react";
 
 import actions from "./actions";
+import navigate from "./navigate";
 import taskState from "./state";
 import SubtaskList from "./task";
 import AutoSizeTextarea from "./textarea";
@@ -31,7 +32,7 @@ import AutoSizeTextarea from "./textarea";
     }
 
     close() {
-        taskState.active_task = this.props.task.parent;
+        navigate.toTask(this.props.task.parent);
     }
 
     render() {

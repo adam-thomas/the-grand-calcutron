@@ -1,6 +1,7 @@
 import {transaction} from "mobx";
 
 import ajax_requests from "./ajax_requests";
+import navigate from "./navigate";
 import taskState from "./state";
 
 
@@ -29,12 +30,13 @@ function deleteTask(task) {
 
     ajax_requests.post("/delete", data, () => {
         transaction(() => {
+            if (taskState.hierarchy.includes(task)) {
+                navigate.toTask(task.parent);
+            }
+
             let parent_children = task.parent.children;
             delete parent_children[task.id];
-
-            if (taskState.hierarchy.includes(task)) {
-                taskState.active_task = task.parent;
-            }
+            delete taskState.tasks_by_id[task.id];
         });
     });
 }

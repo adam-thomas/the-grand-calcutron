@@ -37,25 +37,41 @@ class TaskState {
     @observable dragged_item = null;
     @observable context_menu_source_task = null;
 
+    // A dictionary of tasks indexed by their database IDs, without the fake root.
+    // This can be used for direct lookup.
+    @observable tasks_by_id = {};
+
+    // A "cached" task ID, which can be set pre-initialisation. When initialise() is called,
+    // if this task ID matches a retrieved task, set that to be the active task; otherwise,
+    // do nothing. After initialise(), this value has no effect.
+    start_at_task_id = null;
 
     initialise(tasks) {
         transaction(() => {
             // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
             // the full tree of parents and children.
-            let tasks_by_id = {};
+            this.tasks_by_id = {};
             for (let task_data of Object.values(tasks)) {
                 let task = new Task(task_data);
-                tasks_by_id[task.id] = task;
+                this.tasks_by_id[task.id] = task;
             }
 
             // Then, fill out the parent-child relationships.
             // At this point, the `parent` that comes in from the database is just an ID; replace
             // it with a proper pointer. Fill out each task's list of children as well.
-            for (let task of Object.values(tasks_by_id)) {
-                let parent_obj = (task.parent_id === null) ? this.root_task : tasks_by_id[task.parent_id];
+            for (let task of Object.values(this.tasks_by_id)) {
+                let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
 
                 task.parent = parent_obj;
                 parent_obj.children[task.id] = task;
+            }
+
+            // If a starting task ID was cached, and we have that task available, switch to it now.
+            if (this.start_at_task_id !== null) {
+                const starting_task = this.tasks_by_id[this.start_at_task_id];
+                if (starting_task) {
+                    this.active_task = starting_task;
+                }
             }
         });
     }
@@ -94,6 +110,36 @@ class TaskState {
         // Return true if we think this is a mobile OS.
         // For now, that's just predicated on screen width.
         return (this.screen_width <= 600);
+    }
+
+
+    // Look up the given task ID, and activate it if it's available.
+    @action.bound
+    switchToTaskId(task_id) {
+        // If the task ID is undefined, select the root.
+        if (task_id === undefined || task_id === null) {
+            this.active_task = this.root_task;
+            return;
+        }
+
+        task_id = parseInt(task_id);
+
+        // If no tasks are loaded yet, cache this task ID on the state, so it
+        // can be displayed once the tasks are retrieved.
+        if (Object.keys(this.tasks_by_id).length === 0) {
+            this.start_at_task_id = task_id;
+            return;
+        }
+
+        // If this task ID does not exist, return to the root task.
+        const selected_task = this.tasks_by_id[task_id];
+        if (!selected_task) {
+            this.active_task = this.root_task;
+            return;
+        }
+
+        // Otherwise, activate the new task.
+        this.active_task = selected_task;
     }
 
 

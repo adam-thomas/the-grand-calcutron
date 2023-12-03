@@ -30,7 +30,9 @@
     "mobx-react": "^6.1.4",
     "react": "^16.11.0",
     "react-contextmenu": "^2.14.0",
-    "react-dom": "^16.11.0"
+    "react-dom": "^16.11.0",
+    "react-router": "^6.20.1",
+    "react-router-dom": "^6.20.1"
   },
   "scripts": {
     "dev": "webpack --mode development ./react/main.js --output ./calcutron/static/js/react.js --config webpack.dev.js",
