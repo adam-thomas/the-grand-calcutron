@@ -147,7 +147,10 @@ class TaskState {
     addTask(parent, task_data) {
         let new_task = new Task(task_data);
         new_task.parent = parent;
+
         parent.children[new_task.id] = new_task;
+        this.tasks_by_id[new_task.id] = new_task;
+
         return new_task;
     }
 
