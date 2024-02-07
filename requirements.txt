@@ -1,4 +1,4 @@
-django==3.2.23
+django==3.2.24
 django-extensions==3.2.1
 django-heroku==0.3.1
 django-orderable==6.1.1
