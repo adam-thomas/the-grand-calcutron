@@ -1,25 +1,2 @@
-# Python compile files
-__pycache__/
-.py[cod]
-
-# Virtualenv files
-bin/
-include
-lib/
-lib64
-pyvenv.cfg
-share/
-
-# Locally installed dependencies
-src/
-
-.vscode
-
-# Yarn nonsense
-node_modules
-yarn-error.log
-yarn.lock
-
-# Build output
-calcutron/static/js/react.js
-staticfiles
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*
