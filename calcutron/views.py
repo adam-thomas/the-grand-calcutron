@@ -52,7 +52,8 @@ class AjaxTaskView(LoginRequiredMixin, FormView):
     template_name = ""
 
     def dispatch(self, request, *args, **kwargs):
-        if not self.request.is_ajax():
+        # Reject non-Ajax requests.
+        if request.META.get("HTTP_X_REQUESTED_WITH") != "XMLHttpRequest":
             raise Http404
 
         self.request = request
