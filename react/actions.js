@@ -33,7 +33,7 @@ function deleteTask(task) {
                 navigate.toTask(task.parent);
             }
 
-            // Remove the deleted tasks from objects that reference it.
+            // Remove the deleted task from objects that reference it.
             delete task.parent.children[task.id];
             delete taskState.tasks_by_id[task.id];
         });

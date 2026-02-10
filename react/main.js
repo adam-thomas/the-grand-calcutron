@@ -27,9 +27,9 @@ function saveScreenWidth() {
 // anything other than a {success: true} response.
 function healthCheck() {
     ajax_requests.get("/health_check/", (data) => {
-        // if (data.success !== true) {
-        //     window.location = "/accounts/login";
-        // }
+        if (data.success !== true) {
+            window.location = "/accounts/login";
+        }
     });
 }
 
@@ -67,7 +67,6 @@ function initialise() {
     // Get the tasks from the backend, and initialise the state with them.
     // (This will happen after the app is initially rendered.)
     ajax_requests.get("/get_tasks/", (return_data) => {
-        console.log(return_data);
         taskState.initialise(return_data);
 
         // Create the React UI.
@@ -81,7 +80,8 @@ function initialise() {
         $(window).resize(saveScreenWidth);
     });
 
-    // Start our login health checks.
+    // Start our login health checks. Run them whenever the page is focused, and
+    // pause them otherwise.
     startHealthCheck();
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {
