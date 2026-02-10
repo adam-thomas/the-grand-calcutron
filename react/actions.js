@@ -11,7 +11,7 @@ function addTask(text, parent, task_list_container=null) {
         parent: parent.id,
     };
 
-    ajax_requests.post("/new/", data, (return_data) => {
+    ajax_requests.post("/new/", data).then((return_data) => {
         taskState.addTask(parent, return_data);
 
         if (task_list_container) {
@@ -27,7 +27,7 @@ function deleteTask(task) {
         parent: task.parent.id,
     };
 
-    ajax_requests.delete(`/edit/${task.id}/`, data, () => {
+    ajax_requests.delete(`/edit/${task.id}/`, data).then(() => {
         transaction(() => {
             if (taskState.hierarchy.includes(task)) {
                 navigate.toTask(task.parent);
@@ -41,48 +41,43 @@ function deleteTask(task) {
 }
 
 
-function editTask(task, data, callback) {
-    const base_data = {
-        text: task.text,
-        sort_order: task.sort_order,
-        parent: task.parent.id,
-    }
-    data = Object.assign(base_data, data)
-
-    ajax_requests.patch(`/edit/${task.id}/`, data, callback);
+function editTask(task, data) {
+    return ajax_requests.patch(`/edit/${task.id}/`, data);
 }
 
 
 function setTaskText(task, text) {
-    let data = {
+    const data = {
         text: text,
     };
 
-    editTask(task, data, (return_data) => {
+    return editTask(task, data).then((return_data) => {
         task.text = return_data.text;
     });
 }
 
 
 function setTaskDone(task, done) {
-    let data = {
+    const data = {
         done: done,
     };
 
-    editTask(task, data, (return_data) => {
+    return editTask(task, data).then((return_data) => {
         task.done = return_data.done;
     });
 }
 
 
 function moveTask(task, new_sort_order, new_parent=undefined) {
-    let data = {sort_order: new_sort_order};
+    const data = {
+        sort_order: new_sort_order,
+    };
 
     if (new_parent !== undefined) {
         data.parent = new_parent.id;
     }
 
-    editTask(task, data, () => {});
+    return editTask(task, data);
 }
 
 
