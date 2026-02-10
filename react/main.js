@@ -13,8 +13,8 @@ import {BaseRoutedApp} from "./router";
 // Track the DOM element that React will be added to.
 let target;
 
-// Store a pointer to a repeating login health check.
-let healthCheckInterval = null;
+// Store a pointer to a repeating task data reload.
+let reloadTaskInterval = null;
 
 
 // Update taskState.screen_width to reflect the current size of the window.
@@ -27,7 +27,7 @@ function saveScreenWidth() {
 // This also functions as a health check, since if the user isn't logged in,
 // the ensuing 401 response will cause a redirect to the login page as per
 // the handling in ajax_requests.js.
-function healthCheck() {
+function loadTasks() {
     return ajax_requests.get("/get_tasks/").then(
         (return_data) => {
             taskState.initialise(return_data);
@@ -36,21 +36,23 @@ function healthCheck() {
 }
 
 
-// Start the repeating health check. It should fire once every 30 seconds.
-function startHealthCheck() {
-    healthCheck();
+// Start the automatic task reloading. It fires immediately, then once every two
+// minutes thereafter.
+// TODO: Improve performance on the loading request so this can be done more regularly.
+function startAutoReload() {
+    loadTasks();
 
-    if (healthCheckInterval === null) {
-        healthCheckInterval = setInterval(healthCheck, 30 * 1000);
+    if (reloadTaskInterval === null) {
+        reloadTaskInterval = setInterval(loadTasks, 120 * 1000);
     }
 }
 
 
-// Stop the health check again.
-function stopHealthCheck() {
-    if (healthCheckInterval !== null) {
-        clearInterval(healthCheckInterval);
-        healthCheckInterval = null;
+// Stop the auto-reload again.
+function stopAutoReload() {
+    if (reloadTaskInterval !== null) {
+        clearInterval(reloadTaskInterval);
+        reloadTaskInterval = null;
     }
 }
 
@@ -76,16 +78,13 @@ function initialise() {
     // Reinitialise the UI if the window is resized.
     $(window).resize(saveScreenWidth);
 
-    // Start our login health checks. Run them whenever the page is focused, and
-    // pause them otherwise.
-    // The health checks also (re)load all the task data, so we can use that as an
-    // initialisation step.
-    startHealthCheck();
+    // Start loading the tasks, and reload them automatically while the page is focused.
+    startAutoReload();
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {
-            startHealthCheck();
+            startAutoReload();
         } else {
-            stopHealthCheck();
+            stopAutoReload();
         }
     });
 }
