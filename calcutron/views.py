@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 
 from .models import Task
@@ -41,7 +42,16 @@ class UserTasksMixin:
 
 
 class GetAllTasksView(UserTasksMixin, ListAPIView):
-    pass
+    def list(self, request, *args, **kwargs):
+        tasks = list(Task.objects.filter(parent=None, users=request.user))
+        new_tasks = tasks
+
+        while len(new_tasks) > 0:
+            new_tasks = Task.objects.filter(parent__in=new_tasks)
+            tasks.extend(new_tasks)
+
+        serializer = self.get_serializer(tasks, many=True)
+        return Response(serializer.data)
 
 
 class CreateTaskView(UserTasksMixin, CreateAPIView):
