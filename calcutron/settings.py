@@ -14,6 +14,7 @@ INSTALLED_APPS = (
 
     "django_extensions",
     "orderable",
+    "whitenoise.runserver_nostatic",
 
     "django.contrib.admin",
     "django.contrib.auth",
@@ -25,6 +26,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -70,6 +72,16 @@ STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
+
+# WhiteNoise setup.
+# Use compressed storage to reduce file sizes, and only keep hashed filenames.
+STORAGES = {
+    # https://whitenoise.readthedocs.io/en/latest/django.html#add-compression-and-caching-support
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
 LOGIN_REDIRECT_URL = "/"
 SECURE_SSL_REDIRECT = not DEBUG
