@@ -7,7 +7,7 @@ class Task(Orderable):
     date_created = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
     done = models.BooleanField(default=False)
-    users = models.ManyToManyField("auth.User", blank=True, null=True)
+    users = models.ManyToManyField("auth.User", blank=True)
 
     def __str__(self):
         return self.text

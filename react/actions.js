@@ -11,7 +11,7 @@ function addTask(text, parent, task_list_container=null) {
         parent: parent.id,
     };
 
-    ajax_requests.post("/new", data, (return_data) => {
+    ajax_requests.post("/new/", data).then((return_data) => {
         taskState.addTask(parent, return_data);
 
         if (task_list_container) {
@@ -24,68 +24,60 @@ function addTask(text, parent, task_list_container=null) {
 
 function deleteTask(task) {
     let data = {
-        id: task.id,
         parent: task.parent.id,
     };
 
-    ajax_requests.post("/delete", data, () => {
+    ajax_requests.delete(`/edit/${task.id}/`, data).then(() => {
         transaction(() => {
             if (taskState.hierarchy.includes(task)) {
                 navigate.toTask(task.parent);
             }
 
-            let parent_children = task.parent.children;
-            delete parent_children[task.id];
+            // Remove the deleted task from objects that reference it.
+            delete task.parent.children[task.id];
             delete taskState.tasks_by_id[task.id];
         });
     });
 }
 
 
-function editTask(task, data, callback) {
-    const base_data = {
-        id: task.id,
-        text: task.text,
-        sort_order: task.sort_order,
-        parent: task.parent.id,
-    }
-    data = Object.assign(base_data, data)
-
-    ajax_requests.post("/edit", data, callback);
+function editTask(task, data) {
+    return ajax_requests.patch(`/edit/${task.id}/`, data);
 }
 
 
 function setTaskText(task, text) {
-    let data = {
+    const data = {
         text: text,
     };
 
-    editTask(task, data, (return_data) => {
+    return editTask(task, data).then((return_data) => {
         task.text = return_data.text;
     });
 }
 
 
 function setTaskDone(task, done) {
-    let data = {
-        id: task.id,
+    const data = {
         done: done,
     };
 
-    ajax_requests.post("/done", data, (return_data) => {
+    return editTask(task, data).then((return_data) => {
         task.done = return_data.done;
     });
 }
 
 
 function moveTask(task, new_sort_order, new_parent=undefined) {
-    let data = {sort_order: new_sort_order};
+    const data = {
+        sort_order: new_sort_order,
+    };
 
     if (new_parent !== undefined) {
         data.parent = new_parent.id;
     }
 
-    editTask(task, data, () => {});
+    return editTask(task, data);
 }
 
 

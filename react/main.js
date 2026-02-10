@@ -23,14 +23,16 @@ function saveScreenWidth() {
 }
 
 
-// Poll the login health check endpoint, and redirect to the login page on
-// anything other than a {success: true} response.
+// Poll the task data endpoint and update the taskState accordingly.
+// This also functions as a health check, since if the user isn't logged in,
+// the ensuing 401 response will cause a redirect to the login page as per
+// the handling in ajax_requests.js.
 function healthCheck() {
-    ajax_requests.get("health_check", (data) => {
-        if (data.success !== true) {
-            window.location = "/accounts/login";
+    return ajax_requests.get("/get_tasks/").then(
+        (return_data) => {
+            taskState.initialise(return_data);
         }
-    })
+    );
 }
 
 
@@ -58,29 +60,26 @@ function initialise() {
     // Grab the element we're injecting into.
     target = document.getElementById("app");
 
-    // Basic error checking.
+    // If this element can't be found, we're not on the right page - for example,
+    // we might be on the login page - so skip the rest of the initialisation.
     if (!target) {
-        console.error("Failed to find an element with id='app'");
         return;
     }
+    
+    // Create the React UI.
+    saveScreenWidth();
+    ReactDOM.render(<BaseRoutedApp />, target);
 
-    // Get the tasks from the backend, and initialise the state with them.
-    // (This will happen after the app is initially rendered.)
-    $.get("/get_tasks", (return_data) => {
-        taskState.initialise(return_data);
+    // Get the CSRF token we added, and store it in the state.
+    taskState.csrf = $(target).children("input[name=csrfmiddlewaretoken]").val();
 
-        // Create the React UI.
-        saveScreenWidth();
-        ReactDOM.render(<BaseRoutedApp />, target);
+    // Reinitialise the UI if the window is resized.
+    $(window).resize(saveScreenWidth);
 
-        // Get the CSRF token we added, and store it in the state.
-        taskState.csrf = $(target).children("input[name=csrfmiddlewaretoken]").val();
-
-        // Reinitialise the UI if the window is resized.
-        $(window).resize(saveScreenWidth);
-    });
-
-    // Start our login health checks.
+    // Start our login health checks. Run them whenever the page is focused, and
+    // pause them otherwise.
+    // The health checks also (re)load all the task data, so we can use that as an
+    // initialisation step.
     startHealthCheck();
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") {

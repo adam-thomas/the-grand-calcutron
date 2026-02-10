@@ -121,6 +121,17 @@ LOGGING = {
     }
 }
 
+REST_FRAMEWORK = {
+    # We have an Ajax-style API, so use the standard Django login page.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
 # Set up Heroku.
 # The old django_heroku library is unmaintained, so we need to do this manually.
 # Based on the example at:
