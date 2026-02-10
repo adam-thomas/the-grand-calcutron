@@ -42,9 +42,12 @@ function loadTasks() {
 function startAutoReload() {
     loadTasks();
 
-    if (reloadTaskInterval === null) {
-        reloadTaskInterval = setInterval(loadTasks, 120 * 1000);
-    }
+    // TODO: Reinstate this, but a) make it fast enough to not undo whatever you just
+    //   did, b) show the loading state visibly in the UI, and c) don't reset to the
+    //   task the page was on when the user last loaded it.
+    // if (reloadTaskInterval === null) {
+    //     reloadTaskInterval = setInterval(loadTasks, 120 * 1000);
+    // }
 }
 
 

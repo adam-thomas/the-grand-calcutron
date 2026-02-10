@@ -42,6 +42,8 @@ class UserTasksMixin:
 
 
 class GetAllTasksView(UserTasksMixin, ListAPIView):
+    # TODO: Unify the permission model so that items under a top-level task with the correct
+    # users can be viewed and edited.
     def list(self, request, *args, **kwargs):
         tasks = list(Task.objects.filter(parent=None, users=request.user))
         new_tasks = tasks
