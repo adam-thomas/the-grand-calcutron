@@ -24,7 +24,7 @@ Named for [a parody Magic: the Gathering card](https://gatherer.wizards.com/Page
 
 ## Building and running
 
-* Compile the React and Less code with `yarn dev`. This will also run a file watcher that recompiles the files after any changes.
+* Compile the React and Less code with `npm run dev`. This will also run a file watcher that recompiles the files after any changes.
 * Ensure Django has access to the frontend files with `python manage.py collectstatic`.
 * Run the actual server with `make run`.
 * Head to `127.0.0.1:8000` in your browser to see the results!
