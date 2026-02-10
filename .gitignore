@@ -1,2 +1,16 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+# Virtualenv files
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg
+
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Python cruft
+__pycache__
+
+# Editor cruft
+.vscode/
