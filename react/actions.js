@@ -11,7 +11,7 @@ function addTask(text, parent, task_list_container=null) {
         parent: parent.id,
     };
 
-    ajax_requests.post("/new", data, (return_data) => {
+    ajax_requests.post("/new/", data, (return_data) => {
         taskState.addTask(parent, return_data);
 
         if (task_list_container) {
@@ -24,18 +24,17 @@ function addTask(text, parent, task_list_container=null) {
 
 function deleteTask(task) {
     let data = {
-        id: task.id,
         parent: task.parent.id,
     };
 
-    ajax_requests.post("/delete", data, () => {
+    ajax_requests.delete(`/edit/${task.id}/`, data, () => {
         transaction(() => {
             if (taskState.hierarchy.includes(task)) {
                 navigate.toTask(task.parent);
             }
 
-            let parent_children = task.parent.children;
-            delete parent_children[task.id];
+            // Remove the deleted tasks from objects that reference it.
+            delete task.parent.children[task.id];
             delete taskState.tasks_by_id[task.id];
         });
     });
@@ -44,14 +43,13 @@ function deleteTask(task) {
 
 function editTask(task, data, callback) {
     const base_data = {
-        id: task.id,
         text: task.text,
         sort_order: task.sort_order,
         parent: task.parent.id,
     }
     data = Object.assign(base_data, data)
 
-    ajax_requests.post("/edit", data, callback);
+    ajax_requests.patch(`/edit/${task.id}/`, data, callback);
 }
 
 
@@ -68,11 +66,10 @@ function setTaskText(task, text) {
 
 function setTaskDone(task, done) {
     let data = {
-        id: task.id,
         done: done,
     };
 
-    ajax_requests.post("/done", data, (return_data) => {
+    editTask(task, data, (return_data) => {
         task.done = return_data.done;
     });
 }
