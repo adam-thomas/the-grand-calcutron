@@ -62,8 +62,11 @@ class TaskState {
             for (let task of Object.values(this.tasks_by_id)) {
                 let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
 
-                task.parent = parent_obj;
-                parent_obj.children[task.id] = task;
+                // For safety - e.g. for dealing with old data - handle tasks with missing parents.
+                if (parent_obj) {
+                    task.parent = parent_obj;
+                    parent_obj.children[task.id] = task;
+                }
             }
 
             // If a starting task ID was cached, and we have that task available, switch to it now.
