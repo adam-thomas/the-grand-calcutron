@@ -14,3 +14,6 @@ __pycache__
 
 # Editor cruft
 .vscode/
+
+# Generated JS files
+calcutron/static/js/react.js
