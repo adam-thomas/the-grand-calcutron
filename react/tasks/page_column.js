@@ -35,8 +35,7 @@ import AutoSizeTextarea from "./textarea";
     }
 
     render() {
-        let task = this.props.task;
-        let button_text = taskState.is_mobile ? "+" : "Add";
+        const task = this.props.task;
 
         return (
             <div className="task-column">
@@ -59,7 +58,7 @@ import AutoSizeTextarea from "./textarea";
 
                 {this.props.task == taskState.active_task &&
                     <div key="add-new" className="add-new-task-wrapper">
-                        <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
+                        <button className="submit" onClick={this.addChild.bind(this)}>+ Add</button>
                     </div>                    
                 }
             </div>
