@@ -167,21 +167,49 @@
                     flex-flow: column;
                     align-items: flex-start;
 
+                    .dropzone {
+                        position: absolute;
+                        left: 0;
+                        width: 100%;
+
+                        z-index: 1;
+
+                        &.highlight {
+                            background-color: fade(@contrast-red, 50%);
+                        }
+                    }
+
+                    li.dropzone-wrapper {
+                        position: relative;
+                        z-index: 1;
+                        overflow: visible;
+                        height: 0;
+                        width: 100%;
+
+                        .dropzone.before, .dropzone.after {
+                            height: 24px;
+                            top: -12px;
+                        }
+                    }
+
                     li.task-wrapper {
                         width: 100%;
+                        min-height: 48px;
 
                         &.active {
                             font-weight: bold;
                         }
 
                         .main-row {
-                            min-height: 35px;
                             width: 100%;
+                            height: 100%;
+                            z-index: 0;
 
                             padding: 8px 10px;
                             border: 1px solid transparent;
 
                             position: relative;
+                            overflow-y: visible;
                             user-select: none;
 
                             display: flex;
@@ -238,7 +266,6 @@
 
                                 height: 100%;
                                 width: 100%;
-                                min-height: 35px;
 
                                 cursor: pointer;
                                 z-index: 0;
@@ -301,33 +328,9 @@
                                 }
                             }
 
-                            .dropzone-container {
-                                position: absolute;
-                                left: 0;
-                                top: -5px;
-                                width: 100%;
-                                height: calc(100% + 10px);
-
-                                z-index: 1;
-
-                                display: flex;
-                                flex-flow: column;
-
-                                .dropzone {
-                                    width: 100%;
-
-                                    &.highlight {
-                                        background-color: fade(@contrast-red, 50%);
-                                    }
-
-                                    &.before, &.after {
-                                        height: 25%;
-                                    }
-
-                                    &.in {
-                                        height: 50%;
-                                    }
-                                }
+                            .dropzone {
+                                height: calc(100% - 24px);
+                                top: 12px;
                             }
                         }
                     }

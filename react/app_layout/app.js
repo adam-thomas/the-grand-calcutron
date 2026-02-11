@@ -3,13 +3,13 @@ import {observer} from "mobx-react";
 import React from "react";
 
 import taskState from "../state";
-import TaskColumn from "../tasks/task_column";
+import PageColumn from "../tasks/page_column";
 import ContextMenus from './context_menus';
 
 
 @observer export default class App extends React.Component {
     renderColumn(task) {
-        return (<TaskColumn task={task} key={"task_" + task.id} />);
+        return (<PageColumn task={task} key={"task_" + task.id} />);
     }
 
 

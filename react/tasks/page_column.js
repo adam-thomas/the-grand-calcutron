@@ -4,11 +4,11 @@ import React from "react";
 import actions from "../api_requests/actions";
 import navigate from "../navigation/navigate";
 import taskState from "../state";
-import SubtaskList from "./task";
+import TaskList from "./task_list";
 import AutoSizeTextarea from "./textarea";
 
 
-@observer export default class TaskColumn extends React.Component {
+@observer export default class PageColumn extends React.Component {
     constructor(props) {
         super(props);
 
@@ -54,7 +54,7 @@ import AutoSizeTextarea from "./textarea";
                 </div>
 
                 <div key="children" ref={this.children_container_ref} className="child-task-list-wrapper">
-                    <SubtaskList key="subtasks" task={task} />
+                    <TaskList key="subtasks" task={task} />
                 </div>
 
                 {this.props.task == taskState.active_task &&

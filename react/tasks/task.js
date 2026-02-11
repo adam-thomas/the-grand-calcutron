@@ -1,4 +1,3 @@
-import $ from "jquery";
 import { observer } from "mobx-react";
 import React from "react";
 import { ContextMenuTrigger } from "react-contextmenu";
@@ -7,33 +6,10 @@ import actions from "../api_requests/actions";
 import navigate from "../navigation/navigate";
 import taskState from "../state";
 import AutoSizeTextarea from "./textarea";
+import TaskDropzone from "./dropzone";
 
 
-@observer export default class SubtaskList extends React.Component {
-    render() {
-        let task = this.props.task;
-
-        let children = Object.values(task.children);
-        children.sort((c1, c2) => c1.sort_order - c2.sort_order);
-
-        return (
-            <ul className="child-tasks">
-                {children.map(child => {
-                    const is_active = taskState.columns.includes(child);
-
-                    return (
-                        <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
-                            <Task key="task" task={child} is_active={is_active} />
-                        </li>
-                    );
-                })}
-            </ul>
-        );
-    }
-}
-
-
-@observer class Task extends React.Component {
+@observer export default class Task extends React.Component {
     constructor(props) {
         super(props);
 
@@ -182,20 +158,6 @@ import AutoSizeTextarea from "./textarea";
         );
     }
 
-    renderDropzones() {
-        if (taskState.is_mobile || (taskState.dragged_item === null)) {
-            return null;
-        }
-
-        return (
-            <div className="dropzone-container">
-                <TaskDropzone key="before" zoneType="before" task={this.props.task} />
-                <TaskDropzone key="in" zoneType="in" task={this.props.task} />
-                <TaskDropzone key="after" zoneType="after" task={this.props.task} />
-            </div>
-        );
-    }
-
     render() {
         const draggable = !this.state.edit_mode && !taskState.is_mobile;
         const is_context_menu_source = (taskState.context_menu_source_task === this.props.task);
@@ -219,62 +181,9 @@ import AutoSizeTextarea from "./textarea";
                     : this.renderTaskText()
                 }
 
-                {this.renderDropzones()}
+                <TaskDropzone zoneType="in" task={this.props.task} />
             </div>
         );
     }
 }
 
-
-@observer class TaskDropzone extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            highlight: false,
-        };
-    }
-
-
-    drop() {
-        let operations = {
-            "before": taskState.moveTaskBefore,
-            "in": taskState.setTaskParent,
-            "after": taskState.moveTaskAfter,
-        }
-
-        operations[this.props.zoneType](taskState.dragged_item, this.props.task);
-        taskState.dragged_item = null;
-    }
-
-
-    dragOver(event) {
-        event.preventDefault();
-        this.setState({highlight: true});
-    }
-
-
-    dragLeave() {
-        this.setState({highlight: false});
-    }
-
-
-    render() {
-        if (taskState.dragged_item === null) {
-            return null;
-        }
-
-        let baseClass = "dropzone " + this.props.zoneType;
-        let highlightClass = this.state.highlight ? " highlight" : "";
-
-        return (
-            <div
-                className={baseClass + highlightClass}
-                key={this.props.zoneType}
-                onDrop={this.drop.bind(this)}
-                onDragOver={this.dragOver.bind(this)}
-                onDragLeave={this.dragLeave.bind(this)}
-            />
-        );
-    }
-}
