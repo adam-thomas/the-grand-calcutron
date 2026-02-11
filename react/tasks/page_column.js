@@ -21,8 +21,7 @@ import AutoSizeTextarea from "./textarea";
 
     addChild(event) {
         event.preventDefault();
-        actions.addTask(this.state.field_contents, this.props.task, this.children_container_ref.current);
-        this.setState({field_contents: ""});
+        actions.addTask("", this.props.task, this.children_container_ref.current);
     }
 
     handleEnter(event) {
@@ -57,7 +56,11 @@ import AutoSizeTextarea from "./textarea";
                     <TaskList key="subtasks" task={task} />
                 </div>
 
-                {this.props.task == taskState.active_task &&
+                <div key="add-new" className="add-new-task-wrapper">
+                    <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
+                </div>
+
+                {/* {this.props.task == taskState.active_task &&
                     <div key="add-form" className="task-form-wrapper">
                         <AutoSizeTextarea
                             value={this.state.field_contents}
@@ -66,7 +69,7 @@ import AutoSizeTextarea from "./textarea";
                         />
                         <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
                     </div>
-                }
+                } */}
             </div>
         );
     }

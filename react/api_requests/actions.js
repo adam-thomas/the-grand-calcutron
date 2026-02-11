@@ -11,19 +11,21 @@ function addTask(text, parent, task_list_container=null) {
         parent_id: parent.id,
     };
 
-    ajax_requests.post("/new/", data).then((return_data) => {
-        taskState.addTask(parent, return_data);
+    return ajax_requests.post("/new/", data).then((return_data) => {
+        const new_task = taskState.addTask(parent, return_data);
 
         if (task_list_container) {
             let container_obj = $(task_list_container);
             container_obj.scrollTop(container_obj[0].scrollHeight);
         }
+
+        return new_task;
     });
 }
 
 
 function deleteTask(task) {
-    ajax_requests.delete(`/edit/${task.id}/`).then(() => {
+    return ajax_requests.delete(`/edit/${task.id}/`).then(() => {
         transaction(() => {
             if (taskState.hierarchy.includes(task)) {
                 navigate.toTask(task.parent);

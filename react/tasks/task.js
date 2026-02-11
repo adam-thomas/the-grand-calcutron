@@ -14,9 +14,14 @@ import TaskDropzone from "./dropzone";
         super(props);
 
         this.state = {
-            edit_mode: false,
+            is_new: this.props.task.text === "",
+            edit_mode: this.props.task.text === "",
             edit_field_contents: this.props.task.text,
-            show_hovered: false,
+            
+            previous_contents: this.props.task.text,
+            saving_promise: null,
+            text_to_save_buffer: null,
+            delete_buffered: false,
         }
     }
 
@@ -33,43 +38,138 @@ import TaskDropzone from "./dropzone";
     }
 
     showEditMode() {
-        this.setState({edit_mode: true, edit_field_contents: this.props.task.text});
+        this.setState({
+            edit_mode: true,
+            edit_field_contents: this.props.task.text,
+            previous_contents: this.props.task.text,
+        });
     }
 
     delete() {
         actions.deleteTask(this.props.task);
     }
+    
+    clearEditState() {
+        this.setState({
+            edit_mode: false,
+            is_new: false,
+            saving_promise: false,
+            text_to_save_buffer: null,
+            edit_field_contents: this.props.task.text,
+            previous_contents: this.props.task.text,
+        });
+    }
 
-    saveEdit() {
+    runSave(new_contents=null) {
+        // Deletes take priority over anything in the buffer, and will naturally clean up
+        // any remaining data by erasing this React component instance entirely after the
+        // delete finishes resolving.
+        if (this.state.delete_buffered) {
+            return actions.deleteTask(this.props.task);
+        }
+
+        const text = new_contents !== null
+            ? new_contents
+            : this.state.text_to_save_buffer;
+
+        // If no new text has been supplied or buffered, we're done with the save action,
+        // so clear the stored promise and return.
+        if (text === null) {
+            this.setState({saving_promise: null});
+            return;
+        }
+
+        // Clear the buffer now that we've consumed it.
+        this.setState({
+            text_to_save_buffer: null
+        });
+
+        // Kick off the save action, asynchronously. Chain it into another runSave
+        // in case more operations are buffered in-between.
+        const new_saving_promise = actions.setTaskText(this.props.task, text).then(() => {
+            return this.runSave();
+        });
+        
+        // If the state doesn't already have a saving_promise on it, set it to our
+        // newly-constructed one.
+        if (!this.state.saving_promise) {
+            this.setState({saving_promise: new_saving_promise});
+        }
+
+        // Return the new promise so we can chain off it elsewhere.
+        return new_saving_promise;
+    }
+
+    autosave(new_contents) {
+        // Buffer the changes if a save is already in progress; otherwise, start one.
+        if (this.state.saving_promise) {
+            this.setState({text_to_save_buffer: new_contents});
+            return this.state.saving_promise;
+        }
+
+        return this.runSave(new_contents);
+    }
+
+    delete_this_task() {
+        // Buffer a deletion if a save is already in progress; otherwise, delete the
+        // task immediately.
+        if (this.state.saving_promise) {
+            this.setState({delete_buffered: true});
+            return;
+        }
+        
+        actions.deleteTask(this.props.task);
+    }
+
+    handleSaveEditButton() {
+        // If the task is saved with empty contents, delete it. Otherwise, save the current
+        // text and close the editing UI.
         let text = this.state.edit_field_contents;
 
         if (text === "") {
-            actions.deleteTask(this.props.task);
-        } else {
-            actions.setTaskText(this.props.task, text);
+            this.delete_this_task();
+            return;
         }
 
-        this.setState({edit_mode: false});
+        this.autosave(text).then(() => {
+            this.clearEditState();
+        });
     }
 
-    cancelEdit() {
-        this.setState({
-            edit_mode: false,
-            edit_field_contents: this.props.task.text,
+    handleCancelEditButton() {
+        // When a task has never been saved with nonempty contents, and the user closes
+        // the edit UI, delete the task. Otherwise, restore it to the contents it had
+        // before editing.
+        if (this.state.is_new) {
+            this.delete_this_task();
+            return;
+        }
+
+        this.autosave(this.state.previous_contents).then(() => {
+            this.clearEditState();
         });
+    }
+
+    handleEditTextInput(event) {
+        const text = event.target.value;
+        this.setState({edit_field_contents: text});
+        this.autosave(text);
+    }
+
+    handleEscEnter(event) {
+        if (event.key === "Enter") {
+            // Block the onChange handler from also firing using event.preventDefault.
+            event.preventDefault();
+            this.handleSaveEditButton();
+        } else if (event.key === "Escape") {
+            event.preventDefault();
+            this.handleCancelEditButton();
+        }
     }
 
     toggleDone(event) {
         event.stopPropagation();
         actions.setTaskDone(this.props.task, !this.props.task.done);
-    }
-
-    handleEscEnter(event) {
-        if (event.key === "Enter") {
-            this.saveEdit();
-        } else if (event.key === "Escape") {
-            this.cancelEdit();
-        }
     }
 
     parseTextForURLs(text) {
@@ -146,13 +246,13 @@ import TaskDropzone from "./dropzone";
                 <AutoSizeTextarea
                     autoFocus={true}
                     value={this.state.edit_field_contents}
-                    onChange={(event) => this.setState({edit_field_contents: event.target.value})}
+                    onChange={this.handleEditTextInput.bind(this)}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
 
                 <div className="actions">
-                    <button className="submit" onClick={this.saveEdit.bind(this)}>&#128190;</button>
-                    <button className="submit" onClick={this.cancelEdit.bind(this)}>&#10006;</button>
+                    <button className="submit" onClick={this.handleSaveEditButton.bind(this)}>&#128190;</button>
+                    <button className="submit" onClick={this.handleCancelEditButton.bind(this)}>&#10006;</button>
                 </div>
             </div>
         );

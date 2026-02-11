@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { Fragment } from "react";
 
 import taskState from "../state";
 import TaskDropzone from "./dropzone";
@@ -25,7 +25,7 @@ import Task from "./task";
                     const is_active = taskState.columns.includes(child);
 
                     return (
-                        <>
+                        <Fragment key={child.id}>
                             <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
                                 <Task task={child} is_active={is_active} />
                             </li>
@@ -33,7 +33,7 @@ import Task from "./task";
                             <li key={`dropzone-${child.id}`} className="dropzone-wrapper">
                                 <TaskDropzone zoneType="after" task={child} />
                             </li>
-                        </>
+                        </Fragment>
                     );
                 })}
             </ul>

@@ -26,7 +26,7 @@ class Task(Orderable):
     )
 
     date_created = models.DateTimeField(auto_now_add=True)
-    text = models.TextField()
+    text = models.TextField(blank=True, null=True)
     done = models.BooleanField(default=False)
 
     # This is only used on top-level parents,
