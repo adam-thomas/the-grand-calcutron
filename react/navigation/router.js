@@ -2,14 +2,14 @@ import React from "react";
 import { observer } from "mobx-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import DesktopUI from "./desktop_ui";
+import App from "../app_layout/app";
 import navigate from "./navigate";
-import taskState from "./state";
+import taskState from "../state";
 
 const router = createBrowserRouter([
     {
         path: "/:task_id?",
-        element: <DesktopUI />,
+        element: <App />,
         loader: ({ params }) => {
             // Whenever this URL changes, switch to the newly selected task_id.
             taskState.switchToTaskId(params.task_id);

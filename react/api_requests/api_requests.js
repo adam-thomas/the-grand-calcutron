@@ -1,4 +1,4 @@
-import taskState from "./state";
+import taskState from "../state";
 
 
 function _run_fetch(url, method, data=null) {

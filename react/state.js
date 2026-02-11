@@ -1,5 +1,5 @@
 import {action, observable, transaction, computed} from "mobx";
-import actions from "./actions";
+import actions from "./api_requests/actions";
 
 
 class Task {

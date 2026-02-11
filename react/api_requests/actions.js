@@ -1,8 +1,8 @@
 import {transaction} from "mobx";
 
-import ajax_requests from "./ajax_requests";
-import navigate from "./navigate";
-import taskState from "./state";
+import ajax_requests from "./api_requests";
+import navigate from "../navigation/navigate";
+import taskState from "../state";
 
 
 function addTask(text, parent, task_list_container=null) {

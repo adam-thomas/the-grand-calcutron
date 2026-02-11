@@ -1,14 +1,14 @@
 import {observer} from "mobx-react";
 import React from "react";
 
-import actions from "./actions";
-import navigate from "./navigate";
-import taskState from "./state";
+import actions from "../api_requests/actions";
+import navigate from "../navigation/navigate";
+import taskState from "../state";
 import SubtaskList from "./task";
 import AutoSizeTextarea from "./textarea";
 
 
-@observer class TaskColumn extends React.Component {
+@observer export default class TaskColumn extends React.Component {
     constructor(props) {
         super(props);
 
@@ -70,9 +70,4 @@ import AutoSizeTextarea from "./textarea";
             </div>
         );
     }
-}
-
-
-export default {
-    TaskColumn,
 }

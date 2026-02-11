@@ -2,14 +2,14 @@ import DjangoCSRFToken from 'django-react-csrftoken';
 import {observer} from "mobx-react";
 import React from "react";
 
-import taskState from "./state";
-import tab_container from "./tab_container";
+import taskState from "../state";
+import TaskColumn from "../tasks/task_column";
 import ContextMenus from './context_menus';
 
 
-@observer export default class DesktopUI extends React.Component {
+@observer export default class App extends React.Component {
     renderColumn(task) {
-        return (<tab_container.TaskColumn task={task} key={"task_" + task.id} />);
+        return (<TaskColumn task={task} key={"task_" + task.id} />);
     }
 
 

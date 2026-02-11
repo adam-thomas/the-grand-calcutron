@@ -5,9 +5,9 @@ import $ from "jquery";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import ajax_requests from "./ajax_requests";
+import ajax_requests from "./api_requests/api_requests";
 import taskState from "./state";
-import {BaseRoutedApp} from "./router";
+import {BaseRoutedApp} from "./navigation/router";
 
 
 // Track the DOM element that React will be added to.
@@ -42,9 +42,8 @@ function loadTasks() {
 function startAutoReload() {
     loadTasks();
 
-    // TODO: Reinstate this, but a) make it fast enough to not undo whatever you just
-    //   did, b) show the loading state visibly in the UI, and c) don't reset to the
-    //   task the page was on when the user last loaded it.
+    // TODO: Reinstate this, but a) don't undo whatever you just
+    //   did, b) show the loading state visibly in the UI.
     // if (reloadTaskInterval === null) {
     //     reloadTaskInterval = setInterval(loadTasks, 30 * 1000);
     // }
