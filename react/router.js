@@ -11,6 +11,7 @@ const router = createBrowserRouter([
         path: "/:task_id?",
         element: <DesktopUI />,
         loader: ({ params }) => {
+            // Whenever this URL changes, switch to the newly selected task_id.
             taskState.switchToTaskId(params.task_id);
             return null;
         },

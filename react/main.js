@@ -46,7 +46,7 @@ function startAutoReload() {
     //   did, b) show the loading state visibly in the UI, and c) don't reset to the
     //   task the page was on when the user last loaded it.
     // if (reloadTaskInterval === null) {
-    //     reloadTaskInterval = setInterval(loadTasks, 120 * 1000);
+    //     reloadTaskInterval = setInterval(loadTasks, 30 * 1000);
     // }
 }
 

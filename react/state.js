@@ -43,9 +43,11 @@ class TaskState {
 
     // A "cached" task ID, which can be set pre-initialisation. When initialise() is called,
     // if this task ID matches a retrieved task, set that to be the active task; otherwise,
-    // do nothing. After initialise(), this value has no effect.
+    // do nothing. After the first initialise(), this is reset to null, and has no effect.
     start_at_task_id = null;
+    
 
+    @action.bound
     initialise(tasks) {
         transaction(() => {
             // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
@@ -70,12 +72,15 @@ class TaskState {
                 }
             }
 
-            // If a starting task ID was cached, and we have that task available, switch to it now.
+            // If a starting task ID was precached, and we have that task available, switch to it now.
+            // Either way, unset the precached ID so it doesn't get in the way later.
             if (this.start_at_task_id !== null) {
                 const starting_task = this.tasks_by_id[this.start_at_task_id];
                 if (starting_task) {
                     this.active_task = starting_task;
                 }
+
+                this.start_at_task_id = null;
             }
         });
     }
@@ -126,17 +131,17 @@ class TaskState {
             return;
         }
 
-        task_id = parseInt(task_id);
-
-        // If no tasks are loaded yet, cache this task ID on the state, so it
-        // can be displayed once the tasks are retrieved.
+        // If no tasks are currently loaded, precache the given task_id
+        // and switch to it after initialise().
         if (Object.keys(this.tasks_by_id).length === 0) {
             this.start_at_task_id = task_id;
             return;
         }
 
-        // If this task ID does not exist, return to the root task.
+        task_id = parseInt(task_id);
         const selected_task = this.tasks_by_id[task_id];
+
+        // If this task ID does not exist, return to the root task.
         if (!selected_task) {
             this.active_task = this.root_task;
             return;
