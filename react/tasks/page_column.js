@@ -56,20 +56,12 @@ import AutoSizeTextarea from "./textarea";
                     <TaskList key="subtasks" task={task} />
                 </div>
 
-                <div key="add-new" className="add-new-task-wrapper">
-                    <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
-                </div>
 
-                {/* {this.props.task == taskState.active_task &&
-                    <div key="add-form" className="task-form-wrapper">
-                        <AutoSizeTextarea
-                            value={this.state.field_contents}
-                            onChange={(event) => this.setState({field_contents: event.target.value})}
-                            onKeyPress={this.handleEnter.bind(this)}
-                        />
+                {this.props.task == taskState.active_task &&
+                    <div key="add-new" className="add-new-task-wrapper">
                         <button className="submit" onClick={this.addChild.bind(this)}>{button_text}</button>
-                    </div>
-                } */}
+                    </div>                    
+                }
             </div>
         );
     }
