@@ -2,14 +2,14 @@ import { observer } from "mobx-react";
 import React from "react";
 import { ContextMenuTrigger } from "react-contextmenu";
 
-import actions from "../api_requests/actions";
+import actions from "../state_management/saved_actions";
 import navigate from "../navigation/navigate";
-import taskState from "../state";
+import taskState from "../state_management/state";
 import AutoSizeTextarea from "./textarea";
 import TaskDropzone from "./dropzone";
 
 
-@observer export default class Task extends React.Component {
+@observer export default class SingleTask extends React.Component {
     constructor(props) {
         super(props);
 
@@ -37,16 +37,16 @@ import TaskDropzone from "./dropzone";
         navigate.toTask(this.props.task);
     }
 
+    handleDelete() {
+        actions.deleteTask(this.props.task);
+    }
+
     showEditMode() {
         this.setState({
             edit_mode: true,
             edit_field_contents: this.props.task.text,
             previous_contents: this.props.task.text,
         });
-    }
-
-    delete() {
-        actions.deleteTask(this.props.task);
     }
     
     clearEditState() {
@@ -60,80 +60,18 @@ import TaskDropzone from "./dropzone";
         });
     }
 
-    runSave(new_contents=null) {
-        // Deletes take priority over anything in the buffer, and will naturally clean up
-        // any remaining data by erasing this React component instance entirely after the
-        // delete finishes resolving.
-        if (this.state.delete_buffered) {
-            return actions.deleteTask(this.props.task);
-        }
-
-        const text = new_contents !== null
-            ? new_contents
-            : this.state.text_to_save_buffer;
-
-        // If no new text has been supplied or buffered, we're done with the save action,
-        // so clear the stored promise and return.
-        if (text === null) {
-            this.setState({saving_promise: null});
-            return;
-        }
-
-        // Clear the buffer now that we've consumed it.
-        this.setState({
-            text_to_save_buffer: null
-        });
-
-        // Kick off the save action, asynchronously. Chain it into another runSave
-        // in case more operations are buffered in-between.
-        const new_saving_promise = actions.setTaskText(this.props.task, text).then(() => {
-            return this.runSave();
-        });
-        
-        // If the state doesn't already have a saving_promise on it, set it to our
-        // newly-constructed one.
-        if (!this.state.saving_promise) {
-            this.setState({saving_promise: new_saving_promise});
-        }
-
-        // Return the new promise so we can chain off it elsewhere.
-        return new_saving_promise;
-    }
-
-    autosave(new_contents) {
-        // Buffer the changes if a save is already in progress; otherwise, start one.
-        if (this.state.saving_promise) {
-            this.setState({text_to_save_buffer: new_contents});
-            return this.state.saving_promise;
-        }
-
-        return this.runSave(new_contents);
-    }
-
-    delete_this_task() {
-        // Buffer a deletion if a save is already in progress; otherwise, delete the
-        // task immediately.
-        if (this.state.saving_promise) {
-            this.setState({delete_buffered: true});
-            return;
-        }
-        
-        actions.deleteTask(this.props.task);
-    }
-
     handleSaveEditButton() {
         // If the task is saved with empty contents, delete it. Otherwise, save the current
         // text and close the editing UI.
         let text = this.state.edit_field_contents;
 
         if (text === "") {
-            this.delete_this_task();
+            this.handleDelete();
             return;
         }
 
-        this.autosave(text).then(() => {
-            this.clearEditState();
-        });
+        actions.setTaskText(this.props.task, text);
+        this.clearEditState();
     }
 
     handleCancelEditButton() {
@@ -141,19 +79,18 @@ import TaskDropzone from "./dropzone";
         // the edit UI, delete the task. Otherwise, restore it to the contents it had
         // before editing.
         if (this.state.is_new) {
-            this.delete_this_task();
+            this.handleDelete();
             return;
         }
 
-        this.autosave(this.state.previous_contents).then(() => {
-            this.clearEditState();
-        });
+        actions.setTaskText(this.props.task, this.state.previous_contents);
+        this.clearEditState();
     }
 
     handleEditTextInput(event) {
         const text = event.target.value;
         this.setState({edit_field_contents: text});
-        this.autosave(text);
+        actions.setTaskText(this.props.task, text);
     }
 
     handleEscEnter(event) {
@@ -217,7 +154,7 @@ import TaskDropzone from "./dropzone";
                     taskState.context_menu_source_task = this.props.task;
                     return {
                         showEditCallback: this.showEditMode.bind(this),
-                        deleteCallback: this.delete.bind(this),
+                        deleteCallback: this.handleDelete.bind(this),
                     }
                 }}
                 attributes={{

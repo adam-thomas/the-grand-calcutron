@@ -1,9 +1,9 @@
 import { observer } from "mobx-react";
 import React, { Fragment } from "react";
 
-import taskState from "../state";
+import taskState from "../state_management/state";
 import TaskDropzone from "./dropzone";
-import Task from "./task";
+import SingleTask from "./task";
 
 
 @observer export default class TaskList extends React.Component {
@@ -27,7 +27,7 @@ import Task from "./task";
                     return (
                         <Fragment key={child.id}>
                             <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
-                                <Task task={child} is_active={is_active} />
+                                <SingleTask task={child} is_active={is_active} />
                             </li>
 
                             <li key={`dropzone-${child.id}`} className="dropzone-wrapper">

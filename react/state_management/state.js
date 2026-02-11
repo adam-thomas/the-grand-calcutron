@@ -1,26 +1,8 @@
 import {action, observable, transaction, computed} from "mobx";
-import actions from "./api_requests/actions";
 
-
-class Task {
-    @observable text = "";
-    @observable sort_order = 0;
-    @observable children = {};
-    @observable done = false;
-
-    id = null;
-    parent = null;
-    parent_id = null;
-
-    constructor(api_data={}) {
-        this.text = api_data.text || "";
-        this.sort_order = api_data.sort_order || 0;
-        this.done = api_data.done || false;
-
-        this.id = api_data.id || null;
-        this.parent_id = api_data.parent_id || null;
-    }
-}
+import actions from "./saved_actions";
+import Task from "./task";
+import navigate from "../navigation/navigate";
 
 
 class TaskState {
@@ -29,7 +11,7 @@ class TaskState {
     // in the database will point at this root task.
     // (This is needed instead of just forcing a root node because top-level tasks can be
     // shared between users, so there isn't actually a single consistent root to the tree.)
-    @observable root_task = new Task();
+    @observable root_task = new Task({});
 
     csrf = null;
     @observable active_task = this.root_task;
@@ -49,40 +31,38 @@ class TaskState {
 
     @action.bound
     initialise(tasks) {
-        transaction(() => {
-            // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
-            // the full tree of parents and children.
-            this.tasks_by_id = {};
-            for (let task_data of Object.values(tasks)) {
-                let task = new Task(task_data);
-                this.tasks_by_id[task.id] = task;
+        // Fill out tasks_by_id first, so that all the tasks exist for when we're constructing
+        // the full tree of parents and children.
+        this.tasks_by_id = {};
+        for (let task_data of Object.values(tasks)) {
+            let task = new Task(task_data);
+            this.tasks_by_id[task.id] = task;
+        }
+
+        // Then, fill out the parent-child relationships.
+        // At this point, the `parent` that comes in from the database is just an ID; replace
+        // it with a proper pointer. Fill out each task's list of children as well.
+        for (let task of Object.values(this.tasks_by_id)) {
+            let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
+
+            // For safety - e.g. for dealing with old data - don't explode when encountering
+            // tasks with missing parents.
+            if (parent_obj) {
+                task.parent = parent_obj;
+                parent_obj.children[task.id] = task;
+            }
+        }
+
+        // If a starting task ID was precached, and we have that task available, switch to it now.
+        // Either way, unset the precached ID so it doesn't get in the way later.
+        if (this.start_at_task_id !== null) {
+            const starting_task = this.tasks_by_id[this.start_at_task_id];
+            if (starting_task) {
+                this.active_task = starting_task;
             }
 
-            // Then, fill out the parent-child relationships.
-            // At this point, the `parent` that comes in from the database is just an ID; replace
-            // it with a proper pointer. Fill out each task's list of children as well.
-            for (let task of Object.values(this.tasks_by_id)) {
-                let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
-
-                // For safety - e.g. for dealing with old data - don't explode when encountering
-                // tasks with missing parents.
-                if (parent_obj) {
-                    task.parent = parent_obj;
-                    parent_obj.children[task.id] = task;
-                }
-            }
-
-            // If a starting task ID was precached, and we have that task available, switch to it now.
-            // Either way, unset the precached ID so it doesn't get in the way later.
-            if (this.start_at_task_id !== null) {
-                const starting_task = this.tasks_by_id[this.start_at_task_id];
-                if (starting_task) {
-                    this.active_task = starting_task;
-                }
-
-                this.start_at_task_id = null;
-            }
-        });
+            this.start_at_task_id = null;
+        }
     }
 
 
@@ -154,13 +134,44 @@ class TaskState {
 
     @action.bound
     addTask(parent, task_data) {
-        let new_task = new Task(task_data);
-        new_task.parent = parent;
+        let new_task = new Task({parent, ...task_data});
 
-        parent.children[new_task.id] = new_task;
-        this.tasks_by_id[new_task.id] = new_task;
+        const id = new_task.id || new_task.temporary_id;
+        parent.children[id] = new_task;
+        this.tasks_by_id[id] = new_task;
 
         return new_task;
+    }
+
+
+    @action.bound
+    setRealId(task, id) {
+        // After creating a task with a fake ID, use this method to set the actual
+        // id used in the database and clear out the old data.
+        delete task.parent.children[task.temporary_id];
+        delete this.tasks_by_id[task.temporary_id];
+        task.temporary_id = null;
+
+        task.parent.children[id] = task;
+        this.tasks_by_id[id] = task;
+        task.id = id;
+    }
+
+
+    @action.bound
+    deleteTask(task) {
+        // Move to a layer up, if we're currently at or below this task in the tree.
+        if (this.hierarchy.includes(task)) {
+            navigate.toTask(task.parent);
+        }
+
+        // Set the task's `to_delete` flag, so the mutation buffer knows to remove it
+        // from the backend as well.
+        task.to_delete = true;
+
+        // Remove the deleted task from objects that reference it.
+        delete task.parent.children[task.id];
+        delete this.tasks_by_id[task.id];
     }
 
 

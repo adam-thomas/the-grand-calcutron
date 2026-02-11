@@ -5,8 +5,8 @@ import $ from "jquery";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import ajax_requests from "./api_requests/api_requests";
-import taskState from "./state";
+import api_requests from "./state_management/api_requests";
+import taskState from "./state_management/state";
 import {BaseRoutedApp} from "./navigation/router";
 
 
@@ -26,9 +26,9 @@ function saveScreenWidth() {
 // Poll the task data endpoint and update the taskState accordingly.
 // This also functions as a health check, since if the user isn't logged in,
 // the ensuing 401 response will cause a redirect to the login page as per
-// the handling in ajax_requests.js.
+// the handling in api_requests.js.
 function loadTasks() {
-    return ajax_requests.get("/get_tasks/").then(
+    return api_requests.get("/get_tasks/").then(
         (return_data) => {
             taskState.initialise(return_data);
         }

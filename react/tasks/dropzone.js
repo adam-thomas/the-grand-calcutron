@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import React from "react";
 
-import taskState from "../state";
+import taskState from "../state_management/state";
 
 
 @observer export default class TaskDropzone extends React.Component {

@@ -1,9 +1,9 @@
 import {observer} from "mobx-react";
 import React from "react";
 
-import actions from "../api_requests/actions";
+import actions from "../state_management/saved_actions";
 import navigate from "../navigation/navigate";
-import taskState from "../state";
+import taskState from "../state_management/state";
 import TaskList from "./task_list";
 import AutoSizeTextarea from "./textarea";
 
@@ -12,8 +12,6 @@ import AutoSizeTextarea from "./textarea";
     constructor(props) {
         super(props);
 
-        this.children_container_ref = React.createRef();
-
         this.state = {
             field_contents: "",
         }
@@ -21,7 +19,11 @@ import AutoSizeTextarea from "./textarea";
 
     addChild(event) {
         event.preventDefault();
-        actions.addTask("", this.props.task, this.children_container_ref.current);
+
+        // TODO: This causes an edit view to open, and focuses it with the cursor, which
+        //   at least on desktop Chrome causes it to scroll into view. Is this consistent
+        //   on mobile?
+        actions.addTask("", this.props.task);
     }
 
     handleEnter(event) {

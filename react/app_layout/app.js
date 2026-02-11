@@ -2,7 +2,7 @@ import DjangoCSRFToken from 'django-react-csrftoken';
 import {observer} from "mobx-react";
 import React from "react";
 
-import taskState from "../state";
+import taskState from "../state_management/state";
 import PageColumn from "../tasks/page_column";
 import ContextMenus from './context_menus';
 

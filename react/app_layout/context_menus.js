@@ -1,7 +1,7 @@
 import React from "react";
 import { ContextMenu, MenuItem } from "react-contextmenu";
 
-import taskState from "../state";
+import taskState from "../state_management/state";
 
 
 function cleanEvent(event) {
