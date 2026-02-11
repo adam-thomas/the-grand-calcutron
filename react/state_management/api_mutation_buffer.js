@@ -6,19 +6,18 @@ import taskState from "./state";
 // A value of `null` indicates the task should be deleted.
 const buffered_tasks = new Set();
 
-// This cooldown timer prevents lots of requests from happening
-// too quickly.
-const cooldownInterval = null;
+// Wait a certain amount of time (ms) between requests to
+// avoid churning the server.
+const cooldownTime = 1500;
+
+// Store whether a mutation is actively occurring.
+let mutationPromise = null;
 
 
 export default function mutateTask(task) {
-    if (buffered_tasks.has(task)) {
-        return;
-    }
-
     buffered_tasks.add(task);
 
-    if (!cooldownInterval) {
+    if (!mutationPromise) {
         applyNextMutation();
     }
 }
@@ -26,6 +25,7 @@ export default function mutateTask(task) {
 
 function applyNextMutation() {
     if (buffered_tasks.size === 0) {
+        mutationPromise = null;
         return Promise.resolve();
     }
 
@@ -46,6 +46,7 @@ function applyNextMutation() {
 
     if (task.id === null) {
         // A task without an ID needs to be created.
+        // When it comes back, set its new ID properly and clear away the temporary one.
         request_promise = api_requests.post("/new/", post_data).then((task_data) => {
             runInAction(() => {
                 taskState.setRealId(task, task_data.id);
@@ -61,7 +62,10 @@ function applyNextMutation() {
         request_promise = api_requests.patch(`/edit/${task.id}/`, post_data);
     }
 
-    // After the request completes, check whether there are any other tasks in the
-    // buffer, and apply another mutation if so.
-    return request_promise.then(applyNextMutation);
+    // After the request completes, wait for the cooldown timer, then re-run this function
+    // to check the buffer again and save another mutation if needed.
+    mutationPromise = request_promise.then(() => {
+        return new Promise((resolve) => setTimeout(resolve, cooldownTime)).then(applyNextMutation);
+    })
+    return mutationPromise;
 }
