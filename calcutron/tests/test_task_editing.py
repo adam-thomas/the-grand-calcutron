@@ -44,7 +44,7 @@ class TestTaskEditing(TaskTestCase):
 
         self.client.force_login(self.user_1)
         response = self.client.patch(f"/edit/{task_to_move.id}/", {
-            "parent": None,
+            "parent_id": None,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
@@ -63,7 +63,7 @@ class TestTaskEditing(TaskTestCase):
 
         self.client.force_login(self.user_1)
         response = self.client.patch(f"/edit/{task_to_move.id}/", {
-            "parent": self.task.id,
+            "parent_id": self.task.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
@@ -83,7 +83,7 @@ class TestTaskEditing(TaskTestCase):
 
         self.client.force_login(self.user_1)
         response = self.client.patch(f"/edit/{task_to_move.id}/", {
-            "parent": new_parent.id,
+            "parent_id": new_parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
@@ -100,7 +100,7 @@ class TestTaskEditing(TaskTestCase):
 
         self.client.force_login(self.user_1)
         response = self.client.patch(self.edit_url, {
-            "parent": parent.id,
+            "parent_id": parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 400, response.data)
@@ -115,7 +115,7 @@ class TestTaskEditing(TaskTestCase):
 
         self.client.force_login(self.user_1)
         response = self.client.patch(self.edit_url, {
-            "parent": middle_parent.id,
+            "parent_id": middle_parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 400, response.data)

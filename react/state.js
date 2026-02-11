@@ -18,7 +18,7 @@ class Task {
         this.done = api_data.done || false;
 
         this.id = api_data.id || null;
-        this.parent_id = api_data.parent || null;
+        this.parent_id = api_data.parent_id || null;
     }
 }
 
@@ -62,7 +62,8 @@ class TaskState {
             for (let task of Object.values(this.tasks_by_id)) {
                 let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
 
-                // For safety - e.g. for dealing with old data - handle tasks with missing parents.
+                // For safety - e.g. for dealing with old data - don't explode when encountering
+                // tasks with missing parents.
                 if (parent_obj) {
                     task.parent = parent_obj;
                     parent_obj.children[task.id] = task;

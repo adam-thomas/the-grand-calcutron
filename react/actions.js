@@ -8,7 +8,7 @@ import taskState from "./state";
 function addTask(text, parent, task_list_container=null) {
     let data = {
         text: text,
-        parent: parent.id,
+        parent_id: parent.id,
     };
 
     ajax_requests.post("/new/", data).then((return_data) => {
@@ -23,11 +23,7 @@ function addTask(text, parent, task_list_container=null) {
 
 
 function deleteTask(task) {
-    let data = {
-        parent: task.parent.id,
-    };
-
-    ajax_requests.delete(`/edit/${task.id}/`, data).then(() => {
+    ajax_requests.delete(`/edit/${task.id}/`).then(() => {
         transaction(() => {
             if (taskState.hierarchy.includes(task)) {
                 navigate.toTask(task.parent);
@@ -74,7 +70,7 @@ function moveTask(task, new_sort_order, new_parent=undefined) {
     };
 
     if (new_parent !== undefined) {
-        data.parent = new_parent.id;
+        data.parent_id = new_parent.id;
     }
 
     return editTask(task, data);

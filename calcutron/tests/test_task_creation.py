@@ -28,7 +28,7 @@ class TestTaskCreation(TaskTestCase):
         self.client.force_login(self.user_1)
         response = self.client.post("/new/", {
             "text": "A new task",
-            "parent": parent.id,
+            "parent_id": parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 201, response.data)
@@ -48,7 +48,7 @@ class TestTaskCreation(TaskTestCase):
         self.client.force_login(self.user_1)
         response = self.client.post("/new/", {
             "text": "A new task",
-            "parent": middle_parent.id,
+            "parent_id": middle_parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 201, response.data)
@@ -69,7 +69,7 @@ class TestTaskCreation(TaskTestCase):
         self.client.force_login(self.user_2)
         response = self.client.post("/new/", {
             "text": "A new task",
-            "parent": parent.id,
+            "parent_id": parent.id,
         }, content_type="application/json")
 
         self.assertEqual(response.status_code, 400, response.data)

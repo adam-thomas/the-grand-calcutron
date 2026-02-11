@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
@@ -8,7 +9,7 @@ from rest_framework.serializers import ValidationError
 
 from .models import Task
 from .permissions import can_access_task, TaskAccessPermission
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, TASK_API_FIELDS
 
 
 
@@ -40,8 +41,8 @@ class UserTasksMixin:
         Check that if this task is being created or moved under a parent, that that parent
         is also accessible to this user.
         """
-        parent = serializer.validated_data.get("parent", None)
-        if parent and not can_access_task(self.request.user, parent):
+        parent_id = serializer.validated_data.get("parent_id", None)
+        if parent_id and not can_access_task(self.request.user, Task.objects.get(id=parent_id)):
             raise ValidationError("Cannot assign to this parent.")
         
     def calculate_top_level_parent(self, task):
@@ -74,7 +75,13 @@ class UserTasksMixin:
 
 
 class GetAllTasksView(UserTasksMixin, ListAPIView):
-    pass
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Bypass the normal DRF serializer, because they're very slow on large lists.
+        data = queryset.values(*TASK_API_FIELDS)
+
+        return Response(data)
 
 
 class CreateTaskView(UserTasksMixin, CreateAPIView):
