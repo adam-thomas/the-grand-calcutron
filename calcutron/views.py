@@ -2,10 +2,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 
 from .models import Task
+from .permissions import can_access_task, TaskAccessPermission
 from .serializers import TaskSerializer
 
 
@@ -26,46 +28,62 @@ class LoginHealthCheck(LoginRequiredMixin, View):
 
 
 class UserTasksMixin:
+    model_class = Task
     serializer_class = TaskSerializer
-
-    def get_queryset(self):
-        return Task.objects.filter(users=self.request.user)
+    permission_classes = [IsAuthenticated, TaskAccessPermission]
     
+    def get_queryset(self):
+        return Task.objects.for_user(self.request.user)
+
     def check_parent(self, serializer):
         """
         Check that if this task is being created or moved under a parent, that that parent
-        has the correct users on it.
+        is also accessible to this user.
         """
         parent = serializer.validated_data.get("parent", None)
-        if parent and not self.get_queryset().filter(id=parent.id).exists():
+        if parent and not can_access_task(self.request.user, parent):
             raise ValidationError("Cannot assign to this parent.")
+        
+    def calculate_top_level_parent(self, task):
+        """
+        Figure out what a task's top-level parent should be based on its current parent
+        (or lack thereof).
+        """
+        if task.parent is None:
+            return None
+        
+        if task.parent.parent is None:
+            return task.parent
+        
+        return task.parent.top_level_parent
+    
+    def save_and_set_data(self, serializer):
+        """
+        Save a Task instance, and set its user list and top_level_parent according
+        to its position in the hierarchy.
+        """
+        edited_task = serializer.save()
+        
+        edited_task.top_level_parent = self.calculate_top_level_parent(edited_task)
+        edited_task.save()
+        
+        if edited_task.parent is None:
+            edited_task.users.add(self.request.user)
+        else:
+            edited_task.users.set([])
 
 
 class GetAllTasksView(UserTasksMixin, ListAPIView):
-    # TODO: Unify the permission model so that items under a top-level task with the correct
-    # users can be viewed and edited.
-    def list(self, request, *args, **kwargs):
-        tasks = list(Task.objects.filter(parent=None, users=request.user))
-        new_tasks = tasks
-
-        while len(new_tasks) > 0:
-            new_tasks = Task.objects.filter(parent__in=new_tasks)
-            tasks.extend(new_tasks)
-
-        serializer = self.get_serializer(tasks, many=True)
-        return Response(serializer.data)
+    pass
 
 
 class CreateTaskView(UserTasksMixin, CreateAPIView):
     def perform_create(self, serializer):
         self.check_parent(serializer)
-
-        new_object = serializer.save()
-        new_object.users.add(self.request.user)
+        self.save_and_set_data(serializer)
 
 
 class EditTaskView(UserTasksMixin, RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         self.check_parent(serializer)
-        serializer.save()
-
+        self.save_and_set_data(serializer)

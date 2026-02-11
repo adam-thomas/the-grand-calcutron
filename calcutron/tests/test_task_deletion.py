@@ -1,18 +1,13 @@
-from django.contrib.auth.models import User
-from django.test import TestCase
-
+from .task_test_case import TaskTestCase
 from ..models import Task
 
 
-class TestTaskCreation(TestCase):
+class TestTaskDeletion(TaskTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user_1 = User.objects.create_user("leeroy")
-        cls.user_2 = User.objects.create_user("jenkins")
+        super().setUpTestData()
 
-        cls.task = Task.objects.create(text="An old task")
-        cls.task.users.set([cls.user_1])
-
+        cls.task = cls.create_task("An old task", users=[cls.user_1])
         cls.edit_url = f"/edit/{cls.task.id}/"
     
     def test_delete_task(self):
@@ -22,7 +17,7 @@ class TestTaskCreation(TestCase):
         self.client.force_login(self.user_1)
         response = self.client.delete(self.edit_url)
 
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 204, response.data)
         self.assertEqual(Task.objects.count(), 0)
 
     def test_delete_by_wrong_user(self):
@@ -32,5 +27,5 @@ class TestTaskCreation(TestCase):
         self.client.force_login(self.user_2)
         response = self.client.delete(self.edit_url)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, response.data)
         self.assertEqual(Task.objects.count(), 1)
