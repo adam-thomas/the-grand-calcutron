@@ -8,7 +8,10 @@ const buffered_tasks = new Set();
 
 // Wait a certain amount of time (ms) between requests to
 // avoid churning the server.
-const cooldownTime = 1500;
+// TODO: Set up bulk updates (especially for moving tasks and
+// updating a load of sort_order values) and extend the cooldown
+// a bit.
+const cooldownTime = 1000;
 
 // Store whether a mutation is actively occurring.
 let mutationPromise = null;
@@ -45,11 +48,11 @@ function applyNextMutation() {
     }
 
     if (task.id === null) {
-        // A task without an ID needs to be created.
-        // When it comes back, set its new ID properly and clear away the temporary one.
+        // A task without an ID needs to be created in the database.
+        // When it comes back, set its new ID and sort_order properly.
         request_promise = api_requests.post("/new/", post_data).then((task_data) => {
             runInAction(() => {
-                taskState.setRealId(task, task_data.id);
+                taskState.setRealId(task, task_data.id, task_data.sort_order);
             })
         });
 

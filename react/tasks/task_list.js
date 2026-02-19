@@ -24,13 +24,18 @@ import SingleTask from "./task";
                 {children.map((child) => {
                     const is_active = taskState.columns.includes(child);
 
+                    // Use the temporary ID generated for a newly-created task preferentially as
+                    // its key, over the actual database ID. This is so that when the task gets
+                    // its ID from the database, the React component isn't removed and recreated.
+                    const task_key = child.temporary_id || child.id;
+
                     return (
-                        <Fragment key={child.id}>
-                            <li key={child.id} className={`${is_active ? "active" : ""} task-wrapper`}>
+                        <Fragment key={task_key}>
+                            <li key="task" className={`${is_active ? "active" : ""} task-wrapper`}>
                                 <SingleTask task={child} is_active={is_active} />
                             </li>
 
-                            <li key={`dropzone-${child.id}`} className="dropzone-wrapper">
+                            <li key="dropzone" className="dropzone-wrapper">
                                 <TaskDropzone zoneType="after" task={child} />
                             </li>
                         </Fragment>

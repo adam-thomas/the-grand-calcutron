@@ -3,7 +3,7 @@ import {observable} from "mobx";
 
 export default class Task {
     @observable text = "";
-    @observable sort_order = 0;
+    @observable sort_order = undefined;
     @observable children = {};
     @observable done = false;
     @observable to_delete = false;
@@ -15,7 +15,7 @@ export default class Task {
     // Use a temporary ID while the task doesn't exist in the backend.
     temporary_id = null;
 
-    constructor({ text="", sort_order=0, done=false, id=null, parent_id=null, parent=null }) {
+    constructor({ text="", sort_order=undefined, done=false, id=null, parent_id=null, parent=null }) {
         this.text = text;
         this.sort_order = sort_order;
         this.done = done;

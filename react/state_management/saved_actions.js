@@ -15,17 +15,7 @@ import mutateTask from "./api_mutation_buffer";
 
 
 function addTask(text, parent) {
-    const existing_sort_orders = [
-        ...Object.values(parent.children).map(c => c.sort_order),
-        0
-    ];
-    const new_sort_order = Math.max(...existing_sort_orders) + 1;
-
-    const new_task = taskState.addTask(parent, {
-        text,
-        sort_order: new_sort_order,
-    });
-
+    const new_task = taskState.addTask(parent, { text });
     mutateTask(new_task);
 
     // let data = {
