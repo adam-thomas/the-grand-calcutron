@@ -146,7 +146,7 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
             return (
                 <div className="loading checkbox-wrapper">
                     <div className={checkbox_class}>
-                        <span class="ellipsis">···</span>
+                        <span className="ellipsis">···</span>
                     </div>
                 </div>
             );
