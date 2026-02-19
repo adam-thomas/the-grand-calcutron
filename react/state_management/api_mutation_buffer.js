@@ -1,10 +1,10 @@
-import { runInAction } from "mobx";
+import { observable, runInAction } from "mobx";
 
 import api_requests from "./api_requests";
 import taskState from "./state";
 
 // A value of `null` indicates the task should be deleted.
-const buffered_tasks = new Set();
+const buffered_tasks = observable(new Set());
 
 // Wait a certain amount of time (ms) between requests to
 // avoid churning the server.
@@ -23,6 +23,11 @@ export default function mutateTask(task) {
     if (!mutationPromise) {
         applyNextMutation();
     }
+}
+
+
+export function isBuffered(task) {
+    return buffered_tasks.has(task);
 }
 
 

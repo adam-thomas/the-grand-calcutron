@@ -7,6 +7,7 @@ import navigate from "../navigation/navigate";
 import taskState from "../state_management/state";
 import AutoSizeTextarea from "./textarea";
 import TaskDropzone from "./dropzone";
+import { isBuffered } from "../state_management/api_mutation_buffer";
 
 
 @observer export default class SingleTask extends React.Component {
@@ -135,11 +136,30 @@ import TaskDropzone from "./dropzone";
         return result.concat(rest_of_text);
     }
 
-    renderTaskText() {
+    renderDoneCheckbox() {
         let checkbox_class = "imitation-checkbox";
         if (this.props.task.done) {
             checkbox_class = "checked " + checkbox_class;
         }
+
+        if (isBuffered(this.props.task)) {
+            return (
+                <div className="loading checkbox-wrapper">
+                    <div className={checkbox_class}>
+                        <span class="ellipsis">···</span>
+                    </div>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
+                <div className={checkbox_class} />
+            </div>
+        );
+    }
+
+    renderTaskText() {
 
         return (
             <ContextMenuTrigger
@@ -162,9 +182,7 @@ import TaskDropzone from "./dropzone";
                     onClick: this.activate.bind(this),
                 }}
             >
-                <div className="checkbox-wrapper" onClick={this.toggleDone.bind(this)}>
-                    <div className={checkbox_class} />
-                </div>
+                {this.renderDoneCheckbox()}
 
                 <span className="task-text">{this.parseTextForURLs(this.props.task.text)}</span>
 

@@ -256,6 +256,31 @@
                                         border: 2px solid @text-dark;
                                     }
                                 }
+
+                                &.loading {
+                                    cursor: default;
+
+                                    .imitation-checkbox {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+
+                                        .ellipsis {
+                                            font-size: 16px;
+                                            font-weight: bold;
+                                            color: @text-dark;
+
+                                            // We're using "interpuncts" (vertically centred dots)
+                                            // so that they visually align in the middle of the dot.
+                                            // Using our font, they're quite spread-out, so squish
+                                            // them back in so they look like a reasonable fit.
+                                            // Letter spacing seems to be applied asymmetrically,
+                                            // so add some right padding to re-centre them.
+                                            letter-spacing: -2px;
+                                            padding-right: 2px;
+                                        }
+                                    }
+                                }
                             }
 
                             .task-entry {
