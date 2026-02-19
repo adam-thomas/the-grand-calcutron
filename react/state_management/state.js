@@ -3,6 +3,7 @@ import {action, observable, transaction, computed} from "mobx";
 import actions from "./saved_actions";
 import Task from "./task";
 import navigate from "../navigation/navigate";
+import mutateTask from "./api_mutation_buffer";
 
 
 class TaskState {
@@ -191,9 +192,14 @@ class TaskState {
 
 
     @action.bound
-    setSortOrder(task, new_value, new_parent=undefined) {
+    setSortOrder(task, new_value) {
         task.sort_order = new_value;
-        actions.moveTask(task, new_value, new_parent);
+
+        // TODO: Instead of manually synchronising here, use an autorun on tasks to automatically
+        // mirror them to the backend when they receive edits. Or, initiate all the below functions
+        // (setTaskParent, moveTaskBefore, etc) from saved_actions.js so there's a consistent point
+        // for making modifications.
+        mutateTask(task);
     }
 
 
@@ -222,7 +228,7 @@ class TaskState {
 
         // Tell the API about the changes - both to the sort order and to the parent.
         if (!skip_save) {
-            this.setSortOrder(task, max_sort_order + 1, target_parent);
+            this.setSortOrder(task, max_sort_order + 1);
         }
     }
 
@@ -240,7 +246,7 @@ class TaskState {
         // If the task being moved isn't in the same level of the hierarchy as the target,
         // update that first.
         if (task.parent !== target_task.parent) {
-            this.setTaskParent(task, target_parent, true);
+            this.setTaskParent(task, target_parent);
         }
 
         let new_sort_order = target_task.sort_order;
@@ -266,7 +272,7 @@ class TaskState {
             new_sort_order--;
         }
 
-        this.setSortOrder(task, new_sort_order, task.parent);
+        this.setSortOrder(task, new_sort_order);
     }
 
 

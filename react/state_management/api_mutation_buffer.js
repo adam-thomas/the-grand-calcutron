@@ -64,8 +64,19 @@ function applyNextMutation() {
 
     // After the request completes, wait for the cooldown timer, then re-run this function
     // to check the buffer again and save another mutation if needed.
-    mutationPromise = request_promise.then(() => {
-        return new Promise((resolve) => setTimeout(resolve, cooldownTime)).then(applyNextMutation);
-    })
+    // If a request fails, clear the buffer and reset to a neutral state.
+    //
+    // TODO: This might end up with weird consequences - either reset more properly (reload
+    // the currently displayed data?) or try to continue gracefully. Retrying the previous
+    // operation may help.
+    mutationPromise = request_promise.then(
+        () => {
+            return new Promise((resolve) => setTimeout(resolve, cooldownTime)).then(applyNextMutation);
+        },
+        (error) => {
+            alert(`Request failed: ${error}`);
+            buffered_tasks.clear();
+        }
+    )
     return mutationPromise;
 }

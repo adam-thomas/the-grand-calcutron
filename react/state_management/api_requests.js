@@ -51,19 +51,14 @@ function _run_fetch(url, method, data=null) {
                     if (response.ok) {
                         return json_data;
                     }
-                    
-                    alert(JSON.stringify(json_data));
                     throw json_data;
                 },
                 (error) => {
                     // If the JSON parsing failed, we either have a successful response with invalid
                     // contents, or a normal empty failure response with no extra data.
                     if (response.ok) {
-                        alert(`Received invalid JSON in response: ${error}`);
-                        throw error;
+                        throw `Received invalid JSON in response: ${error}`;
                     }
-
-                    alert(`Request failed with status code ${response.status}`);
                     throw {"status": response.status};
                 },
             );
