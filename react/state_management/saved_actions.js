@@ -19,7 +19,7 @@ function addTask(text, parent) {
         ...Object.values(parent.children).map(c => c.sort_order),
         0
     ];
-    const new_sort_order = Math.max(existing_sort_orders) + 1;
+    const new_sort_order = Math.max(...existing_sort_orders) + 1;
 
     const new_task = taskState.addTask(parent, {
         text,

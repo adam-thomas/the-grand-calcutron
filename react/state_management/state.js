@@ -135,7 +135,7 @@ class TaskState {
 
     @action.bound
     addTask(parent, task_data) {
-        let new_task = new Task({parent, ...task_data});
+        const new_task = new Task({parent, ...task_data});
 
         const id = new_task.id || new_task.temporary_id;
         parent.children[id] = new_task;
