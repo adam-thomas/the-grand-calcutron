@@ -206,8 +206,10 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
                 />
 
                 <div className="actions">
-                    <button className="submit" onClick={this.handleSaveEditButton.bind(this)}>&#128190;</button>
-                    <button className="submit" onClick={this.handleCancelEditButton.bind(this)}>&#10006;</button>
+                    {this.state.is_new || (
+                        <button className="cancel submit" onClick={this.handleCancelEditButton.bind(this)}>&#10006;</button>
+                    )}
+                    <button className="save submit" onClick={this.handleSaveEditButton.bind(this)}>&#128190;</button>
                 </div>
             </div>
         );

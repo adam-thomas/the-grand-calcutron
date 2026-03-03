@@ -318,25 +318,35 @@
                                 }
 
                                 &.edit-form {
-                                    align-items: flex-end;
+                                    position: relative;
 
                                     textarea {
                                         min-height: 65px;
                                     }
 
                                     .actions {
+                                        // Include a container to make space for the icons.
                                         margin-left: 5px;
-
-                                        display: flex;
-                                        flex-flow: column;
-                                        gap: 5px;
+                                        width: 30px;
 
                                         button.submit {
+                                            // Attach these buttons to the top and bottom of the textarea.
+                                            // Flexbox can't do this, so we need to use position: absolute
+                                            // instead.
+                                            position: absolute;
+
                                             height: 30px;
                                             width: 30px;
-                                            flex: 0 0 auto;
 
                                             font-size: 15px;
+
+                                            &.save {
+                                                bottom: 0;
+                                            }
+
+                                            &.cancel {
+                                                top: 0;
+                                            }
                                         }
                                     }
                                 }
