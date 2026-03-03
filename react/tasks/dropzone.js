@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import React from "react";
 
-import taskState from "../state_management/state";
+import taskState, { INTERACTION_MODES } from "../state_management/state";
 
 
 @observer export default class TaskDropzone extends React.Component {
@@ -21,8 +21,14 @@ import taskState from "../state_management/state";
             "after": taskState.moveTaskAfter,
         }
 
-        operations[this.props.zoneType](taskState.dragged_item, this.props.task);
-        taskState.dragged_item = null;
+        if (taskState.interaction.mode !== INTERACTION_MODES.DRAG) {
+            // Weird UI case. Do nothing.
+            console.log("skipping")
+            return;
+        }
+
+        operations[this.props.zoneType](taskState.interaction.task, this.props.task);
+        taskState.setInteraction();
         this.setState({highlight: false});
     }
 
@@ -39,7 +45,7 @@ import taskState from "../state_management/state";
 
 
     render() {
-        if (taskState.is_mobile || taskState.dragged_item === null) {
+        if (taskState.is_mobile || taskState.interaction.mode !== INTERACTION_MODES.DRAG) {
             return null;
         }
 

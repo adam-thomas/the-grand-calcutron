@@ -4,7 +4,7 @@ import { ContextMenuTrigger } from "react-contextmenu";
 
 import actions from "../state_management/saved_actions";
 import navigate from "../navigation/navigate";
-import taskState from "../state_management/state";
+import taskState, { INTERACTION_MODES } from "../state_management/state";
 import AutoSizeTextarea from "./textarea";
 import TaskDropzone from "./dropzone";
 import { isBuffered } from "../state_management/api_mutation_buffer";
@@ -27,11 +27,11 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
     }
 
     dragStart() {
-        taskState.dragged_item = this.props.task;
+        taskState.setInteraction(INTERACTION_MODES.DRAG, this.props.task);
     }
 
     dragEnd() {
-        taskState.dragged_item = null;
+        taskState.setInteraction();
     }
 
     activate() {

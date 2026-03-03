@@ -5,6 +5,14 @@ import navigate from "../navigation/navigate";
 import mutateTask from "./api_mutation_buffer";
 
 
+export const INTERACTION_MODES = {
+    NONE: null,
+    DRAG: "drag",
+    EDIT: "edit",
+    CONTEXT_MENU: "context_menu",
+}
+
+
 class TaskState {
     // The root task fakes an item at the head of the tree, which makes it easier to write code
     // without having to write special cases for null parents. All tasks with a parent ID of null
@@ -16,8 +24,13 @@ class TaskState {
     csrf = null;
     @observable active_task = this.root_task;
     @observable screen_width = 0;
-    @observable dragged_item = null;
     @observable context_menu_source_task = null;
+
+    // State for mutually-exclusive, complex UI interactions.
+    @observable interaction = {
+        mode: null,  // must be a value from INTERACTION_MODES (we have typescript at home)
+        task: null,  // can be null or a Task object being operated on
+    };
 
     // A dictionary of tasks indexed by their database IDs, without the fake root.
     // This can be used for direct lookup.
@@ -106,6 +119,25 @@ class TaskState {
         // Return true if we think this is a mobile OS.
         // For now, that's just predicated on screen width.
         return (this.screen_width <= 600);
+    }
+
+
+    @action.bound
+    setInteraction(mode=null, task=null) {
+        /*
+         * Convenience method to handle the interaction format.
+         * Includes some basic type validation on the `mode` value.
+         * Can be called with no parameters to reset the interaction
+         * back to its idle state.
+         */
+        if (!Object.values(INTERACTION_MODES).includes(mode)) {
+            throw "Invalid interaction mode " + mode;
+        }
+
+        this.interaction = {
+            mode: mode,
+            task: task,
+        };
     }
 
 
