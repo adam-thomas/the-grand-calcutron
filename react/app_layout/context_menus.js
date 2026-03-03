@@ -1,7 +1,8 @@
 import React from "react";
 import { ContextMenu, MenuItem } from "react-contextmenu";
+import { observer } from "mobx-react";
 
-import taskState from "../state_management/state";
+import taskState, { INTERACTION_MODES } from "../state_management/state";
 
 
 function cleanEvent(event) {
@@ -10,33 +11,21 @@ function cleanEvent(event) {
 }
 
 
-export default class ContextMenus extends React.Component {
+@observer export default class ContextMenus extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            overlay: false,
-        }
-
-        this.onShowAnyMenu = this.onShowAnyMenu.bind(this);
         this.onHideAnyMenu = this.onHideAnyMenu.bind(this);
     }
 
-
-    onShowAnyMenu() {
-        this.setState({overlay: true});
-    }
     onHideAnyMenu() {
-        this.setState({overlay: false});
         taskState.context_menu_source_task = null;
     }
-
 
     render() {
         return (
             <>
                 <ContextMenu id="task-context-menu" onShow={this.onShowAnyMenu} onHide={this.onHideAnyMenu}>
-                    <MenuItem onClick={(event, data) => {
+                    <MenuItem disabled={taskState.isInteracting(INTERACTION_MODES.EDIT)} onClick={(event, data) => {
                         cleanEvent(event);
                         data.showEditCallback();
                     }}>

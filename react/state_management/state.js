@@ -9,6 +9,11 @@ export const INTERACTION_MODES = {
     NONE: null,
     DRAG: "drag",
     EDIT: "edit",
+
+    // TODO: Handling react-contextmenu through this variable is impossible,
+    // so currently, this interaction mode doesn't do anything. It might be
+    // worth building a context menu by hand in order to improve the UI
+    // behaviour overall.
     CONTEXT_MENU: "context_menu",
 }
 

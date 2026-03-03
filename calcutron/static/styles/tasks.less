@@ -28,6 +28,14 @@
                 margin: 5px 5px;
                 border-bottom: 1px solid @text-light;
             }
+            
+            &--disabled:not(&--divider) {
+                color: @text-light;
+    
+                &:hover {
+                    background-color: @white;
+                }
+            }
         }
     }
 
