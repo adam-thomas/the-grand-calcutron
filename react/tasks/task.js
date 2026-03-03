@@ -16,22 +16,19 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
 
         this.state = {
             is_new: this.props.task.text === "",
-            edit_mode: this.props.task.text === "",
-            edit_field_contents: this.props.task.text,
-            
-            previous_contents: this.props.task.text,
-            saving_promise: null,
-            text_to_save_buffer: null,
-            delete_buffered: false,
         }
     }
 
     dragStart() {
-        taskState.setInteraction(INTERACTION_MODES.DRAG, this.props.task);
+        if (!taskState.isInteracting()) {
+            taskState.setInteraction(INTERACTION_MODES.DRAG, this.props.task);
+        }
     }
 
     dragEnd() {
-        taskState.setInteraction();
+        if (taskState.isInteracting(INTERACTION_MODES.DRAG)) {
+            taskState.setInteraction();
+        }
     }
 
     activate() {
@@ -43,35 +40,34 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
     }
 
     showEditMode() {
-        this.setState({
-            edit_mode: true,
+        if (taskState.isInteracting()) {
+            return;
+        }
+
+        taskState.setInteraction(INTERACTION_MODES.EDIT, this.props.task, {
             edit_field_contents: this.props.task.text,
             previous_contents: this.props.task.text,
         });
     }
     
     clearEditState() {
+        taskState.setInteraction();
         this.setState({
-            edit_mode: false,
             is_new: false,
-            saving_promise: false,
-            text_to_save_buffer: null,
-            edit_field_contents: this.props.task.text,
-            previous_contents: this.props.task.text,
         });
     }
 
     handleSaveEditButton() {
         // If the task is saved with empty contents, delete it. Otherwise, save the current
         // text and close the editing UI.
-        let text = this.state.edit_field_contents;
+        let text = taskState.interaction.data.edit_field_contents;
 
-        if (text === "") {
+        if (!text || text === "") {
             this.handleDelete();
-            return;
+        } else {
+            actions.setTaskText(this.props.task, text);
         }
 
-        actions.setTaskText(this.props.task, text);
         this.clearEditState();
     }
 
@@ -81,16 +77,19 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
         // before editing.
         if (this.state.is_new) {
             this.handleDelete();
-            return;
+        } else {
+            actions.setTaskText(this.props.task, taskState.interaction.data.previous_contents);
         }
 
-        actions.setTaskText(this.props.task, this.state.previous_contents);
         this.clearEditState();
     }
 
     handleEditTextInput(event) {
         const text = event.target.value;
-        this.setState({edit_field_contents: text});
+        taskState.setInteraction(INTERACTION_MODES.EDIT, this.props.task, {
+            ...taskState.interaction.data,
+            edit_field_contents: text,
+        });
         actions.setTaskText(this.props.task, text);
     }
 
@@ -160,7 +159,6 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
     }
 
     renderTaskText() {
-
         return (
             <ContextMenuTrigger
                 id="task-context-menu"
@@ -200,23 +198,24 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
             <div key="add-form" className="edit-form task-entry">
                 <AutoSizeTextarea
                     autoFocus={true}
-                    value={this.state.edit_field_contents}
+                    value={taskState.interaction.data.edit_field_contents || ""}
                     onChange={this.handleEditTextInput.bind(this)}
                     onKeyDown={this.handleEscEnter.bind(this)}
                 />
 
                 <div className="actions">
                     {this.state.is_new || (
-                        <button className="cancel submit" onClick={this.handleCancelEditButton.bind(this)}>&#10006;</button>
+                        <button className="cancel submit" onClick={this.handleCancelEditButton.bind(this)}>&#8634;</button>
                     )}
-                    <button className="save submit" onClick={this.handleSaveEditButton.bind(this)}>&#128190;</button>
+                    <button className="save submit" onClick={this.handleSaveEditButton.bind(this)}>&#10003;</button>
                 </div>
             </div>
         );
     }
 
     render() {
-        const draggable = !this.state.edit_mode && !taskState.is_mobile;
+        const is_editing = taskState.isInteracting(INTERACTION_MODES.EDIT, this.props.task);
+        const draggable = !is_editing && !taskState.is_mobile;
         const is_context_menu_source = (taskState.context_menu_source_task === this.props.task);
 
         const className = [
@@ -233,7 +232,7 @@ import { isBuffered } from "../state_management/api_mutation_buffer";
                 onDragStart={draggable ? this.dragStart.bind(this) : null}
                 onDragEnd={draggable ? this.dragEnd.bind(this) : null}
             >
-                {this.state.edit_mode
+                {is_editing
                     ? this.renderEditForm()
                     : this.renderTaskText()
                 }

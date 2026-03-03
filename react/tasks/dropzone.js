@@ -21,9 +21,8 @@ import taskState, { INTERACTION_MODES } from "../state_management/state";
             "after": taskState.moveTaskAfter,
         }
 
-        if (taskState.interaction.mode !== INTERACTION_MODES.DRAG) {
+        if (!taskState.isInteracting(INTERACTION_MODES.DRAG)) {
             // Weird UI case. Do nothing.
-            console.log("skipping")
             return;
         }
 
@@ -45,7 +44,7 @@ import taskState, { INTERACTION_MODES } from "../state_management/state";
 
 
     render() {
-        if (taskState.is_mobile || taskState.interaction.mode !== INTERACTION_MODES.DRAG) {
+        if (taskState.is_mobile || !taskState.isInteracting(INTERACTION_MODES.DRAG)) {
             return null;
         }
 

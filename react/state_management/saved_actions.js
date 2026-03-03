@@ -1,7 +1,5 @@
 import {runInAction, transaction} from "mobx";
 
-import api_requests from "./api_requests";
-import navigate from "../navigation/navigate";
 import taskState from "./state";
 import mutateTask from "./api_mutation_buffer";
 
@@ -17,6 +15,7 @@ import mutateTask from "./api_mutation_buffer";
 function addTask(text, parent) {
     const new_task = taskState.addTask(parent, { text });
     mutateTask(new_task, "create");
+    return new_task;
 }
 
 

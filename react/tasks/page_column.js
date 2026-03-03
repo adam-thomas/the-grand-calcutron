@@ -3,7 +3,7 @@ import React from "react";
 
 import actions from "../state_management/saved_actions";
 import navigate from "../navigation/navigate";
-import taskState from "../state_management/state";
+import taskState, { INTERACTION_MODES } from "../state_management/state";
 import TaskList from "./task_list";
 import AutoSizeTextarea from "./textarea";
 
@@ -23,7 +23,11 @@ import AutoSizeTextarea from "./textarea";
         // TODO: This causes an edit view to open, and focuses it with the cursor, which
         //   at least on desktop Chrome causes it to scroll into view. Is this consistent
         //   on mobile?
-        actions.addTask("", this.props.task);
+        const new_task = actions.addTask("", this.props.task);
+        taskState.setInteraction(
+            INTERACTION_MODES.EDIT,
+            new_task,
+        )
     }
 
     handleEnter(event) {
@@ -58,7 +62,7 @@ import AutoSizeTextarea from "./textarea";
                 </div>
 
 
-                {this.props.task == taskState.active_task &&
+                {this.props.task == taskState.active_task && !taskState.isInteracting() &&
                     <div key="add-new" className="add-new-task-wrapper">
                         <button className="submit" onClick={this.addChild.bind(this)}>+ Add</button>
                     </div>                    

@@ -30,6 +30,7 @@ class TaskState {
     @observable interaction = {
         mode: null,  // must be a value from INTERACTION_MODES (we have typescript at home)
         task: null,  // can be null or a Task object being operated on
+        data: {},    // arbitrary extra data specific to the interaction
     };
 
     // A dictionary of tasks indexed by their database IDs, without the fake root.
@@ -123,21 +124,57 @@ class TaskState {
 
 
     @action.bound
-    setInteraction(mode=null, task=null) {
+    setInteraction(mode=null, task=null, data={}) {
         /*
          * Convenience method to handle the interaction format.
+         *
          * Includes some basic type validation on the `mode` value.
          * Can be called with no parameters to reset the interaction
          * back to its idle state.
+         * If a non-null mode is passed and an interaction is already
+         * occurring, does nothing, unless both the mode and task match
+         * the current state, in which case the data will be updated.
          */
         if (!Object.values(INTERACTION_MODES).includes(mode)) {
             throw "Invalid interaction mode " + mode;
         }
 
+        if (
+            mode &&
+            this.interaction.mode &&
+            (mode !== this.interaction.mode || task !== this.interaction.task)
+        ) {
+            return;
+        }
+
         this.interaction = {
             mode: mode,
             task: task,
+            data: data,
         };
+    }
+
+
+    isInteracting(mode=undefined, task=undefined) {
+        /*
+         * If no mode is supplied, return true if any interaction is happening
+         * (this.interaction.mode !== null). If a mode is supplied, return
+         * true if that type of interaction is happening; if a task is also supplied,
+         * return true if that type of interaction is happening to that task.
+         */
+        if (mode === undefined) {
+            return this.interaction.mode !== null;
+        }
+
+        if (this.interaction.mode !== mode) {
+            return false;
+        }
+
+        if (task === undefined) {
+            return true;
+        }
+
+        return this.interaction.task === task;
     }
 
 
