@@ -35,12 +35,8 @@ export default class ContextMenus extends React.Component {
     render() {
         return (
             <>
-                {this.state.overlay && (
-                    <div className="context-click-away-overlay" onClick={(event) => event.stopPropagation()} />
-                )}
-
                 <ContextMenu id="task-context-menu" onShow={this.onShowAnyMenu} onHide={this.onHideAnyMenu}>
-                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => {
+                    <MenuItem onClick={(event, data) => {
                         cleanEvent(event);
                         data.showEditCallback();
                     }}>
@@ -49,7 +45,7 @@ export default class ContextMenus extends React.Component {
 
                     <MenuItem divider />
 
-                    <MenuItem data={{foo: 'bar'}} onClick={(event, data) => {
+                    <MenuItem onClick={(event, data) => {
                         cleanEvent(event);
                         data.deleteCallback();
                     }}>
