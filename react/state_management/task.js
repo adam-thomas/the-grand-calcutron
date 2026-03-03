@@ -10,7 +10,11 @@ export default class Task {
 
     id = null;
     parent = null;
-    parent_id = null;
+
+    // The parent_id isn't meant to be used as a representative field, but we do need to cache it
+    // when retrieving tasks from the backend, so that we can attach the task to its actual parent
+    // later on.
+    _parent_id = null;
 
     // Use a temporary ID while the task doesn't exist in the backend.
     temporary_id = null;
@@ -23,9 +27,8 @@ export default class Task {
 
         if (parent) {
             this.parent = parent;
-            this.parent_id = parent.id;
         } else {
-            this.parent_id = parent_id;
+            this._parent_id = parent_id;
         }
 
         if (id === null) {

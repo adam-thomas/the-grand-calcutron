@@ -16,42 +16,14 @@ import mutateTask from "./api_mutation_buffer";
 
 function addTask(text, parent) {
     const new_task = taskState.addTask(parent, { text });
-    mutateTask(new_task);
-
-    // let data = {
-    //     text: text,
-    //     parent_id: parent.id,
-    // };
-    // 
-    // return api_requests.post("/new/", data).then((task_data) => {
-    //     runInAction(() => {
-    //         new_task.id = task_data.id;
-    //     })
-    // });
+    mutateTask(new_task, "create");
 }
 
 
 function deleteTask(task) {
     taskState.deleteTask(task);
-    mutateTask(task);
-
-    // return api_requests.delete(`/edit/${task.id}/`).then(() => {
-    //     transaction(() => {
-    //         if (taskState.hierarchy.includes(task)) {
-    //             navigate.toTask(task.parent);
-    //         }
-
-    //         // Remove the deleted task from objects that reference it.
-    //         delete task.parent.children[task.id];
-    //         delete taskState.tasks_by_id[task.id];
-    //     });
-    // });
+    mutateTask(task, "delete");
 }
-
-
-// function editTask(task, data) {
-//     return api_requests.patch(`/edit/${task.id}/`, data);
-// }
 
 
 function setTaskText(task, text) {
@@ -59,15 +31,7 @@ function setTaskText(task, text) {
         task.text = text;
     });
 
-    mutateTask(task);
-
-    // const data = {
-    //     text: text,
-    // };
-
-    // return editTask(task, data).then((return_data) => {
-    //     task.text = return_data.text;
-    // });
+    mutateTask(task, "update");
 }
 
 
@@ -76,30 +40,13 @@ function setTaskDone(task, done) {
         task.done = done;
     });
 
-    mutateTask(task);
-    // const data = {
-    //     done: done,
-    // };
-
-    // return editTask(task, data).then((return_data) => {
-    //     task.done = return_data.done;
-    // });
+    mutateTask(task, "update");
 }
 
 
 function moveTask(task, new_sort_order, new_parent=undefined) {
     taskState.setSortOrder(task, new_sort_order, new_parent);
-    mutateTask(task);
-
-    // const data = {
-    //     sort_order: new_sort_order,
-    // };
-
-    // if (new_parent !== undefined) {
-    //     data.parent_id = new_parent.id;
-    // }
-
-    // return editTask(task, data);
+    mutateTask(task, "update");
 }
 
 

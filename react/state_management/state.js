@@ -44,14 +44,21 @@ class TaskState {
         // At this point, the `parent` that comes in from the database is just an ID; replace
         // it with a proper pointer. Fill out each task's list of children as well.
         for (let task of Object.values(this.tasks_by_id)) {
-            let parent_obj = (task.parent_id === null) ? this.root_task : this.tasks_by_id[task.parent_id];
+            let parent_obj = (task._parent_id === null) ? this.root_task : this.tasks_by_id[task._parent_id];
 
             // For safety - e.g. for dealing with old data - don't explode when encountering
-            // tasks with missing parents.
-            if (parent_obj) {
-                task.parent = parent_obj;
-                parent_obj.children[task.id] = task;
+            // tasks with missing parents. Any task with an invalid parent just gets attached
+            // to the root.
+            if (!parent_obj) {
+                parent_obj = this.root_task;
             }
+
+            // Connect the task to its parent.
+            task.parent = parent_obj;
+            parent_obj.children[task.id] = task;
+
+            // Unset the cached _parent_id for consistency.
+            task._parent_id = null;
         }
 
         // If a starting task ID was precached, and we have that task available, switch to it now.
@@ -203,7 +210,7 @@ class TaskState {
         // mirror them to the backend when they receive edits. Or, initiate all the below functions
         // (setTaskParent, moveTaskBefore, etc) from saved_actions.js so there's a consistent point
         // for making modifications.
-        mutateTask(task);
+        mutateTask(task, "update");
     }
 
 

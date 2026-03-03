@@ -1,10 +1,17 @@
-import { observable, runInAction } from "mobx";
+import { computed, observable, runInAction } from "mobx";
 
 import api_requests from "./api_requests";
 import taskState from "./state";
 
-// A value of `null` indicates the task should be deleted.
-const buffered_tasks = observable(new Set());
+// Buffers.
+// Use more than one buffer here so that we can perform operations in a safe order.
+// Create actions must happen first, then edits, then deletions. This minimises the
+// risk of invalid IDs causing problems.
+const buffered_operations = observable({
+    create: new Set(),
+    update: new Set(),
+    delete: new Set(),
+});
 
 // Wait a certain amount of time (ms) between requests to
 // avoid churning the server.
@@ -16,9 +23,22 @@ const cooldownTime = 1000;
 // Store whether a mutation is actively occurring.
 let mutationPromise = null;
 
+// Maintain a set of all tasks in the buffer for convenient checking purposes.
+const buffered_tasks = computed(() => {
+    return new Set([
+        ...buffered_operations.create,
+        ...buffered_operations.update,
+        ...buffered_operations.delete,
+    ]);
+})
 
-export default function mutateTask(task) {
-    buffered_tasks.add(task);
+
+export default function mutateTask(task, operation_key) {
+    if (!Object.keys(buffered_operations).includes(operation_key)) {
+        throw "Invalid task mutation key " + operation_key;
+    }
+
+    buffered_operations[operation_key].add(task);
 
     if (!mutationPromise) {
         applyNextMutation();
@@ -27,32 +47,47 @@ export default function mutateTask(task) {
 
 
 export function isBuffered(task) {
-    return buffered_tasks.has(task);
+    return buffered_tasks.get().has(task);
+}
+
+
+function popNextTask(buffer) {
+    // Take an arbitrary task from the buffer. Remove it to avoid spurious repeats.
+    const task = buffer.values().next().value;
+    buffer.delete(task);
+
+    // Filter the task down to only the fields the backend will accept, and return
+    // that alongside the task itself.
+    return {
+        task: task,
+        post_data: {
+            done: task.done,
+            parent_id: task.parent.id,
+            sort_order: task.sort_order,
+            text: task.text,
+        },
+    }
 }
 
 
 function applyNextMutation() {
-    if (buffered_tasks.size === 0) {
+    if (buffered_tasks.get().size === 0) {
         mutationPromise = null;
         return Promise.resolve();
     }
 
-    // Take an arbitrary task from the buffer. Remove it to avoid spurious repeats.
-    const task = buffered_tasks.values().next().value;
-    buffered_tasks.delete(task);
-
     // Run the relevant API request.
     let request_promise;
 
-    // Filter the task down to only the fields the backend will accept.
-    const post_data = {
-        done: task.done,
-        parent_id: task.parent_id,
-        sort_order: task.sort_order,
-        text: task.text,
-    }
+    // Look through the three buffers in strict order, and run the request appropriate
+    // to what we find first.
+    // Create operations always come first, so that if a task is created and then edited,
+    // its ID is valid for the update operation. Likewise, delete operations come last,
+    // so that if a task is both edited and removed, its ID is valid for that update
+    // operation.
+    if (buffered_operations.create.size !== 0) {
+        const {task, post_data} = popNextTask(buffered_operations.create);
 
-    if (task.id === null) {
         // A task without an ID needs to be created in the database.
         // When it comes back, set its new ID and sort_order properly.
         request_promise = api_requests.post("/new/", post_data).then((task_data) => {
@@ -61,13 +96,13 @@ function applyNextMutation() {
             })
         });
 
-    } else if (task.to_delete) {
-        // This flag prepares a task for deletion.
-        request_promise = api_requests.delete(`/edit/${task.id}/`);
-    
-    } else {
-        // Update the task according to its current state.
+    } else if (buffered_operations.update.size !== 0) {
+        const {task, post_data} = popNextTask(buffered_operations.update);
         request_promise = api_requests.patch(`/edit/${task.id}/`, post_data);
+
+    } else {
+        const {task} = popNextTask(buffered_operations.delete);
+        request_promise = api_requests.delete(`/edit/${task.id}/`);
     }
 
     // After the request completes, wait for the cooldown timer, then re-run this function
@@ -83,7 +118,7 @@ function applyNextMutation() {
         },
         (error) => {
             alert(`Request failed: ${error}`);
-            buffered_tasks.clear();
+            buffered_operations.clear();
         }
     )
     return mutationPromise;
