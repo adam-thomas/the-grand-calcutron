@@ -59,7 +59,6 @@ function popNextTask(buffer) {
     // Take an arbitrary task from the buffer. Remove it to avoid spurious repeats.
     const task = buffer.values().next().value;
     buffer.delete(task);
-    console.log("Popping:", task);
 
     // Filter the task down to only the fields the backend will accept, and return
     // that alongside the task itself.
@@ -134,7 +133,10 @@ function applyNextMutation() {
                 buffered_operations.update.clear();
                 buffered_operations.delete.clear();
             });
+
+            mutationPromise = null;
         }
     )
+
     return mutationPromise;
 }
