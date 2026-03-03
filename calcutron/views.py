@@ -2,14 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveDestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 
 from .models import Task
 from .permissions import can_access_task, TaskAccessPermission
-from .serializers import TaskSerializer, TASK_API_FIELDS
+from .serializers import TaskBulkEditSerializer, TaskSerializer, TASK_API_FIELDS
 
 
 
@@ -36,12 +36,12 @@ class UserTasksMixin:
     def get_queryset(self):
         return Task.objects.for_user(self.request.user)
 
-    def check_parent(self, serializer):
+    def check_parent(self, task_data):
         """
-        Check that if this task is being created or moved under a parent, that that parent
+        Check that if a task is being created or moved under a parent, that that parent
         is also accessible to this user.
         """
-        parent_id = serializer.validated_data.get("parent_id", None)
+        parent_id = task_data.get("parent_id", None)
         if parent_id and not can_access_task(self.request.user, Task.objects.get(id=parent_id)):
             raise ValidationError("Cannot assign to this parent.")
         
@@ -58,20 +58,18 @@ class UserTasksMixin:
         
         return task.parent.top_level_parent
     
-    def save_and_set_data(self, serializer):
+    def set_task_data(self, saved_task):
         """
-        Save a Task instance, and set its user list and top_level_parent according
+        Set a Task instance's user list and top_level_parent according
         to its position in the hierarchy.
         """
-        edited_task = serializer.save()
+        saved_task.top_level_parent = self.calculate_top_level_parent(saved_task)
+        saved_task.save()
         
-        edited_task.top_level_parent = self.calculate_top_level_parent(edited_task)
-        edited_task.save()
-        
-        if edited_task.parent is None:
-            edited_task.users.add(self.request.user)
+        if saved_task.parent is None:
+            saved_task.users.add(self.request.user)
         else:
-            edited_task.users.set([])
+            saved_task.users.set([])
 
 
 class GetAllTasksView(UserTasksMixin, ListAPIView):
@@ -86,11 +84,32 @@ class GetAllTasksView(UserTasksMixin, ListAPIView):
 
 class CreateTaskView(UserTasksMixin, CreateAPIView):
     def perform_create(self, serializer):
-        self.check_parent(serializer)
-        self.save_and_set_data(serializer)
+        self.check_parent(serializer.validated_data)
+        saved_task = serializer.save()
+        self.set_task_data(saved_task)
 
 
-class EditTaskView(UserTasksMixin, RetrieveUpdateDestroyAPIView):
+class GetDeleteTaskView(UserTasksMixin, RetrieveDestroyAPIView):
+    pass
+
+
+class BulkEditTaskView(UserTasksMixin, UpdateAPIView):
+    serializer_class = TaskBulkEditSerializer
+
     def perform_update(self, serializer):
-        self.check_parent(serializer)
-        self.save_and_set_data(serializer)
+        for item in serializer.validated_data:
+            self.check_parent(item)
+        
+        saved_tasks = serializer.save()
+        
+        for task in saved_tasks:
+            self.set_task_data(task)
+
+    def update(self, request, *args, **kwargs):
+        """Add many=True to the standard functionality so this view can handle bulk requests."""
+        partial = kwargs.pop("partial", False)
+        instances = self.get_queryset()
+        serializer = self.get_serializer(instances, data=request.data, partial=partial, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

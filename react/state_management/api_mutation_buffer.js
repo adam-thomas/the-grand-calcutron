@@ -33,14 +33,18 @@ const buffered_tasks = computed(() => {
 })
 
 
-export default function mutateTask(task, operation_key) {
+export default function mutateTask(task, operation_key, quiet=false) {
+    /* Add a task to the buffer corresponding to the given operation_key.
+     * Then, if quiet=False and an operation is not already in progress,
+     * submit the change to the backend.
+     */
     if (!Object.keys(buffered_operations).includes(operation_key)) {
         throw "Invalid task mutation key " + operation_key;
     }
 
     buffered_operations[operation_key].add(task);
 
-    if (!mutationPromise) {
+    if (!mutationPromise && !quiet) {
         applyNextMutation();
     }
 }
@@ -55,12 +59,14 @@ function popNextTask(buffer) {
     // Take an arbitrary task from the buffer. Remove it to avoid spurious repeats.
     const task = buffer.values().next().value;
     buffer.delete(task);
+    console.log("Popping:", task);
 
     // Filter the task down to only the fields the backend will accept, and return
     // that alongside the task itself.
     return {
-        task: task,
+        task,
         post_data: {
+            id: task.id || null,
             done: task.done,
             parent_id: task.parent.id,
             sort_order: task.sort_order,
@@ -97,12 +103,17 @@ function applyNextMutation() {
         });
 
     } else if (buffered_operations.update.size !== 0) {
-        const {task, post_data} = popNextTask(buffered_operations.update);
-        request_promise = api_requests.patch(`/edit/${task.id}/`, post_data);
+        // Updates are submitted in bulk, so send the entire buffer down to the backend.
+        const all_post_data = []
+        while (buffered_operations.update.size > 0) {
+            const {post_data} = popNextTask(buffered_operations.update);
+            all_post_data.push(post_data);
+        }
+        request_promise = api_requests.patch("/edit/", all_post_data);
 
     } else {
         const {task} = popNextTask(buffered_operations.delete);
-        request_promise = api_requests.delete(`/edit/${task.id}/`);
+        request_promise = api_requests.delete(`/task/${task.id}/`);
     }
 
     // After the request completes, wait for the cooldown timer, then re-run this function
@@ -118,7 +129,11 @@ function applyNextMutation() {
         },
         (error) => {
             alert(`Request failed: ${error}`);
-            buffered_operations.clear();
+            runInAction(() => {
+                buffered_operations.create.clear();
+                buffered_operations.update.clear();
+                buffered_operations.delete.clear();
+            });
         }
     )
     return mutationPromise;

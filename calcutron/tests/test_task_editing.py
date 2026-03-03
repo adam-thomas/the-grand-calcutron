@@ -15,25 +15,56 @@ class TestTaskEditing(TaskTestCase):
         A basic change to an existing task.
         """
         self.client.force_login(self.user_1)
-        response = self.client.patch(self.edit_url, {
+        response = self.client.patch("/edit/", [{
+            "id": self.task.id,
             "text": "An updated task",
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
 
         self.task.refresh_from_db()
         self.assertEqual(self.task.text, "An updated task")
 
+    def test_bulk_edit_task(self):
+        """
+        A basic change to two existing tasks.
+        """
+        second_task = self.create_task("task two", parent=self.task)
+
+        self.client.force_login(self.user_1)
+        response = self.client.patch("/edit/", [
+            {
+                "id": self.task.id,
+                "text": "An updated task",
+            },
+            {
+                "id": second_task.id,
+                "text": "Another updated task",
+            }
+        ], content_type="application/json")
+
+        self.assertEqual(response.status_code, 200, response.data)
+
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.text, "An updated task")
+
+        second_task.refresh_from_db()
+        self.assertEqual(second_task.text, "Another updated task")
+
     def test_task_edit_by_wrong_user(self):
         """
-        Users cannot edit tasks owned by other users.
+        Users cannot edit tasks owned by other users. The operation will simply do nothing.
         """
         self.client.force_login(self.user_2)
-        response = self.client.patch(self.edit_url, {
+        response = self.client.patch("/edit/", [{
+            "id": self.task.id,
             "text": "An updated task",
-        }, content_type="application/json")
+        }], content_type="application/json")
 
-        self.assertEqual(response.status_code, 404, response.data)
+        self.assertEqual(response.status_code, 200, response.data)
+
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.text, "An old task")
 
     def test_move_task_up(self):
         """
@@ -43,9 +74,10 @@ class TestTaskEditing(TaskTestCase):
         task_to_move = self.create_task("to move", parent=self.task)
 
         self.client.force_login(self.user_1)
-        response = self.client.patch(f"/edit/{task_to_move.id}/", {
+        response = self.client.patch("/edit/", [{
+            "id": task_to_move.id,
             "parent_id": None,
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
 
@@ -62,9 +94,10 @@ class TestTaskEditing(TaskTestCase):
         task_to_move = self.create_task("to move", users=[self.user_1])
 
         self.client.force_login(self.user_1)
-        response = self.client.patch(f"/edit/{task_to_move.id}/", {
+        response = self.client.patch("/edit/", [{
+            "id": task_to_move.id,
             "parent_id": self.task.id,
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
 
@@ -82,9 +115,10 @@ class TestTaskEditing(TaskTestCase):
         new_parent = self.create_task("new parent", users=[self.user_1])
 
         self.client.force_login(self.user_1)
-        response = self.client.patch(f"/edit/{task_to_move.id}/", {
+        response = self.client.patch("/edit/", [{
+            "id": task_to_move.id,
             "parent_id": new_parent.id,
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
 
@@ -99,9 +133,10 @@ class TestTaskEditing(TaskTestCase):
         parent = self.create_task("parent", users=[self.user_2])
 
         self.client.force_login(self.user_1)
-        response = self.client.patch(self.edit_url, {
+        response = self.client.patch("/edit/", [{
+            "id": self.task.id,
             "parent_id": parent.id,
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 400, response.data)
 
@@ -114,9 +149,10 @@ class TestTaskEditing(TaskTestCase):
         middle_parent = self.create_task("middle parent", parent=top_parent)
 
         self.client.force_login(self.user_1)
-        response = self.client.patch(self.edit_url, {
+        response = self.client.patch("/edit/", [{
+            "id": self.task.id,
             "parent_id": middle_parent.id,
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 400, response.data)
 
@@ -125,10 +161,11 @@ class TestTaskEditing(TaskTestCase):
         Editing the `users` field in the submitted data is ignored.
         """
         self.client.force_login(self.user_1)
-        response = self.client.patch(self.edit_url, {
+        response = self.client.patch("/edit/", [{
+            "id": self.task.id,
             "text": "An updated task",
             "users": [self.user_2.id],
-        }, content_type="application/json")
+        }], content_type="application/json")
 
         self.assertEqual(response.status_code, 200, response.data)
 

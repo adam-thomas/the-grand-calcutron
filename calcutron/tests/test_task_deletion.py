@@ -8,7 +8,7 @@ class TestTaskDeletion(TaskTestCase):
         super().setUpTestData()
 
         cls.task = cls.create_task("An old task", users=[cls.user_1])
-        cls.edit_url = f"/edit/{cls.task.id}/"
+        cls.edit_url = f"/task/{cls.task.id}/"
     
     def test_delete_task(self):
         """

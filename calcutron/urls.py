@@ -15,7 +15,8 @@ urlpatterns = [
     path("health_check/", views.LoginHealthCheck.as_view(), name="health_check"),
     path("get_tasks/", views.GetAllTasksView.as_view(), name="get_tasks"),
     path("new/", views.CreateTaskView.as_view(), name="new"),
-    path("edit/<int:pk>/", views.EditTaskView.as_view(), name="edit"),
+    path("task/<int:pk>/", views.GetDeleteTaskView.as_view(), name="get_delete"),
+    path("edit/", views.BulkEditTaskView.as_view(), name="edit"),
 
     path("", views.MainView.as_view(), name="main"),
     path("<int:task_id>/", views.MainView.as_view(), name="main_with_task_id"),

@@ -1,6 +1,5 @@
-import {action, observable, transaction, computed} from "mobx";
+import {action, observable, computed} from "mobx";
 
-import actions from "./saved_actions";
 import Task from "./task";
 import navigate from "../navigation/navigate";
 import mutateTask from "./api_mutation_buffer";
@@ -10,8 +9,8 @@ class TaskState {
     // The root task fakes an item at the head of the tree, which makes it easier to write code
     // without having to write special cases for null parents. All tasks with a parent ID of null
     // in the database will point at this root task.
-    // (This is needed instead of just forcing a root node because top-level tasks can be
-    // shared between users, so there isn't actually a single consistent root to the tree.)
+    // (This is needed instead of forcing a root node in the backend because top-level tasks can
+    // be shared between users, so there isn't actually a single consistent root to the tree.)
     @observable root_task = new Task({});
 
     csrf = null;
@@ -203,14 +202,14 @@ class TaskState {
 
 
     @action.bound
-    setSortOrder(task, new_value) {
+    setSortOrder(task, new_value, quiet=true) {
         task.sort_order = new_value;
 
         // TODO: Instead of manually synchronising here, use an autorun on tasks to automatically
         // mirror them to the backend when they receive edits. Or, initiate all the below functions
         // (setTaskParent, moveTaskBefore, etc) from saved_actions.js so there's a consistent point
         // for making modifications.
-        mutateTask(task, "update");
+        mutateTask(task, "update", quiet);
     }
 
 
@@ -239,7 +238,7 @@ class TaskState {
 
         // Tell the API about the changes - both to the sort order and to the parent.
         if (!skip_save) {
-            this.setSortOrder(task, max_sort_order + 1);
+            this.setSortOrder(task, max_sort_order + 1, false);
         }
     }
 
@@ -283,7 +282,7 @@ class TaskState {
             new_sort_order--;
         }
 
-        this.setSortOrder(task, new_sort_order);
+        this.setSortOrder(task, new_sort_order, false);
     }
 
 
@@ -326,7 +325,7 @@ class TaskState {
             }
         }
 
-        this.setSortOrder(task, new_sort_order, task.parent);
+        this.setSortOrder(task, new_sort_order, false);
     }
 }
 
