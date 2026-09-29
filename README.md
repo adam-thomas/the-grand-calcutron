@@ -17,10 +17,9 @@ Named for [a parody Magic: the Gathering card](https://gatherer.wizards.com/Page
 ## Setup
 
 * Clone the project and `cd` into the cloned directory.
-* Create a virtual environment with `python3 -m venv .`.
-* Activate the virtual environment with `source bin/activate`.
 * Ensure Postgres is running on your system ([instructions are here](https://www.postgresql.org/) if you need to set it up).
-* Install Calcutron with `make install`. Note that this will need a small amount of your input in setting up a user account - it doesn't have to be anything secure, since it's just running on your local machine for test data.
+* Create a virtual environment and set up Calcutron with `make install`.
+    * Note that this will need a small amount of your input in setting up a user account - it doesn't have to be anything secure, since it's just running on your local machine for test data.
 
 ## Building and running
 
