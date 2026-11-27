@@ -209,6 +209,10 @@ class TaskState {
         }
 
         // Otherwise, activate the new task.
+        // Clean up any editing state, so we don't end up with hidden
+        // open editors or drag operations blocking up the visible
+        // functionality.
+        this.setInteraction(null);
         this.active_task = selected_task;
     }
 
