@@ -15,10 +15,7 @@ const buffered_operations = observable({
 
 // Wait a certain amount of time (ms) between requests to
 // avoid churning the server.
-// TODO: Set up bulk updates (especially for moving tasks and
-// updating a load of sort_order values) and extend the cooldown
-// a bit.
-const cooldownTime = 1000;
+const cooldownTime = 100;
 
 // Store whether a mutation is actively occurring.
 let mutationPromise = null;
