@@ -186,12 +186,6 @@ class TaskState {
     // Look up the given task ID, and activate it if it's available.
     @action.bound
     switchToTaskId(task_id) {
-        // If the task ID is undefined, select the root.
-        if (task_id === undefined || task_id === null) {
-            this.active_task = this.root_task;
-            return;
-        }
-
         // If no tasks are currently loaded, precache the given task_id
         // and switch to it after initialise().
         if (Object.keys(this.tasks_by_id).length === 0) {
@@ -199,12 +193,19 @@ class TaskState {
             return;
         }
 
-        task_id = parseInt(task_id);
-        const selected_task = this.tasks_by_id[task_id];
+        // Ensure a valid task ID is represented as an integer, since it can come
+        // from the page URL as a string. Undefined or null ids point to the root.
+        if (task_id !== undefined && task_id !== null) {
+            task_id = parseInt(task_id);
+        }
 
-        // If this task ID does not exist, return to the root task.
-        if (!selected_task) {
-            this.active_task = this.root_task;
+        // Fall back to the root for nonexistent IDs. This also correctly accounts
+        // for ids of null or undefined.
+        const selected_task = this.tasks_by_id[task_id] || this.root_task;
+
+        // Safety check: If this task is *already* selected, do nothing.
+        // This avoids spurious interaction clearing.
+        if (this.active_task && selected_task === this.active_task) {
             return;
         }
 
